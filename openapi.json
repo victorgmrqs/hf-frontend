@@ -1,0 +1,2014 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "HF Transaction Service API",
+    "description": "API de controle financeiro (usuários, categorias, formas de pagamento, despesas, orçamentos e contas a pagar).\nRespostas seguem o formato `{ \"data\": ..., \"error\": null }` em sucesso e\n`{ \"data\": null, \"error\": { \"code\": \"...\", \"message\": \"...\" } }` em erro.\n",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Home Finance"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "Ambiente local"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Health",
+      "description": "Saúde do serviço"
+    },
+    {
+      "name": "Users",
+      "description": "Usuários"
+    },
+    {
+      "name": "Categories",
+      "description": "Categorias de despesa"
+    },
+    {
+      "name": "Payment Methods",
+      "description": "Formas de pagamento"
+    },
+    {
+      "name": "Expenses",
+      "description": "Despesas"
+    },
+    {
+      "name": "Budgets",
+      "description": "Metas e Orçamentos"
+    },
+    {
+      "name": "Accounts Payable",
+      "description": "Contas a Pagar"
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": [
+          "Health"
+        ],
+        "summary": "Health check",
+        "responses": {
+          "200": {
+            "description": "Serviço ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/users": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Listar todos os usuários",
+        "responses": {
+          "200": {
+            "description": "Lista de usuários",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseUsers"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Registrar novo usuário",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterUserRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Usuário criado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseUser"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/api/v1/users/{id}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/UuidPathId"
+        }
+      ],
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Buscar usuário por ID",
+        "responses": {
+          "200": {
+            "description": "Usuário encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseUser"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Atualizar usuário",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Usuário atualizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseUser"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Remover usuário",
+        "responses": {
+          "204": {
+            "description": "Removido com sucesso"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/api/v1/categories": {
+      "get": {
+        "tags": [
+          "Categories"
+        ],
+        "summary": "Listar todas as categorias",
+        "responses": {
+          "200": {
+            "description": "Lista de categorias",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseCategories"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Categories"
+        ],
+        "summary": "Criar categoria",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCategoryRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Categoria criada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseCategory"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "409": {
+            "description": "Categoria já existe",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/api/v1/categories/{id}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/UuidPathId"
+        }
+      ],
+      "get": {
+        "tags": [
+          "Categories"
+        ],
+        "summary": "Buscar categoria por ID",
+        "responses": {
+          "200": {
+            "description": "Categoria encontrada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseCategory"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Categories"
+        ],
+        "summary": "Atualizar categoria",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCategoryRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Categoria atualizada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseCategory"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "description": "Nome de categoria já existe",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Categories"
+        ],
+        "summary": "Remover categoria",
+        "responses": {
+          "204": {
+            "description": "Removida com sucesso"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/api/v1/payment-methods/user/{user_id}": {
+      "get": {
+        "tags": [
+          "Payment Methods"
+        ],
+        "summary": "Listar formas de pagamento do usuário",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de formas de pagamento",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponsePaymentMethods"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/api/v1/payment-methods": {
+      "post": {
+        "tags": [
+          "Payment Methods"
+        ],
+        "summary": "Criar forma de pagamento",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePaymentMethodRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Forma de pagamento criada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponsePaymentMethod"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/api/v1/payment-methods/{id}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/UuidPathId"
+        },
+        {
+          "$ref": "#/components/parameters/RequesterIdQuery"
+        }
+      ],
+      "get": {
+        "tags": [
+          "Payment Methods"
+        ],
+        "summary": "Buscar forma de pagamento por ID",
+        "responses": {
+          "200": {
+            "description": "Forma de pagamento encontrada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponsePaymentMethod"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Payment Methods"
+        ],
+        "summary": "Atualizar forma de pagamento",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePaymentMethodRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Forma de pagamento atualizada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponsePaymentMethod"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Payment Methods"
+        ],
+        "summary": "Remover forma de pagamento",
+        "responses": {
+          "204": {
+            "description": "Removida com sucesso"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/api/v1/expenses/user/{user_id}": {
+      "get": {
+        "tags": [
+          "Expenses"
+        ],
+        "summary": "Listar despesas do usuário",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "competence",
+            "in": "query",
+            "description": "Competência no formato YYYY-MM",
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}$",
+              "example": "2025-01"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "description": "Tipo da despesa",
+            "schema": {
+              "$ref": "#/components/schemas/ExpenseType"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de despesas",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseExpenses"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/api/v1/expenses/user/{user_id}/totals": {
+      "get": {
+        "tags": [
+          "Expenses"
+        ],
+        "summary": "Totais do usuário por competência",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "competence",
+            "in": "query",
+            "required": true,
+            "description": "Competência no formato YYYY-MM",
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}$",
+              "example": "2025-01"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Totais (pessoal, compartilhado, geral)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseExpenseTotals"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/api/v1/expenses": {
+      "post": {
+        "tags": [
+          "Expenses"
+        ],
+        "summary": "Criar despesa",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateExpenseRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Despesa criada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseExpense"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/api/v1/expenses/{id}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/UuidPathId"
+        },
+        {
+          "$ref": "#/components/parameters/RequesterIdQuery"
+        }
+      ],
+      "get": {
+        "tags": [
+          "Expenses"
+        ],
+        "summary": "Buscar despesa por ID",
+        "responses": {
+          "200": {
+            "description": "Despesa encontrada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseExpense"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Expenses"
+        ],
+        "summary": "Atualizar despesa",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateExpenseRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Despesa atualizada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseExpense"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Expenses"
+        ],
+        "summary": "Remover despesa",
+        "responses": {
+          "204": {
+            "description": "Removida com sucesso"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/api/v1/expenses/{id}/category": {
+      "patch": {
+        "tags": [
+          "Expenses"
+        ],
+        "summary": "Atualizar apenas a categoria da despesa",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/UuidPathId"
+          },
+          {
+            "$ref": "#/components/parameters/RequesterIdQuery"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateExpenseCategoryRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Despesa atualizada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseExpense"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/api/v1/budgets": {
+      "get": {
+        "tags": [
+          "Budgets"
+        ],
+        "summary": "Listar orçamentos do usuário por competência",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "competence",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de orçamentos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseBudgets"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Budgets"
+        ],
+        "summary": "Criar novo orçamento",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateBudgetRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Orçamento criado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseBudget"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/api/v1/budgets/{id}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/UuidPathId"
+        },
+        {
+          "$ref": "#/components/parameters/RequesterIdQuery"
+        }
+      ],
+      "get": {
+        "tags": [
+          "Budgets"
+        ],
+        "summary": "Buscar orçamento por ID",
+        "responses": {
+          "200": {
+            "description": "Orçamento encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseBudget"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Budgets"
+        ],
+        "summary": "Atualizar valor do orçamento",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateBudgetRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Orçamento atualizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseBudget"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Budgets"
+        ],
+        "summary": "Remover orçamento",
+        "responses": {
+          "204": {
+            "description": "Removido com sucesso"
+          }
+        }
+      }
+    },
+    "/api/v1/budgets/status": {
+      "get": {
+        "tags": [
+          "Budgets"
+        ],
+        "summary": "Status de gastos vs orçamento",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "competence",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Status detalhado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseBudgetStatus"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/accounts-payable": {
+      "get": {
+        "tags": [
+          "Accounts Payable"
+        ],
+        "summary": "Listar contas a pagar",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "PENDING",
+                "PAID"
+              ]
+            }
+          },
+          {
+            "name": "due_date_until",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de contas",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseAccountsPayable"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Accounts Payable"
+        ],
+        "summary": "Criar conta a pagar",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAccountPayableRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Conta criada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseAccountPayable"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/accounts-payable/{id}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/UuidPathId"
+        },
+        {
+          "$ref": "#/components/parameters/RequesterIdQuery"
+        }
+      ],
+      "get": {
+        "tags": [
+          "Accounts Payable"
+        ],
+        "summary": "Buscar conta por ID",
+        "responses": {
+          "200": {
+            "description": "Conta encontrada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseAccountPayable"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Accounts Payable"
+        ],
+        "summary": "Atualizar conta a pagar",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAccountPayableRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Conta atualizada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseAccountPayable"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Accounts Payable"
+        ],
+        "summary": "Remover conta",
+        "responses": {
+          "204": {
+            "description": "Removida com sucesso"
+          }
+        }
+      }
+    },
+    "/api/v1/accounts-payable/{id}/pay": {
+      "post": {
+        "tags": [
+          "Accounts Payable"
+        ],
+        "summary": "Realizar pagamento da conta",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/UuidPathId"
+          },
+          {
+            "$ref": "#/components/parameters/RequesterIdQuery"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PayAccountPayableRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Pagamento realizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseAccountPayable"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "parameters": {
+      "UuidPathId": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "RequesterIdQuery": {
+        "name": "requester_id",
+        "in": "query",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      }
+    },
+    "responses": {
+      "ValidationError": {
+        "description": "Erro de validação",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApiError"
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "Recurso não encontrado",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApiError"
+            }
+          }
+        }
+      },
+      "InternalError": {
+        "description": "Erro interno do servidor",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApiError"
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "ApiError": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "null"
+          },
+          "error": {
+            "type": "object",
+            "required": [
+              "code",
+              "message"
+            ],
+            "properties": {
+              "code": {
+                "type": "string",
+                "example": "VALIDATION_ERROR"
+              },
+              "message": {
+                "type": "string",
+                "example": "Campo obrigatório inválido"
+              }
+            }
+          }
+        }
+      },
+      "ApiResponseUser": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/User"
+          },
+          "error": {
+            "type": "null"
+          }
+        }
+      },
+      "ApiResponseUsers": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/User"
+            }
+          },
+          "error": {
+            "type": "null"
+          }
+        }
+      },
+      "User": {
+        "type": "object",
+        "description": "User sanitized response (UserOutputDTO)",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          }
+        }
+      },
+      "RegisterUserRequest": {
+        "type": "object",
+        "required": [
+          "name",
+          "email",
+          "password"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "UpdateUserRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "ApiResponseCategory": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Category"
+          },
+          "error": {
+            "type": "null"
+          }
+        }
+      },
+      "ApiResponseCategories": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Category"
+            }
+          },
+          "error": {
+            "type": "null"
+          }
+        }
+      },
+      "Category": {
+        "type": "object",
+        "description": "Category sanitized response (CategoryOutputDTO)",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "color": {
+            "type": "string",
+            "pattern": "^#[0-9A-Fa-f]{6}$"
+          }
+        }
+      },
+      "CreateCategoryRequest": {
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "color": {
+            "type": "string"
+          }
+        }
+      },
+      "UpdateCategoryRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "color": {
+            "type": "string"
+          }
+        }
+      },
+      "PaymentMethodType": {
+        "type": "string",
+        "enum": [
+          "CREDIT_CARD",
+          "DEBIT_CARD",
+          "BANK_ACCOUNT",
+          "CASH",
+          "PIX",
+          "OTHER"
+        ]
+      },
+      "ApiResponsePaymentMethod": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/PaymentMethod"
+          },
+          "error": {
+            "type": "null"
+          }
+        }
+      },
+      "ApiResponsePaymentMethods": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PaymentMethod"
+            }
+          },
+          "error": {
+            "type": "null"
+          }
+        }
+      },
+      "PaymentMethod": {
+        "type": "object",
+        "description": "PaymentMethod sanitized response (PaymentMethodOutputDTO)",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "shared": {
+            "type": "boolean"
+          },
+          "users": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/User"
+            }
+          }
+        }
+      },
+      "CreatePaymentMethodRequest": {
+        "type": "object",
+        "required": [
+          "name",
+          "type",
+          "user_ids"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "$ref": "#/components/schemas/PaymentMethodType"
+          },
+          "shared": {
+            "type": "boolean",
+            "default": false
+          },
+          "user_ids": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        }
+      },
+      "UpdatePaymentMethodRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "$ref": "#/components/schemas/PaymentMethodType"
+          }
+        }
+      },
+      "AddUserToPaymentMethodRequest": {
+        "type": "object",
+        "required": [
+          "user_id"
+        ],
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "ExpenseType": {
+        "type": "string",
+        "enum": [
+          "PERSONAL",
+          "SHARED",
+          "CHILD",
+          "HOME",
+          "OTHER"
+        ]
+      },
+      "ApiResponseExpense": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Expense"
+          },
+          "error": {
+            "type": "null"
+          }
+        }
+      },
+      "ApiResponseExpenses": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Expense"
+            }
+          },
+          "error": {
+            "type": "null"
+          }
+        }
+      },
+      "Expense": {
+        "type": "object",
+        "description": "Expense sanitized response (ExpenseOutputDTO)",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "description": {
+            "type": "string"
+          },
+          "value": {
+            "type": "number"
+          },
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "competence": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}$"
+          },
+          "type": {
+            "type": "string"
+          },
+          "user_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "category": {
+            "type": "object",
+            "nullable": true,
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "name": {
+                "type": "string"
+              },
+              "color": {
+                "type": "string"
+              }
+            }
+          },
+          "payment_method": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "name": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string"
+              }
+            }
+          },
+          "shared_with": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ExpenseUserResponse"
+            }
+          }
+        }
+      },
+      "ExpenseUserResponse": {
+        "type": "object",
+        "description": "Expense participant sanitized response",
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "divided_amount": {
+            "type": "number"
+          }
+        }
+      },
+      "CreateExpenseRequest": {
+        "type": "object",
+        "required": [
+          "description",
+          "amount",
+          "date",
+          "competence",
+          "type",
+          "user_id",
+          "payment_method_id"
+        ],
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number"
+          },
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "competence": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}$"
+          },
+          "type": {
+            "$ref": "#/components/schemas/ExpenseType"
+          },
+          "user_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "category_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "payment_method_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "shared_user_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "UpdateExpenseRequest": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number"
+          },
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "competence": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}$"
+          },
+          "payment_method_id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "UpdateExpenseCategoryRequest": {
+        "type": "object",
+        "properties": {
+          "category_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          }
+        }
+      },
+      "ApiResponseExpenseTotals": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "competence": {
+                "type": "string",
+                "example": "2025-01"
+              },
+              "total_personal": {
+                "type": "number"
+              },
+              "total_shared": {
+                "type": "number"
+              },
+              "total_general": {
+                "type": "number"
+              }
+            }
+          },
+          "error": {
+            "type": "null"
+          }
+        }
+      },
+      "Budget": {
+        "type": "object",
+        "description": "Budget sanitized response (BudgetOutputDTO)",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "user_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "category_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "competence": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}$"
+          },
+          "amount": {
+            "type": "number"
+          }
+        }
+      },
+      "CreateBudgetRequest": {
+        "type": "object",
+        "required": [
+          "user_id",
+          "category_id",
+          "competence",
+          "amount"
+        ],
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "category_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "competence": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}$"
+          },
+          "amount": {
+            "type": "number"
+          }
+        }
+      },
+      "UpdateBudgetRequest": {
+        "type": "object",
+        "required": [
+          "amount"
+        ],
+        "properties": {
+          "amount": {
+            "type": "number"
+          }
+        }
+      },
+      "ApiResponseBudget": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Budget"
+          },
+          "error": {
+            "type": "null"
+          }
+        }
+      },
+      "ApiResponseBudgets": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Budget"
+            }
+          },
+          "error": {
+            "type": "null"
+          }
+        }
+      },
+      "BudgetStatus": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "category_name": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number"
+          },
+          "current_spending": {
+            "type": "number"
+          }
+        }
+      },
+      "ApiResponseBudgetStatus": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BudgetStatus"
+            }
+          },
+          "error": {
+            "type": "null"
+          }
+        }
+      },
+      "AccountPayable": {
+        "type": "object",
+        "description": "AccountPayable sanitized response (AccountPayableOutputDTO)",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "description": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number"
+          },
+          "due_date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "PAID"
+            ]
+          },
+          "recurrence": {
+            "type": "string"
+          },
+          "paid_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "expense_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          }
+        }
+      },
+      "CreateAccountPayableRequest": {
+        "type": "object",
+        "required": [
+          "user_id",
+          "description",
+          "amount",
+          "due_date"
+        ],
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "description": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number"
+          },
+          "due_date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "recurrence": {
+            "type": "string"
+          }
+        }
+      },
+      "UpdateAccountPayableRequest": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number"
+          },
+          "due_date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "recurrence": {
+            "type": "string"
+          }
+        }
+      },
+      "PayAccountPayableRequest": {
+        "type": "object",
+        "required": [
+          "payment_method_id",
+          "date",
+          "competence"
+        ],
+        "properties": {
+          "payment_method_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "category_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "competence": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}$"
+          }
+        }
+      },
+      "ApiResponseAccountPayable": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/AccountPayable"
+          },
+          "error": {
+            "type": "null"
+          }
+        }
+      },
+      "ApiResponseAccountsPayable": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AccountPayable"
+            }
+          },
+          "error": {
+            "type": "null"
+          }
+        }
+      }
+    }
+  }
+}
