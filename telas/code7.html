@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Shared Expense Detailed Split</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white">
+<div class="relative flex h-full min-h-screen w-full flex-col overflow-x-hidden">
+<!-- Navigation -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 dark:border-slate-800 bg-white dark:bg-[#111a22] px-6 py-4 lg:px-10">
+<div class="flex items-center gap-4">
+<div class="size-8 text-primary">
+<span class="material-symbols-outlined !text-[32px]">account_balance_wallet</span>
+</div>
+<h2 class="text-lg font-bold leading-tight tracking-[-0.015em]">Home Finance</h2>
+</div>
+<div class="flex flex-1 justify-end gap-8">
+<div class="hidden md:flex items-center gap-9">
+<a class="text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white text-sm font-medium leading-normal transition-colors" href="#">Dashboard</a>
+<a class="text-slate-900 dark:text-white text-sm font-medium leading-normal" href="#">Expenses</a>
+<a class="text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white text-sm font-medium leading-normal transition-colors" href="#">Budget</a>
+<a class="text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white text-sm font-medium leading-normal transition-colors" href="#">Reports</a>
+</div>
+<button class="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary hover:bg-primary/90 transition-colors text-white text-sm font-bold leading-normal tracking-[0.015em]">
+<span class="truncate">Add Expense</span>
+</button>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 ring-2 ring-slate-100 dark:ring-slate-800" data-alt="User profile picture" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuClnwYzJvjtN_-hPX8Pm57KgmToU7VaaK3_TnSJm3e10_wb1Ubm0aRZ4saczbCtSRc-g189xKMn32_8eTejJN7BAeRWuOQX-7a1sjHYPQXZwG5U9IIDqrc0DlMgIRAFdHJJM8GFJmeyiaFhtR1gxxbuIUpAOOh4_unIizW75a1Bah5oXLEfsZgWVkB4E1K3ryp3S0PdGnusQirewijPIJlHan1Bfu7-c5oli2Rf-9c17MBuB4VFW6TgWNWzyuzpqNRGkiVtH0fMhiI");'></div>
+</div>
+</header>
+<main class="layout-container flex h-full grow flex-col items-center py-8 px-4 sm:px-6 lg:px-8">
+<div class="layout-content-container flex flex-col max-w-[1024px] w-full flex-1 gap-6">
+<!-- Breadcrumb -->
+<nav class="flex text-sm text-slate-500 dark:text-slate-400">
+<ol class="flex items-center space-x-2">
+<li><a class="hover:text-primary transition-colors" href="#">Expenses</a></li>
+<li><span class="material-symbols-outlined !text-sm">chevron_right</span></li>
+<li class="text-slate-900 dark:text-white font-medium">Trader Joe's Grocery Run</li>
+</ol>
+</nav>
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 pb-2 border-b border-slate-200 dark:border-slate-800">
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-3">
+<h1 class="text-3xl md:text-4xl font-black leading-tight tracking-[-0.033em]">Trader Joe's Grocery Run</h1>
+<span class="inline-flex items-center rounded-full bg-blue-100 dark:bg-blue-900/30 px-2.5 py-0.5 text-xs font-medium text-blue-800 dark:text-blue-300">
+                                Shared
+                            </span>
+</div>
+<div class="flex items-center gap-2 text-slate-500 dark:text-slate-400 text-base">
+<span class="material-symbols-outlined !text-[18px]">calendar_today</span>
+<span>Oct 24, 2023</span>
+<span class="block size-1 rounded-full bg-slate-400"></span>
+<span>Paid by Alice</span>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="flex items-center justify-center gap-2 rounded-lg px-4 h-10 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-slate-700 dark:text-slate-200 text-sm font-bold">
+<span class="material-symbols-outlined !text-[18px]">delete</span>
+<span class="hidden sm:inline">Delete</span>
+</button>
+<button class="flex items-center justify-center gap-2 rounded-lg px-4 h-10 bg-emerald-600 hover:bg-emerald-700 transition-colors text-white text-sm font-bold shadow-lg shadow-emerald-900/20">
+<span class="material-symbols-outlined !text-[18px]">check_circle</span>
+<span>Settled</span>
+</button>
+</div>
+</div>
+<!-- Main Content Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<!-- Left Column: Details & Breakdown -->
+<div class="lg:col-span-2 flex flex-col gap-6">
+<!-- Expense Card -->
+<div class="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#15202b] p-6 shadow-sm">
+<div class="flex justify-between items-start mb-6">
+<div>
+<p class="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Total Amount</p>
+<p class="text-4xl font-bold tracking-tight text-slate-900 dark:text-white">$145.50</p>
+</div>
+<button class="group flex items-center gap-2 rounded-full bg-slate-100 dark:bg-slate-800 pr-4 pl-3 py-1.5 transition-colors hover:bg-slate-200 dark:hover:bg-slate-700">
+<div class="flex items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/50 p-1 text-primary">
+<span class="material-symbols-outlined !text-[16px]">restaurant</span>
+</div>
+<span class="text-sm font-medium text-slate-700 dark:text-slate-300">Food &amp; Drink</span>
+<span class="material-symbols-outlined !text-[14px] text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200 transition-colors ml-1">edit</span>
+</button>
+</div>
+<!-- Visualization -->
+<div class="relative py-8 px-4 bg-slate-50 dark:bg-[#111a22] rounded-lg border border-slate-200 dark:border-slate-800/50 mb-8">
+<h3 class="absolute top-4 left-4 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Split Visualization</h3>
+<div class="flex flex-col md:flex-row items-center justify-center gap-8 mt-4">
+<!-- Donut Chart Representation -->
+<div class="relative size-40 md:size-48">
+<svg class="transform -rotate-90 w-full h-full" viewbox="0 0 100 100">
+<!-- Background Circle -->
+<circle cx="50" cy="50" fill="none" r="40" stroke="#1e293b" stroke-width="12"></circle>
+<!-- Alice Segment (50%) -->
+<circle class="transition-all duration-1000 ease-out" cx="50" cy="50" fill="none" r="40" stroke="#137fec" stroke-dasharray="125.6 251.2" stroke-dashoffset="0" stroke-width="12"></circle>
+<!-- Bob Segment (50%) -->
+<circle class="transition-all duration-1000 ease-out" cx="50" cy="50" fill="none" r="40" stroke="#3b82f6" stroke-dasharray="125.6 251.2" stroke-dashoffset="-125.6" stroke-opacity="0.4" stroke-width="12"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="text-xs text-slate-500 dark:text-slate-400">Split</span>
+<span class="text-lg font-bold text-slate-900 dark:text-white">50/50</span>
+</div>
+</div>
+<!-- Legend -->
+<div class="flex flex-col gap-3 min-w-[140px]">
+<div class="flex items-center justify-between gap-4">
+<div class="flex items-center gap-2">
+<div class="size-3 rounded-full bg-primary"></div>
+<span class="text-sm font-medium text-slate-700 dark:text-slate-300">Alice</span>
+</div>
+<span class="text-sm font-bold text-slate-900 dark:text-white">50%</span>
+</div>
+<div class="flex items-center justify-between gap-4">
+<div class="flex items-center gap-2">
+<div class="size-3 rounded-full bg-blue-500/40"></div>
+<span class="text-sm font-medium text-slate-700 dark:text-slate-300">Bob</span>
+</div>
+<span class="text-sm font-bold text-slate-900 dark:text-white">50%</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Breakdown List -->
+<div class="space-y-4">
+<div class="flex items-center justify-between pb-2 border-b border-slate-200 dark:border-slate-800">
+<h3 class="text-base font-semibold text-slate-900 dark:text-white">Breakdown</h3>
+<button class="text-xs font-medium text-primary hover:text-primary/80">Edit Split</button>
+</div>
+<!-- User 1 Row -->
+<div class="flex items-center justify-between group p-2 -mx-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+<div class="flex items-center gap-3">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 ring-2 ring-primary/20" data-alt="Alice profile picture" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBqYRIR-Oq2JLRI9fVL8IxpL4R6nmlQITQsm_1GEKUtykJ6rScMQ-R6uOBqBZ6ftsREl06TY6RfM1uURQhP3QKe0fE-LR0OBBWhvjxpQjNxlt1K3RDdE_7vADtwAMFxDkPaOXdT4lqOrllh6JMucI5PEl_BhNdxZ49GRPZKp4_W051M5HRUh6r8taGNNjZB4ZsyIRl6TKyJBpIJm5zoikP5zh-Ov1_y_uKUuw5sfxwQE-mnR3mkXkn3H9Wxuf7HeXLFddNe_8Qr-34");'></div>
+<div class="flex flex-col">
+<span class="text-sm font-medium text-slate-900 dark:text-white">Alice (You)</span>
+<span class="text-xs text-slate-500 dark:text-slate-400">Payer • Owner</span>
+</div>
+</div>
+<div class="text-right">
+<div class="text-base font-bold text-slate-900 dark:text-white">$72.75</div>
+<div class="text-xs text-emerald-500 font-medium">Paid</div>
+</div>
+</div>
+<!-- User 2 Row -->
+<div class="flex items-center justify-between group p-2 -mx-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+<div class="flex items-center gap-3">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 ring-2 ring-slate-700/20" data-alt="Bob profile picture" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDyszMo84SAhhXonLXnEqFw8bVdbtQy7OC0XTXH_EmmvezAYH-oo84W5pW66MhItR_69nu3ATm6GU-ZIgu9IDUOvFjR7oTy_0YjA5vpCa03Vf2AJd5puWXqhJRY0lP1S6gRPDCLFTzu3dgTCHQtkxEGqwzhv0CGzXSudsihofmZhfOC526vb4AumnjOM1Mec3HRyheS8BpWoWDK5WDBSmgDZ9jxh9rYq4XHB5I90AdFWekkZU9B0TEOTIpzDkfzQsA52w--I8H90BU");'></div>
+<div class="flex flex-col">
+<span class="text-sm font-medium text-slate-900 dark:text-white">Bob</span>
+<span class="text-xs text-slate-500 dark:text-slate-400">Owes</span>
+</div>
+</div>
+<div class="text-right">
+<div class="text-base font-bold text-slate-900 dark:text-white">$72.75</div>
+<div class="flex items-center justify-end gap-1 text-xs text-amber-500 font-medium">
+<span class="material-symbols-outlined !text-[14px]">pending</span>
+                                            Pending
+                                        </div>
+</div>
+</div>
+</div>
+</div>
+<!-- Receipt Preview (Mini) -->
+<div class="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#15202b] p-6 shadow-sm flex items-center justify-between cursor-pointer hover:border-primary/50 transition-colors">
+<div class="flex items-center gap-4">
+<div class="flex items-center justify-center size-12 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-400">
+<span class="material-symbols-outlined">receipt_long</span>
+</div>
+<div>
+<p class="text-sm font-medium text-slate-900 dark:text-white">Receipt.jpg</p>
+<p class="text-xs text-slate-500 dark:text-slate-400">Added by Alice on Oct 24</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-slate-400">visibility</span>
+</div>
+</div>
+<!-- Right Column: History & Metadata -->
+<div class="lg:col-span-1 flex flex-col gap-6">
+<!-- History Log -->
+<div class="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#15202b] p-6 shadow-sm h-full">
+<h3 class="text-base font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-slate-400">history</span>
+                                Activity Log
+                            </h3>
+<div class="relative pl-4 border-l border-slate-200 dark:border-slate-800 space-y-8">
+<!-- Event 1 -->
+<div class="relative">
+<div class="absolute -left-[21px] top-1 size-3 rounded-full border-2 border-white dark:border-[#15202b] bg-slate-300 dark:bg-slate-600"></div>
+<div class="flex flex-col gap-1">
+<p class="text-sm text-slate-900 dark:text-slate-200">Bob viewed the expense</p>
+<p class="text-xs text-slate-500 dark:text-slate-500">Just now</p>
+</div>
+</div>
+<!-- Event 2 -->
+<div class="relative">
+<div class="absolute -left-[21px] top-1 size-3 rounded-full border-2 border-white dark:border-[#15202b] bg-primary"></div>
+<div class="flex flex-col gap-1">
+<p class="text-sm text-slate-900 dark:text-slate-200 font-medium">Split updated</p>
+<p class="text-xs text-slate-500 dark:text-slate-400">Updated to 50/50 by Alice</p>
+<p class="text-xs text-slate-500 dark:text-slate-500">2 hours ago</p>
+</div>
+</div>
+<!-- Event 3 -->
+<div class="relative">
+<div class="absolute -left-[21px] top-1 size-3 rounded-full border-2 border-white dark:border-[#15202b] bg-slate-300 dark:bg-slate-600"></div>
+<div class="flex flex-col gap-1">
+<p class="text-sm text-slate-900 dark:text-slate-200">Receipt uploaded</p>
+<div class="flex items-center gap-2 mt-1">
+<div class="h-12 w-12 bg-cover bg-center rounded-md border border-slate-700/50 opacity-70" data-alt="Receipt thumbnail" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBZDD_VICQS1l75sKEN05mnVBxX6-LXdhYCb8FBhwcs6QrJAH7AchloOQ0ph0mlkeWY_yNV9AnqLGmpFfmrVcG_mBhAf10Kg0-y9cfMVHJpOGDwS0AJRSyBPww_5kXknn3gtWWxDxrE72UmIl4j8ubA5o-f3BE6VOiJqpxvqU4UCZsWL99XR-eXRMCGWkVVNdwSnzzgAYSzHhcmJRHYRdiE3Ag04syntHBQ0-7fJAMG9eWbVpCrBB8h5S_V3OedV2ryOpZK3niDaao");'></div>
+</div>
+<p class="text-xs text-slate-500 dark:text-slate-500 mt-1">Oct 24, 10:30 AM</p>
+</div>
+</div>
+<!-- Event 4 -->
+<div class="relative">
+<div class="absolute -left-[21px] top-1 size-3 rounded-full border-2 border-white dark:border-[#15202b] bg-slate-300 dark:bg-slate-600"></div>
+<div class="flex flex-col gap-1">
+<p class="text-sm text-slate-900 dark:text-slate-200">Expense created</p>
+<p class="text-xs text-slate-500 dark:text-slate-500">By Alice • Oct 24, 10:25 AM</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Quick Actions Card -->
+<div class="rounded-xl border border-slate-200 dark:border-slate-800 bg-blue-50/50 dark:bg-blue-900/10 p-5">
+<h4 class="text-sm font-bold text-slate-900 dark:text-white mb-3">Need to change something?</h4>
+<p class="text-xs text-slate-500 dark:text-slate-400 mb-4 leading-relaxed">
+                                If the split amount is incorrect, you can request a review from the other participants.
+                            </p>
+<button class="w-full py-2 px-4 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-primary/50 dark:hover:border-primary/50 text-slate-700 dark:text-slate-200 text-xs font-bold transition-all shadow-sm">
+                                Request Review
+                            </button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>
