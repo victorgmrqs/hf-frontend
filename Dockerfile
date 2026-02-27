@@ -1,5 +1,5 @@
 # Stage 1: Build
-FROM node:20-slim AS build
+FROM node:20.12.2-slim AS build
 
 WORKDIR /app
 
@@ -14,7 +14,7 @@ COPY . .
 RUN npm run build
 
 # Stage 2: Serve com Nginx
-FROM nginx:stable-alpine
+FROM nginx:1.25.4-alpine
 
 # Copia os arquivos estáticos do build
 COPY --from=build /app/dist /usr/share/nginx/html
