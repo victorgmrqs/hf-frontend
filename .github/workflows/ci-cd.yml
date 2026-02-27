@@ -22,7 +22,6 @@ jobs:
           cache: 'npm'
       - run: npm ci --legacy-peer-deps
       - run: npm run lint
-      # - run: npm test # Descomentar quando houver testes configurados
 
   sast:
     name: Security Scan (SAST)
@@ -43,6 +42,8 @@ jobs:
     needs: [lint-and-test, sast]
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
+    outputs:
+      image_tag: ${{ steps.meta.outputs.version }}
     permissions:
       contents: read
       packages: write
@@ -74,4 +75,40 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
-  # O job de GitOps será adicionado após validarmos esta etapa inicial
+  gitops-update:
+    name: GitOps Update
+    needs: build-and-push
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout GitOps Repository
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository_owner }}/homelab-gitops
+          token: ${{ secrets.GITOPS_UPDATE_PAT }}
+          path: gitops
+
+      - name: Set Environment variables
+        run: |
+          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            echo "ENV=prod" >> $GITHUB_ENV
+          else
+            echo "ENV=homolog" >> $GITHUB_ENV
+          fi
+
+      - name: Update Image Tag
+        run: |
+          cd gitops/overlays/${{ env.ENV }}/hf-frontend
+          # Atualiza a imagem no kustomization.yaml
+          # Assume que o nome da imagem no kustomization é 'ghcr.io/victorgmrqs/hf-frontend'
+          sed -i "s|newTag:.*|newTag: ${{ needs.build-and-push.outputs.image_tag }}|g" kustomization.yaml || \
+          kustomize edit set image ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.build-and-push.outputs.image_tag }}
+
+      - name: Commit and Push Changes
+        run: |
+          cd gitops
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add .
+          git commit -m "chore(gitops): update hf-frontend image to ${{ needs.build-and-push.outputs.image_tag }} in ${{ env.ENV }}"
+          git push
