@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, ChevronDown, Check, Loader2 } from 'lucide-react';
-import { financeService, Category, PaymentMethod, User, Expense } from '../services/financeService';
+import { financeService, Category, PaymentMethod, Expense } from '../services/financeService';
 import { useUser } from '../hooks/useUser';
 
 interface ExpenseModalProps {

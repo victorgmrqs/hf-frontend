@@ -1,0 +1,15 @@
+node_modules
+dist
+.git
+.github
+.env
+.env.*
+!.env.example
+*.log
+README.md
+BACKEND_PROMPT.md
+telas
+Dockerfile
+nginx.conf
+.gitignore
+.dockerignore
