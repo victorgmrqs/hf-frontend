@@ -2,7 +2,7 @@ import { config } from '../config';
 
 const BASE_URL = config.api.baseUrl;
 
-export async function apiFetch<T>(endpoint: string, options?: RequestInit): Promise<{ data: T | null; error: any }> {
+export async function apiFetch<T>(endpoint: string, options?: RequestInit): Promise<{ data: T | null; error: unknown }> {
   try {
     const response = await fetch(`${BASE_URL}${endpoint}`, {
       ...options,
