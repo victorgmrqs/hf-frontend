@@ -9,7 +9,5 @@ dist
 README.md
 BACKEND_PROMPT.md
 telas
-Dockerfile
-nginx.conf
 .gitignore
 .dockerignore
