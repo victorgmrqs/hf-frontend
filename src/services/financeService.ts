@@ -72,7 +72,7 @@ export const financeService = {
   // Budgets
   getBudgets: (userId: string, competence: string) =>
     apiFetch<Budget[]>(`/budgets?user_id=${userId}&competence=${competence}`),
-  createBudget: (data: any) => apiFetch<Budget>('/budgets', {
+  createBudget: (data: Record<string, unknown>) => apiFetch<Budget>('/budgets', {
     method: 'POST',
     body: JSON.stringify(data),
   }),
@@ -89,11 +89,11 @@ export const financeService = {
     apiFetch<{ id: string; category_name: string; amount: number; current_spending: number }[]>(`/budgets/status?user_id=${userId}&competence=${competence}`),
   
   // Categories
-  createCategory: (data: any) => apiFetch<Category>('/categories', {
+  createCategory: (data: Record<string, unknown>) => apiFetch<Category>('/categories', {
     method: 'POST',
     body: JSON.stringify(data),
   }),
-  updateCategory: (id: string, data: any) => apiFetch<Category>(`/categories/${id}`, {
+  updateCategory: (id: string, data: Record<string, unknown>) => apiFetch<Category>(`/categories/${id}`, {
     method: 'PUT',
     body: JSON.stringify(data),
   }),
@@ -102,11 +102,11 @@ export const financeService = {
   }),
 
   // Payment Methods
-  createPaymentMethod: (data: any) => apiFetch<PaymentMethod>('/payment-methods', {
+  createPaymentMethod: (data: Record<string, unknown>) => apiFetch<PaymentMethod>('/payment-methods', {
     method: 'POST',
     body: JSON.stringify(data),
   }),
-  updatePaymentMethod: (id: string, data: any) => apiFetch<PaymentMethod>(`/payment-methods/${id}`, {
+  updatePaymentMethod: (id: string, data: Record<string, unknown>) => apiFetch<PaymentMethod>(`/payment-methods/${id}`, {
     method: 'PUT',
     body: JSON.stringify(data),
   }),
@@ -114,7 +114,7 @@ export const financeService = {
     method: 'DELETE',
   }),
 
-  createExpense: (expenseData: any) => apiFetch<Expense>('/expenses', {
+  createExpense: (expenseData: Record<string, unknown>) => apiFetch<Expense>('/expenses', {
     method: 'POST',
     body: JSON.stringify(expenseData),
   }),
@@ -123,7 +123,7 @@ export const financeService = {
       method: 'PATCH',
       body: JSON.stringify({ category_id: categoryId }),
     }),
-  updateExpense: (id: string, requesterId: string, data: any) =>
+  updateExpense: (id: string, requesterId: string, data: Record<string, unknown>) =>
     apiFetch<Expense>(`/expenses/${id}?requester_id=${requesterId}`, {
       method: 'PUT',
       body: JSON.stringify(data),
@@ -140,11 +140,11 @@ export const financeService = {
     if (status) params.append('status', status);
     return apiFetch<AccountPayable[]>(`/accounts-payable?${params.toString()}`);
   },
-  createAccountPayable: (data: any) => apiFetch<AccountPayable>('/accounts-payable', {
+  createAccountPayable: (data: Record<string, unknown>) => apiFetch<AccountPayable>('/accounts-payable', {
     method: 'POST',
     body: JSON.stringify(data),
   }),
-  payAccountPayable: (id: string, requesterId: string, payData: any) => 
+  payAccountPayable: (id: string, requesterId: string, payData: Record<string, unknown>) => 
     apiFetch<AccountPayable>(`/accounts-payable/${id}/pay?requester_id=${requesterId}`, {
       method: 'POST',
       body: JSON.stringify(payData),
