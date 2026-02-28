@@ -1,11 +1,11 @@
 # Stage 1: Build
-FROM node:20.12.2-slim AS build
+FROM node:22-slim AS build
 
 WORKDIR /app
 
 # Copia arquivos de dependências
 COPY package*.json ./
-RUN npm ci
+RUN npm ci --legacy-peer-deps
 
 # Copia o restante do código
 COPY . .
