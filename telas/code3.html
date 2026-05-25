@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Home Finance - Configuration</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style type="text/tailwindcss">
+        :root {
+            --primary: #4F46E5;
+            --primary-dark: #4338ca;
+            --secondary: #64748b;
+            --background: #f8fafc;
+            --surface: #ffffff;
+            --text-main: #1e293b;
+            --text-light: #64748b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --border: #e2e8f0;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background);
+            color: var(--text-main);
+        }
+        .tab-active {
+            @apply border-b-2 border-[var(--primary)] text-[var(--primary)];
+        }
+        .tab-inactive {
+            @apply border-b-2 border-transparent text-[var(--text-light)] hover:text-[var(--text-main)] hover:border-gray-300;
+        }
+        .color-dot {
+            @apply w-4 h-4 rounded-full border border-gray-200 shadow-sm inline-block mr-2 align-middle;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+<nav class="bg-white border-b border-[var(--border)] h-16 flex items-center px-6 sticky top-0 z-10">
+<div class="flex items-center gap-3">
+<div class="bg-indigo-600 text-white p-1.5 rounded-lg">
+<span class="material-symbols-outlined text-[24px]">account_balance_wallet</span>
+</div>
+<span class="font-bold text-xl tracking-tight text-slate-800">HomeFinance</span>
+</div>
+<div class="ml-auto flex items-center gap-4">
+<button class="p-2 text-slate-500 hover:text-slate-800 transition-colors rounded-full hover:bg-slate-100">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="flex items-center gap-3 pl-4 border-l border-slate-200">
+<div class="text-right hidden sm:block">
+<p class="text-sm font-medium text-slate-800">Alex Johnson</p>
+<p class="text-xs text-slate-500">Admin</p>
+</div>
+<div class="h-9 w-9 bg-slate-200 rounded-full flex items-center justify-center text-slate-600 font-semibold overflow-hidden">
+<img alt="User" class="h-full w-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCLuDh4nhRKyYjIjha2PcHcOeBGsRR1Rw9rofhucVkaRgzcEiUlkDA2NMS9-7Yyyo1MAqc9o-iuT5GlXRUtoIi5zr5FnBzjCigGmk8W2YfSctohR3l3nycQODmTNd9CQ6glWHxi1ubUrq5d57ePQNZui52JADdWhV7FVwfFnmTakP813pNBdNLsUZ8uN7cRp1tsGuonUOnRhwtoDL3qEz5yjyuQMa1djXuBkzF-ZD3TvquBhtpJzIhfqqnoXFz03OOa91-q-fOTBV8"/>
+</div>
+</div>
+</div>
+</nav>
+<div class="flex flex-1">
+<aside class="w-64 bg-white border-r border-[var(--border)] hidden lg:flex flex-col pt-6 pb-6">
+<div class="px-4 mb-6">
+<p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Main Menu</p>
+<nav class="space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 rounded-md hover:bg-slate-50 hover:text-indigo-600 transition-colors group" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:text-indigo-600">dashboard</span>
+<span class="text-sm font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 rounded-md hover:bg-slate-50 hover:text-indigo-600 transition-colors group" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:text-indigo-600">receipt_long</span>
+<span class="text-sm font-medium">Transactions</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 rounded-md hover:bg-slate-50 hover:text-indigo-600 transition-colors group" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:text-indigo-600">pie_chart</span>
+<span class="text-sm font-medium">Budgets</span>
+</a>
+</nav>
+</div>
+<div class="px-4">
+<p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Configuration</p>
+<nav class="space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 bg-indigo-50 text-indigo-700 rounded-md font-medium" href="#">
+<span class="material-symbols-outlined text-[20px] text-indigo-600">settings</span>
+<span class="text-sm">System Settings</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 rounded-md hover:bg-slate-50 hover:text-indigo-600 transition-colors group" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:text-indigo-600">group</span>
+<span class="text-sm font-medium">Users &amp; Access</span>
+</a>
+</nav>
+</div>
+</aside>
+<main class="flex-1 p-8 overflow-y-auto h-[calc(100vh-64px)]">
+<header class="mb-8">
+<h1 class="text-2xl font-bold text-slate-800">System Configuration</h1>
+<p class="text-slate-500 mt-1">Manage your expense categories and payment methods.</p>
+</header>
+<div class="border-b border-gray-200 mb-8">
+<nav aria-label="Tabs" class="-mb-px flex space-x-8">
+<a aria-current="page" class="tab-active py-4 px-1 inline-flex items-center gap-2 text-sm font-medium" href="#">
+<span class="material-symbols-outlined text-[18px]">category</span>
+                        Categories
+                    </a>
+<a class="tab-inactive py-4 px-1 inline-flex items-center gap-2 text-sm font-medium" href="#">
+<span class="material-symbols-outlined text-[18px]">credit_card</span>
+                        Payment Methods
+                    </a>
+</nav>
+</div>
+<div class="space-y-8">
+<section class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+<div class="flex items-center justify-between mb-4">
+<h2 class="text-lg font-semibold text-slate-800 flex items-center gap-2">
+<span class="material-symbols-outlined text-slate-400">add_circle</span>
+                            Add New Category
+                        </h2>
+</div>
+<form class="grid grid-cols-1 md:grid-cols-12 gap-6 items-end">
+<div class="md:col-span-4">
+<label class="block text-sm font-medium text-slate-700 mb-1" for="cat-name">Name</label>
+<input class="block w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2.5" id="cat-name" name="cat-name" placeholder="e.g., Groceries" type="text"/>
+</div>
+<div class="md:col-span-5">
+<label class="block text-sm font-medium text-slate-700 mb-1" for="cat-desc">Description</label>
+<input class="block w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2.5" id="cat-desc" name="cat-desc" placeholder="Monthly food supplies" type="text"/>
+</div>
+<div class="md:col-span-1">
+<label class="block text-sm font-medium text-slate-700 mb-1" for="cat-color">Color</label>
+<div class="relative h-10 w-full">
+<input class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" id="cat-color" name="cat-color" type="color" value="#4F46E5"/>
+<div class="w-full h-full rounded-lg border border-slate-300 bg-white flex items-center justify-center shadow-sm">
+<div class="w-6 h-6 rounded-full bg-indigo-600 border border-black/10"></div>
+</div>
+</div>
+</div>
+<div class="md:col-span-2">
+<button class="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors" type="button">
+                                Create
+                            </button>
+</div>
+</form>
+</section>
+<section>
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-sm font-semibold text-slate-500 uppercase tracking-wider">Active Categories</h3>
+<div class="text-xs text-slate-400">Showing 6 categories</div>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+<div class="bg-white rounded-xl shadow-sm border border-slate-200 hover:shadow-md transition-shadow group">
+<div class="p-5">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-emerald-100 flex items-center justify-center text-emerald-600">
+<span class="material-symbols-outlined">shopping_cart</span>
+</div>
+<div>
+<h4 class="font-semibold text-slate-800">Groceries</h4>
+<div class="flex items-center gap-1.5 mt-0.5">
+<span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+<span class="text-xs text-slate-500 font-mono">#10B981</span>
+</div>
+</div>
+</div>
+<div class="relative">
+<button class="text-slate-400 hover:text-slate-600 p-1 rounded hover:bg-slate-50 transition-colors">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+</div>
+<p class="text-sm text-slate-600 mt-4 line-clamp-2">Supermarket runs, fresh food, household cleaning supplies.</p>
+</div>
+<div class="bg-slate-50 px-5 py-3 border-t border-slate-100 rounded-b-xl flex justify-between items-center">
+<span class="text-xs text-slate-400 font-medium">124 Transactions</span>
+<div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="text-slate-500 hover:text-indigo-600 transition-colors" title="Edit">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+<button class="text-slate-500 hover:text-red-600 transition-colors" title="Delete">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+</div>
+</div>
+<div class="bg-white rounded-xl shadow-sm border border-slate-200 hover:shadow-md transition-shadow group">
+<div class="p-5">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600">
+<span class="material-symbols-outlined">home</span>
+</div>
+<div>
+<h4 class="font-semibold text-slate-800">Housing</h4>
+<div class="flex items-center gap-1.5 mt-0.5">
+<span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
+<span class="text-xs text-slate-500 font-mono">#3B82F6</span>
+</div>
+</div>
+</div>
+<div class="relative">
+<button class="text-slate-400 hover:text-slate-600 p-1 rounded hover:bg-slate-50 transition-colors">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+</div>
+<p class="text-sm text-slate-600 mt-4 line-clamp-2">Rent, mortgage, HOA fees, maintenance.</p>
+</div>
+<div class="bg-slate-50 px-5 py-3 border-t border-slate-100 rounded-b-xl flex justify-between items-center">
+<span class="text-xs text-slate-400 font-medium">45 Transactions</span>
+<div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="text-slate-500 hover:text-indigo-600 transition-colors" title="Edit">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+<button class="text-slate-500 hover:text-red-600 transition-colors" title="Delete">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+</div>
+</div>
+<div class="bg-white rounded-xl shadow-sm border border-slate-200 hover:shadow-md transition-shadow group">
+<div class="p-5">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center text-orange-600">
+<span class="material-symbols-outlined">directions_car</span>
+</div>
+<div>
+<h4 class="font-semibold text-slate-800">Transport</h4>
+<div class="flex items-center gap-1.5 mt-0.5">
+<span class="w-2.5 h-2.5 rounded-full bg-orange-500"></span>
+<span class="text-xs text-slate-500 font-mono">#F97316</span>
+</div>
+</div>
+</div>
+<div class="relative">
+<button class="text-slate-400 hover:text-slate-600 p-1 rounded hover:bg-slate-50 transition-colors">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+</div>
+<p class="text-sm text-slate-600 mt-4 line-clamp-2">Gas, car insurance, parking, public transit.</p>
+</div>
+<div class="bg-slate-50 px-5 py-3 border-t border-slate-100 rounded-b-xl flex justify-between items-center">
+<span class="text-xs text-slate-400 font-medium">89 Transactions</span>
+<div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="text-slate-500 hover:text-indigo-600 transition-colors" title="Edit">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+<button class="text-slate-500 hover:text-red-600 transition-colors" title="Delete">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+</div>
+</div>
+<div class="bg-white rounded-xl shadow-sm border border-slate-200 hover:shadow-md transition-shadow group">
+<div class="p-5">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center text-purple-600">
+<span class="material-symbols-outlined">school</span>
+</div>
+<div>
+<h4 class="font-semibold text-slate-800">Education</h4>
+<div class="flex items-center gap-1.5 mt-0.5">
+<span class="w-2.5 h-2.5 rounded-full bg-purple-500"></span>
+<span class="text-xs text-slate-500 font-mono">#A855F7</span>
+</div>
+</div>
+</div>
+<div class="relative">
+<button class="text-slate-400 hover:text-slate-600 p-1 rounded hover:bg-slate-50 transition-colors">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+</div>
+<p class="text-sm text-slate-600 mt-4 line-clamp-2">Tuition, books, courses, school supplies.</p>
+</div>
+<div class="bg-slate-50 px-5 py-3 border-t border-slate-100 rounded-b-xl flex justify-between items-center">
+<span class="text-xs text-slate-400 font-medium">12 Transactions</span>
+<div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="text-slate-500 hover:text-indigo-600 transition-colors" title="Edit">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+<button class="text-slate-500 hover:text-red-600 transition-colors" title="Delete">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+</div>
+</div>
+<div class="bg-white rounded-xl shadow-sm border border-slate-200 hover:shadow-md transition-shadow group">
+<div class="p-5">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-pink-100 flex items-center justify-center text-pink-600">
+<span class="material-symbols-outlined">restaurant</span>
+</div>
+<div>
+<h4 class="font-semibold text-slate-800">Dining Out</h4>
+<div class="flex items-center gap-1.5 mt-0.5">
+<span class="w-2.5 h-2.5 rounded-full bg-pink-500"></span>
+<span class="text-xs text-slate-500 font-mono">#EC4899</span>
+</div>
+</div>
+</div>
+<div class="relative">
+<button class="text-slate-400 hover:text-slate-600 p-1 rounded hover:bg-slate-50 transition-colors">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+</div>
+<p class="text-sm text-slate-600 mt-4 line-clamp-2">Restaurants, cafes, delivery, fast food.</p>
+</div>
+<div class="bg-slate-50 px-5 py-3 border-t border-slate-100 rounded-b-xl flex justify-between items-center">
+<span class="text-xs text-slate-400 font-medium">67 Transactions</span>
+<div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="text-slate-500 hover:text-indigo-600 transition-colors" title="Edit">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+<button class="text-slate-500 hover:text-red-600 transition-colors" title="Delete">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+</div>
+</div>
+<div class="bg-white rounded-xl shadow-sm border border-slate-200 hover:shadow-md transition-shadow group">
+<div class="p-5">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center text-gray-600">
+<span class="material-symbols-outlined">more_horiz</span>
+</div>
+<div>
+<h4 class="font-semibold text-slate-800">Others</h4>
+<div class="flex items-center gap-1.5 mt-0.5">
+<span class="w-2.5 h-2.5 rounded-full bg-gray-500"></span>
+<span class="text-xs text-slate-500 font-mono">#64748B</span>
+</div>
+</div>
+</div>
+<div class="relative">
+<button class="text-slate-400 hover:text-slate-600 p-1 rounded hover:bg-slate-50 transition-colors">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+</div>
+<p class="text-sm text-slate-600 mt-4 line-clamp-2">Miscellaneous expenses not fitting other categories.</p>
+</div>
+<div class="bg-slate-50 px-5 py-3 border-t border-slate-100 rounded-b-xl flex justify-between items-center">
+<span class="text-xs text-slate-400 font-medium">210 Transactions</span>
+<div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="text-slate-500 hover:text-indigo-600 transition-colors" title="Edit">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+<button class="text-slate-500 hover:text-red-600 transition-colors" title="Delete">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<div class="border-t border-slate-200 my-8"></div>
+<section>
+<div class="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
+<div>
+<h2 class="text-lg font-semibold text-slate-800">Payment Methods</h2>
+<p class="text-sm text-slate-500">Configure methods used for transactions and assign shared access.</p>
+</div>
+<button class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-indigo-50 text-indigo-700 rounded-lg text-sm font-medium hover:bg-indigo-100 transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                            Add New Method
+                        </button>
+</div>
+<div class="bg-white shadow-sm border border-slate-200 rounded-xl overflow-hidden">
+<div class="p-6 bg-slate-50 border-b border-slate-200">
+<h4 class="text-sm font-bold text-slate-700 uppercase tracking-wide mb-4">New Payment Method</h4>
+<form class="grid grid-cols-1 md:grid-cols-12 gap-6">
+<div class="md:col-span-3">
+<label class="block text-sm font-medium text-slate-700 mb-1" for="pm-name">Method Name</label>
+<input class="block w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" id="pm-name" placeholder="e.g. Joint Account NuBank" type="text"/>
+</div>
+<div class="md:col-span-3">
+<label class="block text-sm font-medium text-slate-700 mb-1" for="pm-type">Type</label>
+<select class="block w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" id="pm-type">
+<option value="CREDIT_CARD">Credit Card</option>
+<option value="DEBIT_CARD">Debit Card</option>
+<option value="BANK_ACCOUNT">Bank Account</option>
+<option value="PIX">PIX</option>
+<option value="CASH">Cash</option>
+</select>
+</div>
+<div class="md:col-span-4">
+<label class="block text-sm font-medium text-slate-700 mb-1">Shared Access</label>
+<div class="flex items-center gap-2 flex-wrap">
+<label class="inline-flex items-center gap-2 px-3 py-1.5 bg-white border border-slate-300 rounded-full cursor-pointer hover:border-indigo-500 hover:text-indigo-600 transition-colors">
+<input checked="" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" disabled="" type="checkbox"/>
+<span class="text-sm">You</span>
+</label>
+<label class="inline-flex items-center gap-2 px-3 py-1.5 bg-white border border-slate-300 rounded-full cursor-pointer hover:border-indigo-500 hover:text-indigo-600 transition-colors select-none">
+<input class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" type="checkbox"/>
+<img alt="Sarah" class="w-5 h-5 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB2QixV4KUfbWaABWtP-IUiKFc05J32L2zvyfJuWJ3UiUZPj46nuxGY5g2h4mD4NTKWfGVNA_nxDaycIL_Rgg9WzC0vWfIfcZuyXUv-aXiQeiuR9S1ZX9OMZIswAVYT-cU5BXbCunym9J2H5jOmcnQwhTaLtYxqKgQH5NDLs2BYsv-yPVygDXPsre51Ir3v8_f-OpHARCLG6w08jd4bbUG-QmKsjR28QDilYSseAIJaIkzFTu93HgzzgPuJP_pKS31MSuXK3a_jvP4"/>
+<span class="text-sm">Sarah</span>
+</label>
+<label class="inline-flex items-center gap-2 px-3 py-1.5 bg-white border border-slate-300 rounded-full cursor-pointer hover:border-indigo-500 hover:text-indigo-600 transition-colors select-none">
+<input class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" type="checkbox"/>
+<img alt="Mike" class="w-5 h-5 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDbzbgWCGXVbq-StI5PN-92quuSj-4aVX8Z45mQJ9Uh95hyePQdMDnRTN3mQqsgjUcyeLaxq-yBg-Rwx-9QqGl4zU9qidtVicWOqS59jZyMS8Pl0wivHhztM3p6Y7u7wF8zk9joXLvrhHYjsLO6o8yjJg3ov2UmfdLnB3Vqu1Ylmz8e08qFGDFgSA1nX7BHsFbaAKL4QEDdPb1r-lo63EpAPIcNT-Ry4WRBxr_YtKxDoAIPZuCmV2ER3uezCSVFXWTqE7TDGQUm5G4"/>
+<span class="text-sm">Mike</span>
+</label>
+</div>
+</div>
+<div class="md:col-span-2 flex items-end">
+<button class="w-full py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none transition-colors" type="button">
+                                        Save Method
+                                    </button>
+</div>
+</form>
+</div>
+<div class="overflow-x-auto">
+<table class="min-w-full divide-y divide-slate-200">
+<thead class="bg-slate-50">
+<tr>
+<th class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider" scope="col">Method Name</th>
+<th class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider" scope="col">Type</th>
+<th class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider" scope="col">Linked Users</th>
+<th class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider" scope="col">Status</th>
+<th class="relative px-6 py-3" scope="col">
+<span class="sr-only">Edit</span>
+</th>
+</tr>
+</thead>
+<tbody class="bg-white divide-y divide-slate-200">
+<tr class="hover:bg-slate-50 transition-colors">
+<td class="px-6 py-4 whitespace-nowrap">
+<div class="flex items-center">
+<div class="flex-shrink-0 h-10 w-10 bg-indigo-100 rounded-lg flex items-center justify-center text-indigo-600">
+<span class="material-symbols-outlined">credit_card</span>
+</div>
+<div class="ml-4">
+<div class="text-sm font-medium text-slate-900">Nubank Platinum</div>
+<div class="text-xs text-slate-500">Ending in 4421</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 whitespace-nowrap">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-800">
+                                                Credit Card
+                                            </span>
+</td>
+<td class="px-6 py-4 whitespace-nowrap">
+<div class="flex -space-x-2 overflow-hidden">
+<img alt="" class="inline-block h-8 w-8 rounded-full ring-2 ring-white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBX2hTrMExh7KpP2p64KQcZHUM7Oc75mT7BdOi3WBczWOrBtdYFEWagb2SOPwyxGrmh7kyxUFSXr6R5ydN_hq6TcLe6NcdYqZA7F8OE4eTB_NNqjUyCsHCxX3Ifz9cLMgs_6XBVvMkETlVU9hi4cb8Moc1hv0Ju9RtTsVeRK5OBOAkQSvm70PyKIWJ7jrqH5e8VSuXgeEwReOapcVyy8v-56tfWkcmDIYCXEgAOUO1TkNEBQHwcGHr3_PRRp91wCh6KmgxVsX6fA4o"/>
+<img alt="" class="inline-block h-8 w-8 rounded-full ring-2 ring-white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAOkspCbGPx5RB4-grly5uiF_RBn9pnOPHZh2hE8MGQxWbRVVc5PkBoASpiqBvTAMQhMYYApKb5QftzdPxA34PrqkYoDy5v7XotQ08-monv3pksJ22HxU05-xVHl8YjLBO-zQuAgH9y4AhksfLa29V6uVwKg1NsH4GunddqkNshfC9GT-1B9vVhWCTJtSVHrUitXsWc8OqEgcYgrzh7QuisYS3Zm9z2e1jXP1Uhk2-eq6FvE1ZY5TmhwOk4eyU7XZ_cSFYGVbyxOv4"/>
+</div>
+</td>
+<td class="px-6 py-4 whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+<span class="w-1.5 h-1.5 rounded-full bg-green-600"></span> Active
+                                            </span>
+</td>
+<td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+<button class="text-indigo-600 hover:text-indigo-900">Edit</button>
+</td>
+</tr>
+<tr class="hover:bg-slate-50 transition-colors">
+<td class="px-6 py-4 whitespace-nowrap">
+<div class="flex items-center">
+<div class="flex-shrink-0 h-10 w-10 bg-teal-100 rounded-lg flex items-center justify-center text-teal-600">
+<span class="material-symbols-outlined">qr_code_2</span>
+</div>
+<div class="ml-4">
+<div class="text-sm font-medium text-slate-900">PIX Key (Email)</div>
+<div class="text-xs text-slate-500">Primary Key</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 whitespace-nowrap">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-800">
+                                                PIX
+                                            </span>
+</td>
+<td class="px-6 py-4 whitespace-nowrap">
+<div class="flex -space-x-2 overflow-hidden">
+<img alt="" class="inline-block h-8 w-8 rounded-full ring-2 ring-white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCiHvnNnyKBCGrClpqk4ah6qy5mjR8c--vsdjaTqDDSlPlEkXM7CVMHv7m4djKk2K9iCqWO2hMQFa6bDFr8GtV0TQs5upbTbA_AnFgupwWxu1BKzI5EdBnE18rwDmQcW-97eNqLDqOlvjMogfZ_K_p9QLgNo045HVhwidnnFGpGpurlUEIgbP9gW9TVzmL0ytxzcc8peJk5rYZcwfCfvMSXzQitPzTD7j-Ao0jprcj-dtskyDZmi2Gb8oXunfCu1MnoJvPLWhKNQCM"/>
+</div>
+</td>
+<td class="px-6 py-4 whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+<span class="w-1.5 h-1.5 rounded-full bg-green-600"></span> Active
+                                            </span>
+</td>
+<td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+<button class="text-indigo-600 hover:text-indigo-900">Edit</button>
+</td>
+</tr>
+<tr class="hover:bg-slate-50 transition-colors">
+<td class="px-6 py-4 whitespace-nowrap">
+<div class="flex items-center">
+<div class="flex-shrink-0 h-10 w-10 bg-orange-100 rounded-lg flex items-center justify-center text-orange-600">
+<span class="material-symbols-outlined">payments</span>
+</div>
+<div class="ml-4">
+<div class="text-sm font-medium text-slate-900">Wallet Cash</div>
+<div class="text-xs text-slate-500">Physical money</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 whitespace-nowrap">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-800">
+                                                Cash
+                                            </span>
+</td>
+<td class="px-6 py-4 whitespace-nowrap">
+<div class="flex -space-x-2 overflow-hidden">
+<img alt="" class="inline-block h-8 w-8 rounded-full ring-2 ring-white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBg4hO6JJniBpntd4xQtjQYddu_3NeuJECbRV-KPfOY_e7rQgLElDPgNzoWmBJm5qxcQ5C93zyjexSBk3Rwy-DB2P_VsZrbyoZ5c1oObDv-f06gcTxTxZfBYjGdFuvrc1P-EawKEl_MhCSdr97SfatYyYWu7aMdIXYNNQ9iAFwOoV5bZjxWwP39APcRxGdM6hBSK_yaeHDccfvEOkRjb3H7KlHCLrpd4EGDvGirBtyiX4rTLhjUDHgvgRaHEQNp1ddW6GP-Xx-lMBY"/>
+<img alt="" class="inline-block h-8 w-8 rounded-full ring-2 ring-white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAPl9j42WXC0LqWEC4cE-WNS8p4Wzggz_eNXudbAyCjN3j1u2DURj5gd0qOwovdZHcH9qbOemzMOOLEqlJ_Xfv0nd94d12wGXnb7H_GOYOKX_NwvLnd0SalPD06FXj5ayn2zwebDAeh4zCC1QLE7q6pmy1tRFHWLSB7zOMLIDFs36Lk_KCwJbr3xyyZv9CPfKn_YC4l434Teqlu0cy43StQUHSvF8C8fcRq9zw4IpvpONNR1HOs1p6cHzoA20sCbr9z6TlEXeCdSg8"/>
+<img alt="" class="inline-block h-8 w-8 rounded-full ring-2 ring-white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAg4_lM-LuTRiCwcwk5r69zkdPMeKVPi5Voh962x0E2w7K5qHXsAs-PD27Sy3xHGjBNHuQI_oKShY1PqPtD4SDq6iLsusIsCPNuFmLbVlZ7N2jzmMoE_4O-n79-vBNrEOLAsiIKFfS-htBcz9LWto7gi84hTqGHncyuTCRs1FXidUoeXZOqBkgpAKMRNe3ePbVYEsANODU4yygA0egtNzM-LUywuAsLLq5XH5sadiwsgUIq6ZZMX7dhnC3aqskNUtLPQQMGt7ls4o4"/>
+</div>
+</td>
+<td class="px-6 py-4 whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+<span class="w-1.5 h-1.5 rounded-full bg-green-600"></span> Active
+                                            </span>
+</td>
+<td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+<button class="text-indigo-600 hover:text-indigo-900">Edit</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+</div>
+</main>
+</div>
+
+</body></html>
