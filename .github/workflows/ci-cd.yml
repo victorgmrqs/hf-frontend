@@ -87,6 +87,7 @@ jobs:
           repository: ${{ github.repository_owner }}/homelab-gitops
           token: ${{ secrets.GITOPS_UPDATE_PAT }}
           path: gitops
+          ref: ${{ github.ref == 'refs/head/main' && 'main' || 'development'}
 
       - name: Set Environment variables
         run: |
