@@ -105,10 +105,13 @@ jobs:
           sed -i "s|newTag:.*|newTag: ${{ needs.build-and-push.outputs.image_tag }}|g" kustomization.yaml
 
       - name: Commit and Push Changes
+        env:
+          GITOPS_TOKEN: ${{ secrets.GITOPS_UPDATE_PAT }}
         run: |
           cd gitops
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
+          git config --global url."https://${GITOPS_TOKEN}@github.com/".insteadOf "https://github.com/"
           git add .
           if git diff --quiet --cached; then
             echo "No changes to commit"
