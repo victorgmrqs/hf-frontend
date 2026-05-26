@@ -110,5 +110,9 @@ jobs:
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
           git add .
-          git commit -m "chore(gitops): update hf-frontend image to ${{ needs.build-and-push.outputs.image_tag }} in ${{ env.ENV }}"
-          git push
+          if git diff --quiet --cached; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore(gitops): update image to ${{ needs.build-and-push.outputs.image_tag }} in ${{ env.ENV }}"
+            git push
+          fi
