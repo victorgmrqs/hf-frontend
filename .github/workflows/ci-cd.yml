@@ -81,29 +81,28 @@ jobs:
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
+      - name: Set Environment variables
+        run: |
+          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            echo "ENV=prod" >> $GITHUB_ENV
+            echo "GITOPS_BRANCH=main" >> $GITHUB_ENV
+          else
+            echo "ENV=homolog" >> $GITHUB_ENV
+            echo "GITOPS_BRANCH=development" >> $GITHUB_ENV
+          fi
+
       - name: Checkout GitOps Repository
         uses: actions/checkout@v4
         with:
           repository: ${{ github.repository_owner }}/homelab-gitops
           token: ${{ secrets.GITOPS_UPDATE_PAT }}
           path: gitops
-          ref: ${{ github.ref == 'refs/head/main' && 'main' || 'development'}
-
-      - name: Set Environment variables
-        run: |
-          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
-            echo "ENV=prod" >> $GITHUB_ENV
-          else
-            echo "ENV=homolog" >> $GITHUB_ENV
-          fi
+          ref: ${{ env.GITOPS_BRANCH }}
 
       - name: Update Image Tag
         run: |
           cd gitops/overlays/${{ env.ENV }}/hf-frontend
-          # Atualiza a imagem no kustomization.yaml
-          # Assume que o nome da imagem no kustomization é 'ghcr.io/victorgmrqs/hf-frontend'
-          sed -i "s|newTag:.*|newTag: ${{ needs.build-and-push.outputs.image_tag }}|g" kustomization.yaml || \
-          kustomize edit set image ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.build-and-push.outputs.image_tag }}
+          sed -i "s|newTag:.*|newTag: ${{ needs.build-and-push.outputs.image_tag }}|g" kustomization.yaml
 
       - name: Commit and Push Changes
         run: |
