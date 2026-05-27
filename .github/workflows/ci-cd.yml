@@ -112,7 +112,7 @@ jobs:
           cd gitops
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
-          git config url."https://${GITOPS_TOKEN}@github.com/".insteadOf "https://github.com/"
+          git remote set-url origin https://${GITOPS_TOKEN}@github.com/${{ github.repository_owner }}/homelab-gitops.git
           git add .
           if git diff --quiet --cached; then
             echo "No changes to commit"
