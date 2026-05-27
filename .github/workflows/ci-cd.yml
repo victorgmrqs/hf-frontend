@@ -107,15 +107,46 @@ jobs:
       - name: Commit and Push Changes
         env:
           GITOPS_TOKEN: ${{ secrets.GITOPS_UPDATE_PAT }}
-        run: |
-          cd gitops
-          git config user.name "GitHub Actions"
-          git config user.email "actions@github.com"
-          git config --global url."https://${GITOPS_TOKEN}@github.com/".insteadOf "https://github.com/"
-          git add .
-          if git diff --quiet --cached; then
-            echo "No changes to commit"
-          else
-            git commit -m "chore(gitops): update image to ${{ needs.build-and-push.outputs.image_tag }} in ${{ env.ENV }}"
-            git push
-          fi
+gitops-update:
+  name: GitOps Update
+  needs: build-and-push
+  if: github.event_name == 'push'
+  runs-on: ubuntu-latest
+  steps:
+    - name: Checkout GitOps Repository
+      uses: actions/checkout@v4
+      with:
+        repository: ${{ github.repository_owner }}/homelab-gitops
+        token: ${{ secrets.GITOPS_UPDATE_PAT }}
+        path: gitops
+        ref: ${{ github.ref == 'refs/heads/main' && 'main' || 'development' }}
+
+    - name: Set Environment variables
+      run: |
+        if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+          echo "ENV=prod" >> $GITHUB_ENV
+        else
+          echo "ENV=homolog" >> $GITHUB_ENV
+        fi
+
+    - name: Update Image Tag
+      run: |
+        cd gitops/overlays/${{ env.ENV }}/hf-frontend
+        sed -i "s|newTag:.*|newTag: ${{ needs.build-and-push.outputs.image_tag }}|g" kustomization.yaml || \
+        kustomize edit set image ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.build-and-push.outputs.image_tag }}
+
+    - name: Commit and Push Changes
+      env:
+        GITOPS_TOKEN: ${{ secrets.GITOPS_UPDATE_PAT }}
+      run: |
+        cd gitops
+        git config user.name "GitHub Actions"
+        git config user.email "actions@github.com"
+        git config --global url."https://${GITOPS_TOKEN}@github.com/".insteadOf "https://github.com/"
+        git add .
+        if git diff --quiet --cached; then
+          echo "No changes to commit"
+        else
+          git commit -m "chore(gitops): update hf-frontend image to ${{ needs.build-and-push.outputs.image_tag }} in ${{ env.ENV }}"
+          git push
+        fi
