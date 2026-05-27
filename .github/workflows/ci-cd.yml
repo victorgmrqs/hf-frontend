@@ -108,15 +108,20 @@ jobs:
       - name: Commit and Push Changes
         env:
           GITOPS_TOKEN: ${{ secrets.GITOPS_UPDATE_PAT }}
+          GITOPS_REPO_OWNER: ${{ github.repository_owner }}
         run: |
           cd gitops
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
-          git remote set-url origin https://${GITOPS_TOKEN}@github.com/${{ github.repository_owner }}/homelab-gitops.git
+          
+          # Configure git credentials for push
+          git config --global credential.helper store
+          echo "https://${GITOPS_TOKEN}@github.com" > ~/.git-credentials
+          
           git add .
           if git diff --quiet --cached; then
             echo "No changes to commit"
           else
             git commit -m "chore(gitops): update hf-frontend image to ${{ needs.build-and-push.outputs.image_tag }} in ${{ env.ENV }}"
-            git push
+            git push origin ${{ env.GITOPS_BRANCH }}
           fi
