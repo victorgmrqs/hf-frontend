@@ -16,15 +16,17 @@ import ExpenseModal from '../components/ExpenseModal';
 import EditCategoryModal from '../components/EditCategoryModal';
 import { financeService, Expense } from '../services/financeService';
 import { useUser } from '../hooks/useUser';
+import { useCompetences } from '../hooks/useCompetence';
 
 const Expenses: React.FC = () => {
   const { currentUser, allUsers } = useUser();
+  const { availableCompetences, refreshCompetences } = useCompetences();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditCategoryModalOpen, setIsEditCategoryModalOpen] = useState(false);
   const [selectedExpense, setSelectedExpense] = useState<Expense | null>(null);
   
   const [expenses, setExpenses] = useState<Expense[]>([]);
-  const [competence, setCompetence] = useState('2026-02');
+  const [competence, setCompetence] = useState(new Date().toISOString().substring(0, 7));
   const [typeFilter, setTypeFilter] = useState<string>('');
   const [loading, setLoading] = useState(true);
 
@@ -95,8 +97,9 @@ const Expenses: React.FC = () => {
                 onChange={(e) => setCompetence(e.target.value)}
                 className="bg-surface-dark border border-border-dark text-white text-sm rounded-lg focus:ring-primary focus:border-primary block pl-10 pr-4 py-2.5 appearance-none cursor-pointer"
               >
-                <option value="2026-02">2026-02</option>
-                <option value="2026-01">2026-01</option>
+                {availableCompetences.map(c => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
               </select>
             </div>
             <button 
@@ -254,7 +257,10 @@ const Expenses: React.FC = () => {
           setIsModalOpen(false);
           setSelectedExpense(null);
         }} 
-        onSuccess={fetchExpenses}
+        onSuccess={() => {
+          fetchExpenses();
+          refreshCompetences();
+        }}
       />
       <EditCategoryModal 
         expense={selectedExpense}
