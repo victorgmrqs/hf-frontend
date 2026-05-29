@@ -18,15 +18,17 @@ import ExpenseModal from '../components/ExpenseModal';
 import Sidebar from '../components/Sidebar';
 import { financeService, Expense, AccountPayable } from '../services/financeService';
 import { useUser } from '../hooks/useUser';
+import { useCompetences } from '../hooks/useCompetence';
 
 const Dashboard: React.FC = () => {
   const { currentUser, allUsers } = useUser();
+  const { availableCompetences, refreshCompetences } = useCompetences();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [totals, setTotals] = useState({ total_personal: 0, total_shared: 0, total_general: 0 });
   const [budgets, setBudgets] = useState<{ category_name: string; amount: number; current_spending: number }[]>([]);
   const [upcomingAccounts, setUpcomingAccounts] = useState<AccountPayable[]>([]);
-  const [competence, setCompetence] = useState('2026-02');
+  const [competence, setCompetence] = useState(new Date().toISOString().substring(0, 7));
   const [loading, setLoading] = useState(true);
 
   // Settlement state
@@ -150,8 +152,9 @@ const Dashboard: React.FC = () => {
                 onChange={(e) => setCompetence(e.target.value)}
                 className="bg-surface-dark border border-border-dark text-white text-sm rounded-lg focus:ring-primary focus:border-primary block pl-10 pr-4 py-2.5 appearance-none cursor-pointer"
               >
-                <option value="2026-02">2026-02</option>
-                <option value="2026-01">2026-01</option>
+                {availableCompetences.map(c => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
               </select>
             </div>
             <button 
@@ -401,7 +404,10 @@ const Dashboard: React.FC = () => {
       <ExpenseModal 
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
-        onSuccess={fetchData}
+        onSuccess={() => {
+          fetchData();
+          refreshCompetences();
+        }}
       />
     </div>
   );
