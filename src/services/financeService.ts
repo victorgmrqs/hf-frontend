@@ -133,6 +133,21 @@ export const financeService = {
       method: 'DELETE',
     }),
   
+  getAvailableCompetences: async (userId: string): Promise<string[]> => {
+    const { data } = await financeService.getExpenses(userId);
+    if (!data) return [];
+    const competences = data.map(e => e.competence);
+    
+    // Also include current month if not present
+    const currentMonth = new Date().toISOString().substring(0, 7);
+    if (!competences.includes(currentMonth)) {
+      competences.push(currentMonth);
+    }
+    
+    const unique = Array.from(new Set(competences));
+    return unique.sort().reverse();
+  },
+  
   // Accounts Payable
   getAccountsPayable: (userId: string, status?: string) => {
     const params = new URLSearchParams();

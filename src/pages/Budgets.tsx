@@ -11,6 +11,7 @@ import Sidebar from '../components/Sidebar';
 import BudgetModal from '../components/BudgetModal';
 import { financeService } from '../services/financeService';
 import { useUser } from '../hooks/useUser';
+import { useCompetences } from '../hooks/useCompetence';
 
 interface BudgetStatus {
   id: string;
@@ -21,8 +22,9 @@ interface BudgetStatus {
 
 const Budgets: React.FC = () => {
   const { currentUser } = useUser();
+  const { availableCompetences, refreshCompetences } = useCompetences();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [competence, setCompetence] = useState('2026-02');
+  const [competence, setCompetence] = useState(new Date().toISOString().substring(0, 7));
   const [budgets, setBudgets] = useState<BudgetStatus[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -81,8 +83,9 @@ const Budgets: React.FC = () => {
                 onChange={(e) => setCompetence(e.target.value)}
                 className="bg-surface-dark border border-border-dark text-white text-sm rounded-lg focus:ring-primary focus:border-primary block pl-10 pr-4 py-2.5 appearance-none cursor-pointer"
               >
-                <option value="2026-02">2026-02</option>
-                <option value="2026-01">2026-01</option>
+                {availableCompetences.map(c => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
               </select>
             </div>
             <button 
@@ -186,7 +189,10 @@ const Budgets: React.FC = () => {
       <BudgetModal 
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
-        onSuccess={fetchBudgets}
+        onSuccess={() => {
+          fetchBudgets();
+          refreshCompetences();
+        }}
         competence={competence}
       />
     </div>
