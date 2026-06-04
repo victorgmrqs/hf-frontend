@@ -10,6 +10,7 @@ import {
 import Sidebar from '../components/Sidebar';
 import CategoryModal from '../components/CategoryModal';
 import PaymentMethodModal from '../components/PaymentMethodModal';
+import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import { toast } from 'sonner';
 import { financeService, Category, PaymentMethod } from '../services/financeService';
 import { useUser } from '../hooks/useUser';
@@ -25,6 +26,7 @@ const SettingsPage: React.FC = () => {
 
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentMethod | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<{ type: 'category' | 'payment'; id: string; name: string } | null>(null);
 
   useEffect(() => {
     if (currentUser) {
@@ -49,22 +51,28 @@ const SettingsPage: React.FC = () => {
     }
   };
 
-  const handleDeleteCategory = async (id: string, name: string) => {
-    if (confirm(`Are you sure you want to delete the category "${name}"?`)) {
-      const { error } = await financeService.deleteCategory(id);
+  const handleDeleteCategory = (id: string, name: string) => {
+    setDeleteTarget({ type: 'category', id, name });
+  };
+
+  const handleDeletePaymentMethod = (id: string, name: string) => {
+    setDeleteTarget({ type: 'payment', id, name });
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deleteTarget || !currentUser) return;
+    if (deleteTarget.type === 'category') {
+      const { error } = await financeService.deleteCategory(deleteTarget.id);
+      setDeleteTarget(null);
       if (!error) {
         fetchData();
         toast.success('Categoria excluída com sucesso');
       } else {
         toast.error('Erro ao excluir categoria. Verifique se há despesas vinculadas.');
       }
-    }
-  };
-
-  const handleDeletePaymentMethod = async (id: string, name: string) => {
-    if (!currentUser) return;
-    if (confirm(`Are you sure you want to delete the payment method "${name}"?`)) {
-      const { error } = await financeService.deletePaymentMethod(id, currentUser.id);
+    } else {
+      const { error } = await financeService.deletePaymentMethod(deleteTarget.id, currentUser.id);
+      setDeleteTarget(null);
       if (!error) {
         fetchData();
         toast.success('Forma de pagamento excluída com sucesso');
@@ -225,7 +233,14 @@ const SettingsPage: React.FC = () => {
           setIsPaymentModalOpen(false);
           setSelectedPaymentMethod(null);
         }} 
-        onSuccess={fetchData} 
+        onSuccess={fetchData}
+      />
+      <ConfirmDeleteModal
+        isOpen={!!deleteTarget}
+        title={deleteTarget?.type === 'category' ? 'Excluir Categoria' : 'Excluir Forma de Pagamento'}
+        message={`Tem certeza que deseja excluir "${deleteTarget?.name}"? Esta ação não pode ser desfeita.`}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setDeleteTarget(null)}
       />
     </div>
   );
