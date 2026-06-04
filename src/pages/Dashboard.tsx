@@ -19,6 +19,7 @@ import Sidebar from '../components/Sidebar';
 import { financeService, Expense, AccountPayable } from '../services/financeService';
 import { useUser } from '../hooks/useUser';
 import { useCompetences } from '../hooks/useCompetence';
+import { formatCompetence } from '../utils/formatCompetence';
 
 const Dashboard: React.FC = () => {
   const { currentUser, allUsers } = useUser();
@@ -153,7 +154,7 @@ const Dashboard: React.FC = () => {
                 className="bg-surface-dark border border-border-dark text-white text-sm rounded-lg focus:ring-primary focus:border-primary block pl-10 pr-4 py-2.5 appearance-none cursor-pointer"
               >
                 {availableCompetences.map(c => (
-                  <option key={c} value={c}>{c}</option>
+                  <option key={c} value={c}>{formatCompetence(c)}</option>
                 ))}
               </select>
             </div>
