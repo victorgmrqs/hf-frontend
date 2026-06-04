@@ -7,7 +7,6 @@ import {
   CheckCircle2,
   Clock,
   Trash2,
-  AlertCircle,
   TrendingUp,
   History
 } from 'lucide-react';
@@ -99,6 +98,14 @@ const AccountsPayable: React.FC = () => {
     return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
   };
 
+  const getDaysUntilDue = (dueDate: string): number => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const due = new Date(dueDate);
+    due.setHours(0, 0, 0, 0);
+    return Math.round((due.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+  };
+
   return (
     <div className="flex min-h-screen bg-background-dark text-white">
       <Sidebar />
@@ -169,7 +176,19 @@ const AccountsPayable: React.FC = () => {
           ) : getProjectedAccounts().length > 0 ? (
             getProjectedAccounts().map(account => {
               const isOverdue = new Date(account.due_date) < new Date() && account.status === 'PENDING' && !account.isProjected;
-              const isFuture = new Date(account.due_date) > new Date();
+              const days = getDaysUntilDue(account.due_date);
+              const showUrgency = account.status === 'PENDING' && !account.isProjected;
+              const urgencyBadge = showUrgency
+                ? days < 0
+                  ? { label: 'Vencida', cls: 'bg-rose-900/40 text-rose-400 border border-rose-800/50' }
+                  : days === 0
+                    ? { label: 'Vence hoje', cls: 'bg-rose-500/20 text-rose-400 border border-rose-500/30' }
+                    : days <= 3
+                      ? { label: `Vence em ${days} dia${days > 1 ? 's' : ''}`, cls: 'bg-rose-500/20 text-rose-400 border border-rose-500/30' }
+                      : days <= 7
+                        ? { label: `Vence em ${days} dias`, cls: 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30' }
+                        : null
+                : null;
               
               return (
                 <div key={account.id} className={`bg-surface-dark border rounded-xl p-5 transition-all group relative overflow-hidden ${
@@ -183,9 +202,9 @@ const AccountsPayable: React.FC = () => {
                     </div>
                   )}
                   
-                  {isOverdue && (
-                    <div className="absolute top-0 right-0 p-2 text-rose-500" title="Overdue">
-                      <AlertCircle size={18} />
+                  {urgencyBadge && (
+                    <div className={`absolute top-0 left-0 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-br-lg ${urgencyBadge.cls}`}>
+                      {urgencyBadge.label}
                     </div>
                   )}
                   
