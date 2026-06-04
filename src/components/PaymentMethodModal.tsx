@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, Loader2, CreditCard, Wallet, Landmark, Smartphone, Users } from 'lucide-react';
+import { toast } from 'sonner';
 import { financeService, User, PaymentMethod } from '../services/financeService';
 import { useUser } from '../hooks/useUser';
 
@@ -66,10 +67,11 @@ const PaymentMethodModal: React.FC<PaymentMethodModalProps> = ({ paymentMethod, 
       : await financeService.createPaymentMethod(data);
     
     if (!error) {
+      toast.success(paymentMethod ? 'Forma de pagamento atualizada' : 'Forma de pagamento criada com sucesso');
       onSuccess();
       onClose();
     } else {
-      alert(`Error ${paymentMethod ? 'updating' : 'creating'} payment method: ` + (error.message || 'Unknown error'));
+      toast.error(paymentMethod ? 'Erro ao atualizar forma de pagamento' : 'Erro ao criar forma de pagamento');
     }
     setLoading(false);
   };

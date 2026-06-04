@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { toast } from 'sonner';
 import { financeService, User } from '../services/financeService';
 
 interface UserContextType {
@@ -37,8 +38,8 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           setInternalCurrentUser(data[0]);
         }
       }
-    } catch (error) {
-      console.error("Failed to fetch users:", error);
+    } catch {
+      toast.error('Erro ao carregar usuários');
     } finally {
       setLoading(false);
     }

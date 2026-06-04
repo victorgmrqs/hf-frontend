@@ -10,6 +10,7 @@ import {
 import Sidebar from '../components/Sidebar';
 import CategoryModal from '../components/CategoryModal';
 import PaymentMethodModal from '../components/PaymentMethodModal';
+import { toast } from 'sonner';
 import { financeService, Category, PaymentMethod } from '../services/financeService';
 import { useUser } from '../hooks/useUser';
 
@@ -41,8 +42,8 @@ const SettingsPage: React.FC = () => {
       ]);
       if (cats.data) setCategories(cats.data);
       if (pms.data) setPaymentMethods(pms.data);
-    } catch (error) {
-      console.error("Failed to fetch settings data:", error);
+    } catch {
+      toast.error('Erro ao carregar configurações');
     } finally {
       setLoading(false);
     }
@@ -53,8 +54,9 @@ const SettingsPage: React.FC = () => {
       const { error } = await financeService.deleteCategory(id);
       if (!error) {
         fetchData();
+        toast.success('Categoria excluída com sucesso');
       } else {
-        alert('Error deleting category: ' + (error.message || 'Check if there are expenses linked to it.'));
+        toast.error('Erro ao excluir categoria. Verifique se há despesas vinculadas.');
       }
     }
   };
@@ -65,8 +67,9 @@ const SettingsPage: React.FC = () => {
       const { error } = await financeService.deletePaymentMethod(id, currentUser.id);
       if (!error) {
         fetchData();
+        toast.success('Forma de pagamento excluída com sucesso');
       } else {
-        alert('Error deleting payment method: ' + (error.message || 'Check if there are expenses linked to it (FPG-05).'));
+        toast.error('Erro ao excluir forma de pagamento. Verifique se há despesas vinculadas.');
       }
     }
   };
