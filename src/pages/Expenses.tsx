@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { 
+import {
   Plus,
   CalendarDays,
   ShoppingCart,
@@ -9,7 +9,9 @@ import {
   Filter,
   ArrowUpDown,
   Edit2,
-  Trash2
+  Trash2,
+  Search,
+  X
 } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
 import ExpenseModal from '../components/ExpenseModal';
@@ -31,7 +33,12 @@ const Expenses: React.FC = () => {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [competence, setCompetence] = useState(new Date().toISOString().substring(0, 7));
   const [typeFilter, setTypeFilter] = useState<string>('');
+  const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
+
+  const filteredExpenses = expenses.filter(e =>
+    e.description.toLowerCase().includes(searchTerm.toLowerCase())
+  );
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; description: string } | null>(null);
 
   useEffect(() => {
@@ -122,12 +129,12 @@ const Expenses: React.FC = () => {
 
         {/* Filters & Actions Bar */}
         <div className="bg-surface-dark border border-border-dark rounded-xl p-4 mb-6 flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 flex-wrap">
             <div className="flex items-center gap-2 text-sm text-text-secondary mr-2">
               <Filter size={16} />
               <span>Filter by:</span>
             </div>
-            <select 
+            <select
               value={typeFilter}
               onChange={(e) => setTypeFilter(e.target.value)}
               className="bg-input-dark border border-border-dark text-white text-sm rounded-lg focus:ring-primary focus:border-primary px-4 py-2 outline-none cursor-pointer"
@@ -138,10 +145,29 @@ const Expenses: React.FC = () => {
               <option value="CHILD">Child</option>
               <option value="HOME">Home</option>
             </select>
+            <div className="relative">
+              <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary pointer-events-none" />
+              <input
+                type="text"
+                placeholder="Buscar por descrição..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="bg-input-dark border border-border-dark text-white text-sm rounded-lg pl-9 pr-8 py-2 outline-none focus:border-primary focus:ring-1 focus:ring-primary w-56"
+              />
+              {searchTerm && (
+                <button
+                  onClick={() => setSearchTerm('')}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-text-secondary hover:text-white transition-colors"
+                >
+                  <X size={14} />
+                </button>
+              )}
+            </div>
           </div>
-          
+
           <div className="text-sm text-text-secondary">
-            Showing <span className="text-white font-medium">{expenses.length}</span> transactions
+            Showing <span className="text-white font-medium">{filteredExpenses.length}</span>
+            {searchTerm && <span className="text-text-secondary"> of {expenses.length}</span>} transactions
           </div>
         </div>
 
@@ -175,8 +201,8 @@ const Expenses: React.FC = () => {
                 <tr>
                   <td colSpan={6} className="px-6 py-10 text-center">Loading expenses...</td>
                 </tr>
-              ) : expenses.length > 0 ? (
-                expenses.map(expense => (
+              ) : filteredExpenses.length > 0 ? (
+                filteredExpenses.map(expense => (
                   <tr key={expense.id} className="hover:bg-white/5 transition-colors group">
                     <td className="px-6 py-4 font-medium text-white flex items-center gap-3">
                       <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
@@ -250,7 +276,11 @@ const Expenses: React.FC = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={6} className="px-6 py-10 text-center">No expenses found matching your criteria.</td>
+                  <td colSpan={6} className="px-6 py-10 text-center text-text-secondary">
+                    {searchTerm
+                      ? `Nenhuma despesa encontrada para "${searchTerm}".`
+                      : 'Nenhuma despesa neste período.'}
+                  </td>
                 </tr>
               )}
             </tbody>
