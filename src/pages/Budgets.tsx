@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
 import BudgetModal from '../components/BudgetModal';
+import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import { toast } from 'sonner';
 import { financeService } from '../services/financeService';
 import { useUser } from '../hooks/useUser';
@@ -29,6 +30,7 @@ const Budgets: React.FC = () => {
   const [competence, setCompetence] = useState(new Date().toISOString().substring(0, 7));
   const [budgets, setBudgets] = useState<BudgetStatus[]>([]);
   const [loading, setLoading] = useState(true);
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
   useEffect(() => {
     if (currentUser) {
@@ -49,16 +51,19 @@ const Budgets: React.FC = () => {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!currentUser) return;
-    if (confirm('Are you sure you want to delete this budget?')) {
-      const { error } = await financeService.deleteBudget(id, currentUser.id);
-      if (!error) {
-        fetchBudgets();
-        toast.success('Orçamento excluído com sucesso');
-      } else {
-        toast.error('Erro ao excluir orçamento');
-      }
+  const handleDelete = (id: string) => {
+    setDeleteTarget(id);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deleteTarget || !currentUser) return;
+    const { error } = await financeService.deleteBudget(deleteTarget, currentUser.id);
+    setDeleteTarget(null);
+    if (!error) {
+      fetchBudgets();
+      toast.success('Orçamento excluído com sucesso');
+    } else {
+      toast.error('Erro ao excluir orçamento');
     }
   };
 
@@ -197,6 +202,13 @@ const Budgets: React.FC = () => {
           refreshCompetences();
         }}
         competence={competence}
+      />
+      <ConfirmDeleteModal
+        isOpen={!!deleteTarget}
+        title="Excluir Orçamento"
+        message="Tem certeza que deseja excluir este orçamento? Esta ação não pode ser desfeita."
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setDeleteTarget(null)}
       />
     </div>
   );
