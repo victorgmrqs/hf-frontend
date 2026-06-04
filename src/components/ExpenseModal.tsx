@@ -27,6 +27,8 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({ expense, isOpen, onClose, o
   const [isShared, setIsShared] = useState(false);
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
   const prevPayerIdRef = useRef<string>('');
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [apiError, setApiError] = useState('');
 
   useEffect(() => {
     if (isOpen && currentUser) {
@@ -56,6 +58,8 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({ expense, isOpen, onClose, o
         setIsShared(false);
         setSelectedUserIds([]);
       }
+      setErrors({});
+      setApiError('');
     }
   }, [isOpen, expense, currentUser]);
 
@@ -95,15 +99,22 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({ expense, isOpen, onClose, o
     e.preventDefault();
     if (!currentUser) return;
     if (sharedError) return;
-    setLoading(true);
 
+    const newErrors: Record<string, string> = {};
     const parsedAmount = parseFloat(amount.replace(',', '.'));
-
-    if (isNaN(parsedAmount)) {
-      toast.error('Informe um valor válido');
-      setLoading(false);
+    if (!amount || isNaN(parsedAmount) || parsedAmount <= 0) {
+      newErrors.amount = 'Informe um valor válido maior que zero';
+    }
+    if (!description.trim()) {
+      newErrors.description = 'A descrição é obrigatória';
+    }
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
       return;
     }
+    setErrors({});
+    setApiError('');
+    setLoading(true);
 
     const expenseData = {
       description,
@@ -126,7 +137,7 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({ expense, isOpen, onClose, o
       onSuccess();
       onClose();
     } else {
-      toast.error(expense ? 'Erro ao atualizar despesa' : 'Erro ao criar despesa');
+      setApiError(expense ? 'Erro ao atualizar despesa. Verifique os dados e tente novamente.' : 'Erro ao criar despesa. Verifique os dados e tente novamente.');
     }
     setLoading(false);
   };
@@ -152,29 +163,39 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({ expense, isOpen, onClose, o
         </div>
 
         <div className="flex-1 overflow-y-auto px-6 py-6 space-y-6">
+          {apiError && (
+            <div className="px-4 py-3 bg-rose-500/10 border border-rose-500/30 rounded-lg">
+              <p className="text-rose-400 text-sm">{apiError}</p>
+            </div>
+          )}
+
           <div className="flex flex-col gap-2">
             <label className="text-text-secondary text-sm font-medium">Amount</label>
             <div className="relative group">
               <span className="absolute left-4 top-1/2 -translate-y-1/2 text-white font-semibold text-xl">R$</span>
-              <input 
-                required
-                className="w-full bg-input-dark border border-border-dark rounded-lg py-4 pl-12 pr-4 text-white text-2xl font-bold focus:border-primary focus:ring-1 focus:ring-primary outline-none" 
-                placeholder="0,00" 
+              <input
+                className={`w-full bg-input-dark border rounded-lg py-4 pl-12 pr-4 text-white text-2xl font-bold focus:ring-1 outline-none ${
+                  errors.amount ? 'border-rose-500 focus:border-rose-500 focus:ring-rose-500/20' : 'border-border-dark focus:border-primary focus:ring-primary'
+                }`}
+                placeholder="0,00"
                 value={amount}
-                onChange={(e) => setAmount(e.target.value)}
+                onChange={(e) => { setAmount(e.target.value); setErrors(prev => ({ ...prev, amount: '' })); }}
               />
             </div>
+            {errors.amount && <p className="text-rose-400 text-xs mt-1">{errors.amount}</p>}
           </div>
 
           <div className="flex flex-col gap-2">
             <label className="text-text-secondary text-sm font-medium">Description</label>
-            <input 
-              required
-              className="w-full bg-input-dark border border-border-dark rounded-lg h-12 px-4 text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none" 
-              placeholder="e.g. Weekly Groceries" 
+            <input
+              className={`w-full bg-input-dark border rounded-lg h-12 px-4 text-white focus:ring-1 outline-none ${
+                errors.description ? 'border-rose-500 focus:border-rose-500 focus:ring-rose-500/20' : 'border-border-dark focus:border-primary focus:ring-primary'
+              }`}
+              placeholder="e.g. Weekly Groceries"
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              onChange={(e) => { setDescription(e.target.value); setErrors(prev => ({ ...prev, description: '' })); }}
             />
+            {errors.description && <p className="text-rose-400 text-xs mt-1">{errors.description}</p>}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
