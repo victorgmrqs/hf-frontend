@@ -14,6 +14,7 @@ import {
 import Sidebar from '../components/Sidebar';
 import AccountPayableModal from '../components/AccountPayableModal';
 import PayAccountModal from '../components/PayAccountModal';
+import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import { toast } from 'sonner';
 import { financeService, AccountPayable } from '../services/financeService';
 import { useUser } from '../hooks/useUser';
@@ -28,6 +29,7 @@ const AccountsPayable: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState<string>('PENDING');
   const [loading, setLoading] = useState(true);
   const [projectionMonths, setProjectionMonths] = useState(3);
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
   useEffect(() => {
     if (currentUser) {
@@ -72,16 +74,19 @@ const AccountsPayable: React.FC = () => {
     return projected.sort((a, b) => new Date(a.due_date).getTime() - new Date(b.due_date).getTime());
   };
 
-  const handleDelete = async (id: string) => {
-    if (!currentUser) return;
-    if (confirm('Are you sure you want to delete this account payable?')) {
-      const { error } = await financeService.deleteAccountPayable(id, currentUser.id);
-      if (!error) {
-        fetchAccounts();
-        toast.success('Conta excluída com sucesso');
-      } else {
-        toast.error('Erro ao excluir conta a pagar');
-      }
+  const handleDelete = (id: string) => {
+    setDeleteTarget(id);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deleteTarget || !currentUser) return;
+    const { error } = await financeService.deleteAccountPayable(deleteTarget, currentUser.id);
+    setDeleteTarget(null);
+    if (!error) {
+      fetchAccounts();
+      toast.success('Conta excluída com sucesso');
+    } else {
+      toast.error('Erro ao excluir conta a pagar');
     }
   };
 
@@ -276,6 +281,13 @@ const AccountsPayable: React.FC = () => {
           setSelectedAccount(null);
         }} 
         onSuccess={fetchAccounts}
+      />
+      <ConfirmDeleteModal
+        isOpen={!!deleteTarget}
+        title="Excluir Conta a Pagar"
+        message="Tem certeza que deseja excluir esta conta? Esta ação não pode ser desfeita."
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setDeleteTarget(null)}
       />
     </div>
   );

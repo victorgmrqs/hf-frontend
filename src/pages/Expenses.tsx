@@ -14,6 +14,7 @@ import {
 import Sidebar from '../components/Sidebar';
 import ExpenseModal from '../components/ExpenseModal';
 import EditCategoryModal from '../components/EditCategoryModal';
+import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import { toast } from 'sonner';
 import { financeService, Expense } from '../services/financeService';
 import { useUser } from '../hooks/useUser';
@@ -31,6 +32,7 @@ const Expenses: React.FC = () => {
   const [competence, setCompetence] = useState(new Date().toISOString().substring(0, 7));
   const [typeFilter, setTypeFilter] = useState<string>('');
   const [loading, setLoading] = useState(true);
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; description: string } | null>(null);
 
   useEffect(() => {
     if (currentUser) {
@@ -51,16 +53,19 @@ const Expenses: React.FC = () => {
     }
   };
 
-  const handleDelete = async (id: string, description: string) => {
-    if (!currentUser) return;
-    if (confirm(`Are you sure you want to delete the expense "${description}"?`)) {
-      const { error } = await financeService.deleteExpense(id, currentUser.id);
-      if (!error) {
-        fetchExpenses();
-        toast.success('Despesa excluída com sucesso');
-      } else {
-        toast.error('Erro ao excluir despesa');
-      }
+  const handleDelete = (id: string, description: string) => {
+    setDeleteTarget({ id, description });
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deleteTarget || !currentUser) return;
+    const { error } = await financeService.deleteExpense(deleteTarget.id, currentUser.id);
+    setDeleteTarget(null);
+    if (!error) {
+      fetchExpenses();
+      toast.success('Despesa excluída com sucesso');
+    } else {
+      toast.error('Erro ao excluir despesa');
     }
   };
 
@@ -273,6 +278,13 @@ const Expenses: React.FC = () => {
           setSelectedExpense(null);
         }}
         onSuccess={fetchExpenses}
+      />
+      <ConfirmDeleteModal
+        isOpen={!!deleteTarget}
+        title="Excluir Despesa"
+        message={`Tem certeza que deseja excluir "${deleteTarget?.description}"? Esta ação não pode ser desfeita.`}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setDeleteTarget(null)}
       />
     </div>
   );
