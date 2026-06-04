@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 import { financeService } from '../services/financeService';
 import { useUser } from '../hooks/useUser';
 
@@ -27,7 +28,7 @@ const AccountPayableModal: React.FC<AccountPayableModalProps> = ({ isOpen, onClo
     const parsedAmount = parseFloat(amount.replace(',', '.'));
     
     if (isNaN(parsedAmount)) {
-      alert('Please enter a valid amount.');
+      toast.error('Informe um valor válido');
       setLoading(false);
       return;
     }
@@ -43,14 +44,14 @@ const AccountPayableModal: React.FC<AccountPayableModalProps> = ({ isOpen, onClo
     const { error } = await financeService.createAccountPayable(data);
     
     if (!error) {
+      toast.success('Conta a pagar criada com sucesso');
       onSuccess();
       onClose();
-      // Reset form
       setAmount('');
       setDescription('');
       setRecurrence('NONE');
     } else {
-      alert('Error creating account payable: ' + (error.message || 'Unknown error'));
+      toast.error('Erro ao criar conta a pagar');
     }
     setLoading(false);
   };

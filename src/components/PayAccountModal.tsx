@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, ChevronDown, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 import { financeService, PaymentMethod, Category, AccountPayable } from '../services/financeService';
 import { useUser } from '../hooks/useUser';
 
@@ -56,10 +57,11 @@ const PayAccountModal: React.FC<PayAccountModalProps> = ({ account, isOpen, onCl
     const { error } = await financeService.payAccountPayable(account.id, currentUser.id, payData);
     
     if (!error) {
+      toast.success('Pagamento registrado com sucesso');
       onSuccess();
       onClose();
     } else {
-      alert('Error paying account: ' + (error.message || 'Unknown error'));
+      toast.error('Erro ao registrar pagamento');
     }
     setLoading(false);
   };

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, ChevronDown, Loader2, Tag } from 'lucide-react';
+import { toast } from 'sonner';
 import { financeService, Category, Expense } from '../services/financeService';
 import { useUser } from '../hooks/useUser';
 
@@ -40,10 +41,11 @@ const EditCategoryModal: React.FC<EditCategoryModalProps> = ({ expense, isOpen, 
     const { error } = await financeService.updateExpenseCategory(expense.id, currentUser.id, selectedCategoryId || null);
     
     if (!error) {
+      toast.success('Categoria atualizada com sucesso');
       onSuccess();
       onClose();
     } else {
-      alert('Error updating category: ' + (error.message || 'Unknown error'));
+      toast.error('Erro ao atualizar categoria');
     }
     setLoading(false);
   };

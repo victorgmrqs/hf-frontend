@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
 import BudgetModal from '../components/BudgetModal';
+import { toast } from 'sonner';
 import { financeService } from '../services/financeService';
 import { useUser } from '../hooks/useUser';
 import { useCompetences } from '../hooks/useCompetence';
@@ -40,8 +41,8 @@ const Budgets: React.FC = () => {
     try {
       const { data } = await financeService.getBudgetStatus(currentUser.id, competence);
       if (data) setBudgets(data);
-    } catch (error) {
-      console.error("Failed to fetch budgets:", error);
+    } catch {
+      toast.error('Erro ao carregar orçamentos');
     } finally {
       setLoading(false);
     }
@@ -53,8 +54,9 @@ const Budgets: React.FC = () => {
       const { error } = await financeService.deleteBudget(id, currentUser.id);
       if (!error) {
         fetchBudgets();
+        toast.success('Orçamento excluído com sucesso');
       } else {
-        alert('Error deleting budget: ' + (error.message || 'Unknown error'));
+        toast.error('Erro ao excluir orçamento');
       }
     }
   };

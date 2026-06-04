@@ -14,6 +14,7 @@ import {
 import Sidebar from '../components/Sidebar';
 import ExpenseModal from '../components/ExpenseModal';
 import EditCategoryModal from '../components/EditCategoryModal';
+import { toast } from 'sonner';
 import { financeService, Expense } from '../services/financeService';
 import { useUser } from '../hooks/useUser';
 import { useCompetences } from '../hooks/useCompetence';
@@ -42,8 +43,8 @@ const Expenses: React.FC = () => {
     try {
       const { data } = await financeService.getExpenses(currentUser.id, competence, typeFilter || undefined);
       if (data) setExpenses(data);
-    } catch (error) {
-      console.error("Failed to fetch expenses:", error);
+    } catch {
+      toast.error('Erro ao carregar despesas');
     } finally {
       setLoading(false);
     }
@@ -55,8 +56,9 @@ const Expenses: React.FC = () => {
       const { error } = await financeService.deleteExpense(id, currentUser.id);
       if (!error) {
         fetchExpenses();
+        toast.success('Despesa excluída com sucesso');
       } else {
-        alert('Error deleting expense: ' + (error.message || 'Unknown error'));
+        toast.error('Erro ao excluir despesa');
       }
     }
   };

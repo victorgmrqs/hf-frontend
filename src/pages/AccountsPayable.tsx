@@ -14,6 +14,7 @@ import {
 import Sidebar from '../components/Sidebar';
 import AccountPayableModal from '../components/AccountPayableModal';
 import PayAccountModal from '../components/PayAccountModal';
+import { toast } from 'sonner';
 import { financeService, AccountPayable } from '../services/financeService';
 import { useUser } from '../hooks/useUser';
 
@@ -40,8 +41,8 @@ const AccountsPayable: React.FC = () => {
     try {
       const { data } = await financeService.getAccountsPayable(currentUser.id, statusFilter || undefined);
       if (data) setAccounts(data);
-    } catch (error) {
-      console.error("Failed to fetch accounts:", error);
+    } catch {
+      toast.error('Erro ao carregar contas a pagar');
     } finally {
       setLoading(false);
     }
@@ -77,8 +78,9 @@ const AccountsPayable: React.FC = () => {
       const { error } = await financeService.deleteAccountPayable(id, currentUser.id);
       if (!error) {
         fetchAccounts();
+        toast.success('Conta excluída com sucesso');
       } else {
-        alert('Error deleting account: ' + (error.message || 'Unknown error'));
+        toast.error('Erro ao excluir conta a pagar');
       }
     }
   };
