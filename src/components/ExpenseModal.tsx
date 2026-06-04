@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { X, ChevronDown, Check, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { financeService, Category, PaymentMethod, Expense } from '../services/financeService';
@@ -26,6 +26,7 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({ expense, isOpen, onClose, o
   const [payerId, setPayerId] = useState('');
   const [isShared, setIsShared] = useState(false);
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
+  const prevPayerIdRef = useRef<string>('');
 
   useEffect(() => {
     if (isOpen && currentUser) {
@@ -37,6 +38,7 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({ expense, isOpen, onClose, o
         setCategoryId(expense.category?.id || '');
         setPaymentMethodId(expense.payment_method.id);
         setPayerId(expense.user_id);
+        prevPayerIdRef.current = expense.user_id;
         setIsShared(expense.type === 'SHARED');
         // Extract shared users except the payer
         const otherParticipants = expense.shared_with
@@ -50,11 +52,28 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({ expense, isOpen, onClose, o
         setCategoryId('');
         if (paymentMethods.length > 0) setPaymentMethodId(paymentMethods[0].id);
         setPayerId(currentUser.id);
+        prevPayerIdRef.current = currentUser.id;
         setIsShared(false);
         setSelectedUserIds([]);
       }
     }
   }, [isOpen, expense, currentUser]);
+
+  // DSP-07: sync participants when payer changes
+  useEffect(() => {
+    if (!isShared || !payerId) return;
+    const prevId = prevPayerIdRef.current;
+    if (prevId && prevId !== payerId) {
+      setSelectedUserIds(prev => {
+        const withoutNewPayer = prev.filter(uid => uid !== payerId);
+        if (!withoutNewPayer.includes(prevId)) {
+          return [...withoutNewPayer, prevId];
+        }
+        return withoutNewPayer;
+      });
+    }
+    prevPayerIdRef.current = payerId;
+  }, [payerId]);
 
   const loadInitialData = async () => {
     if (!currentUser) return;
