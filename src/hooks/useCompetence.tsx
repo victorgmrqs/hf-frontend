@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { toast } from 'sonner';
 import { financeService } from '../services/financeService';
 import { useUser } from './useUser';
 
@@ -14,8 +15,8 @@ export const useCompetences = () => {
     try {
       const months = await financeService.getAvailableCompetences(currentUser.id);
       setAvailableCompetences(months);
-    } catch (error) {
-      console.error("Failed to fetch available competences:", error);
+    } catch {
+      toast.error('Erro ao carregar competências disponíveis');
     } finally {
       setLoadingCompetences(false);
     }

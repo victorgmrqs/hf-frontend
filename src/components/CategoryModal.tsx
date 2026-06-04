@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, Loader2, Palette } from 'lucide-react';
+import { toast } from 'sonner';
 import { financeService, Category } from '../services/financeService';
 
 interface CategoryModalProps {
@@ -51,10 +52,11 @@ const CategoryModal: React.FC<CategoryModalProps> = ({ category, isOpen, onClose
       : await financeService.createCategory(data);
     
     if (!error) {
+      toast.success(category ? 'Categoria atualizada com sucesso' : 'Categoria criada com sucesso');
       onSuccess();
       onClose();
     } else {
-      alert(`Error ${category ? 'updating' : 'creating'} category: ` + (error.message || 'Unknown error'));
+      toast.error(category ? 'Erro ao atualizar categoria' : 'Erro ao criar categoria');
     }
     setLoading(false);
   };

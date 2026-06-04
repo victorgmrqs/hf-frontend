@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { toast } from 'sonner';
 import { 
   Plus,
   CalendarDays,
@@ -69,8 +70,8 @@ const Dashboard: React.FC = () => {
           .slice(0, 3);
         setUpcomingAccounts(sorted);
       }
-    } catch (error) {
-      console.error("Failed to fetch data:", error);
+    } catch {
+      toast.error('Erro ao carregar dados do dashboard');
     } finally {
       setLoading(false);
     }

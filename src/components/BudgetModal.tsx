@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, ChevronDown, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 import { financeService, Category } from '../services/financeService';
 import { useUser } from '../hooks/useUser';
 
@@ -38,7 +39,7 @@ const BudgetModal: React.FC<BudgetModalProps> = ({ isOpen, onClose, onSuccess, c
     const parsedAmount = parseFloat(amount.replace(',', '.'));
     
     if (isNaN(parsedAmount)) {
-      alert('Please enter a valid amount.');
+      toast.error('Informe um valor válido');
       setLoading(false);
       return;
     }
@@ -53,12 +54,13 @@ const BudgetModal: React.FC<BudgetModalProps> = ({ isOpen, onClose, onSuccess, c
     const { error } = await financeService.createBudget(data);
     
     if (!error) {
+      toast.success('Orçamento criado com sucesso');
       onSuccess();
       onClose();
       setAmount('');
       setCategoryId('');
     } else {
-      alert('Error creating budget: ' + (error.message || 'Unknown error'));
+      toast.error('Erro ao criar orçamento');
     }
     setLoading(false);
   };
