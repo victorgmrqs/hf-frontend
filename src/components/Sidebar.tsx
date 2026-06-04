@@ -6,11 +6,10 @@ import {
   PieChart, 
   Settings
 } from 'lucide-react';
-import { Link, useLocation } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { useUser } from '../hooks/useUser';
 
 const Sidebar: React.FC = () => {
-  const location = useLocation();
   const { currentUser, allUsers, setCurrentUser } = useUser();
   const [isUserMenuOpen, setIsUserMenuOpen] = React.useState(false);
 
@@ -30,18 +29,21 @@ const Sidebar: React.FC = () => {
       </div>
       <nav className="flex-1 px-4 py-6 space-y-2">
         {menuItems.map((item) => (
-          <Link
+          <NavLink
             key={item.path}
             to={item.path}
-            className={`flex items-center px-4 py-3 rounded-lg group transition-colors ${
-              location.pathname === item.path
-                ? 'bg-primary/10 text-primary'
-                : 'text-text-secondary hover:bg-white/5 hover:text-white'
-            }`}
+            end={item.path === '/'}
+            className={({ isActive }) =>
+              `flex items-center px-4 py-3 rounded-lg group transition-colors ${
+                isActive
+                  ? 'bg-primary/10 text-primary'
+                  : 'text-text-secondary hover:bg-white/5 hover:text-white'
+              }`
+            }
           >
             <div className="mr-3">{item.icon}</div>
             <span className="font-medium">{item.label}</span>
-          </Link>
+          </NavLink>
         ))}
       </nav>
       <div className="p-4 border-t border-border-dark relative">
