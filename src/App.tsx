@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Toaster } from 'sonner';
 import { UserProvider } from './hooks/useUser';
 import Dashboard from './pages/Dashboard';
 import Expenses from './pages/Expenses';
@@ -11,6 +12,7 @@ function App() {
     <UserProvider>
       <Router>
         <div className="dark min-h-screen bg-background-dark">
+          <Toaster richColors position="bottom-right" />
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/expenses" element={<Expenses />} />

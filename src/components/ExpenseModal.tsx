@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, ChevronDown, Check, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 import { financeService, Category, PaymentMethod, Expense } from '../services/financeService';
 import { useUser } from '../hooks/useUser';
 
@@ -77,7 +78,7 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({ expense, isOpen, onClose, o
     const parsedAmount = parseFloat(amount.replace(',', '.'));
     
     if (isNaN(parsedAmount)) {
-      alert('Please enter a valid amount.');
+      toast.error('Informe um valor válido');
       setLoading(false);
       return;
     }
@@ -99,10 +100,11 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({ expense, isOpen, onClose, o
       : await financeService.createExpense(expenseData);
     
     if (!error) {
+      toast.success(expense ? 'Despesa atualizada com sucesso' : 'Despesa criada com sucesso');
       onSuccess();
       onClose();
     } else {
-      alert(`Error ${expense ? 'updating' : 'creating'} expense: ` + (error.message || 'Unknown error'));
+      toast.error(expense ? 'Erro ao atualizar despesa' : 'Erro ao criar despesa');
     }
     setLoading(false);
   };
