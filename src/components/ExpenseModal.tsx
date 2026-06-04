@@ -260,7 +260,15 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({ expense, isOpen, onClose, o
                   type="checkbox" 
                   className="sr-only peer" 
                   checked={isShared}
-                  onChange={(e) => setIsShared(e.target.checked)}
+                  onChange={(e) => {
+                    const checked = e.target.checked;
+                    setIsShared(checked);
+                    if (checked) {
+                      setSelectedUserIds(allUsers.filter(u => u.id !== payerId).map(u => u.id));
+                    } else {
+                      setSelectedUserIds([]);
+                    }
+                  }}
                 />
                 <div className="w-11 h-6 bg-input-dark rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary border border-border-dark"></div>
               </label>
