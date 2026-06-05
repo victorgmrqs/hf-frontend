@@ -10,6 +10,7 @@ import {
 import Sidebar from '../components/Sidebar';
 import BudgetModal from '../components/BudgetModal';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
+import EmptyState from '../components/EmptyState';
 import { toast } from 'sonner';
 import { financeService } from '../services/financeService';
 import { useUser } from '../hooks/useUser';
@@ -176,20 +177,13 @@ const Budgets: React.FC = () => {
             })}
           </div>
         ) : (
-          <div className="bg-surface-dark border border-border-dark border-dashed rounded-xl py-20 text-center">
-            <div className="bg-white/5 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 text-text-secondary">
-              <Target size={40} />
-            </div>
-            <h3 className="text-white font-semibold text-xl mb-2">No budgets set yet</h3>
-            <p className="text-text-secondary mb-8 max-w-sm mx-auto">
-              Setting a budget helps you control your spending by category and stay on track with your financial goals.
-            </p>
-            <button 
-              onClick={() => setIsModalOpen(true)}
-              className="bg-primary hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-bold transition-all shadow-lg shadow-blue-900/20"
-            >
-              Set Your First Budget
-            </button>
+          <div className="bg-surface-dark border border-border-dark border-dashed rounded-xl">
+            <EmptyState
+              icon={<Target size={40} />}
+              title={`Nenhum orçamento definido para ${formatCompetence(competence)}.`}
+              actionLabel="Novo Orçamento"
+              onAction={() => setIsModalOpen(true)}
+            />
           </div>
         )}
       </main>
