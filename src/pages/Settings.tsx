@@ -11,6 +11,7 @@ import Sidebar from '../components/Sidebar';
 import CategoryModal from '../components/CategoryModal';
 import PaymentMethodModal from '../components/PaymentMethodModal';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
+import EmptyState from '../components/EmptyState';
 import { toast } from 'sonner';
 import { financeService, Category, PaymentMethod } from '../services/financeService';
 import { useUser } from '../hooks/useUser';
@@ -147,7 +148,16 @@ const SettingsPage: React.FC = () => {
                   ))}
                 </div>
               ) : (
-                <div className="py-10 text-center text-text-secondary italic">No categories found.</div>
+                <EmptyState
+                  icon={<Tag size={32} />}
+                  title="Nenhuma categoria criada ainda."
+                  actionLabel="Nova Categoria"
+                  onAction={() => {
+                    setSelectedCategory(null);
+                    setIsCategoryModalOpen(true);
+                  }}
+                  className="py-8"
+                />
               )}
             </div>
           </section>
