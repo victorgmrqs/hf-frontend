@@ -72,21 +72,40 @@ Gerenciador financeiro doméstico para casal com filhos. Permite controlar despe
 
 ---
 
-## 7. Funcionalidades Futuras (não implementar no MVP)
+## 7. Orçamentos e Metas
 
-### 7.1 Metas e Orçamentos
 | Regra | Descrição |
 |-------|-----------|
-| MET-01 | Usuário poderá definir orçamento mensal por categoria |
-| MET-02 | Sistema alertará quando gastos atingirem % do orçamento |
+| MET-01 | Usuário pode definir orçamento mensal por categoria |
+| MET-02 | Sistema alerta visualmente quando gastos ultrapassam 80% do orçamento da categoria; exibe em vermelho quando o limite é excedido |
+| MET-03 | *(planejado)* Percentual de alerta configurável pelo usuário |
 
-### 7.2 Contas a Pagar
+---
+
+## 8. Contas a Pagar
+
 | Regra | Descrição |
 |-------|-----------|
-| CTP-01 | Contas a pagar possuem: descrição, valor, data de vencimento, recorrência |
-| CTP-02 | Vencimentos agrupados por dia-chave (ex: dia 5, 10, 20) |
-| CTP-03 | Visualização: "O que preciso pagar até o dia X" |
+| CTP-01 | Contas a pagar possuem: descrição, valor, data de vencimento, recorrência (mensal) |
+| CTP-02 | Contas mensais recorrentes são projetadas automaticamente para os próximos N meses na visualização |
+| CTP-03 | Conta paga registra pagamento com data e forma de pagamento associados |
 | CTP-04 | Conta paga gera automaticamente uma despesa vinculada |
+| CTP-05 | Contas com vencimento em até 7 dias recebem badge de urgência; contas vencidas ou com até 3 dias recebem destaque em vermelho |
+
+---
+
+## 9. Experiência do Usuário
+
+| Regra | Descrição |
+|-------|-----------|
+| UX-01 | Toda ação destrutiva (exclusão) exige confirmação explícita via modal antes de ser executada |
+| UX-02 | Toda ação (criação, edição, exclusão) fornece feedback imediato via toast notification |
+| UX-03 | Quando uma lista está vazia, o sistema exibe mensagem orientadora e botão de ação contextual (CTA) |
+| UX-04 | A rota ativa é destacada visualmente na Sidebar para orientar a navegação |
+| UX-05 | Competência é sempre exibida em formato legível "Mês/Ano" (ex: "Junho/2026") em vez do formato ISO |
+| UX-06 | Ao ativar tipo "Compartilhada" no formulário de despesa, todos os usuários da família são pré-selecionados automaticamente |
+| UX-07 | Erros de validação são exibidos inline abaixo de cada campo inválido, sem depender de alertas genéricos |
+| UX-08 | Contas com vencimento próximo exibem badge de urgência na Sidebar como alerta passivo |
 
 ---
 
