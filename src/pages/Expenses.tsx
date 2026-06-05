@@ -278,6 +278,7 @@ const Expenses: React.FC = () => {
               ) : (
                 <tr>
                   <td colSpan={6}>
+<<<<<<< HEAD
                     {searchTerm ? (
                       <EmptyState
                         icon={<Search size={40} />}
@@ -294,6 +295,15 @@ const Expenses: React.FC = () => {
                         onAction={() => setIsModalOpen(true)}
                       />
                     )}
+=======
+                    <EmptyState
+                      icon={<ShoppingCart size={40} />}
+                      title={`Nenhuma despesa em ${formatCompetence(competence)}.`}
+                      description="Que tal registrar a primeira?"
+                      actionLabel="Nova Despesa"
+                      onAction={() => setIsModalOpen(true)}
+                    />
+>>>>>>> 604b1d36c53cf163bac0aecac4d3ec85084aaa37
                   </td>
                 </tr>
               )}
