@@ -15,6 +15,7 @@ import Sidebar from '../components/Sidebar';
 import ExpenseModal from '../components/ExpenseModal';
 import EditCategoryModal from '../components/EditCategoryModal';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
+import EmptyState from '../components/EmptyState';
 import { toast } from 'sonner';
 import { financeService, Expense } from '../services/financeService';
 import { useUser } from '../hooks/useUser';
@@ -250,7 +251,15 @@ const Expenses: React.FC = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={6} className="px-6 py-10 text-center">No expenses found matching your criteria.</td>
+                  <td colSpan={6}>
+                    <EmptyState
+                      icon={<ShoppingCart size={40} />}
+                      title={`Nenhuma despesa em ${formatCompetence(competence)}.`}
+                      description="Que tal registrar a primeira?"
+                      actionLabel="Nova Despesa"
+                      onAction={() => setIsModalOpen(true)}
+                    />
+                  </td>
                 </tr>
               )}
             </tbody>

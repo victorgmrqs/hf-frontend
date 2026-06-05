@@ -14,6 +14,7 @@ import Sidebar from '../components/Sidebar';
 import AccountPayableModal from '../components/AccountPayableModal';
 import PayAccountModal from '../components/PayAccountModal';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
+import EmptyState from '../components/EmptyState';
 import { toast } from 'sonner';
 import { financeService, AccountPayable } from '../services/financeService';
 import { useUser } from '../hooks/useUser';
@@ -275,12 +276,13 @@ const AccountsPayable: React.FC = () => {
               );
             })
           ) : (
-            <div className="col-span-full bg-surface-dark border border-border-dark border-dashed rounded-xl py-16 text-center">
-              <div className="bg-white/5 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-text-secondary">
-                <Clock size={32} />
-              </div>
-              <h3 className="text-white font-semibold text-lg">No accounts found</h3>
-              <p className="text-text-secondary">You don't have any accounts payable for this filter.</p>
+            <div className="col-span-full bg-surface-dark border border-border-dark border-dashed rounded-xl">
+              <EmptyState
+                icon={<Clock size={40} />}
+                title="Nenhuma conta pendente."
+                actionLabel="Nova Conta"
+                onAction={() => setIsCreateModalOpen(true)}
+              />
             </div>
           )}
         </div>
