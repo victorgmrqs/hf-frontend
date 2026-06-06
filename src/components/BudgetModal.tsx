@@ -19,7 +19,6 @@ const BudgetModal: React.FC<BudgetModalProps> = ({ isOpen, onClose, onSuccess, c
   // Form state
   const [amount, setAmount] = useState('');
   const [categoryId, setCategoryId] = useState('');
-  const [alertThreshold, setAlertThreshold] = useState(80);
 
   useEffect(() => {
     if (isOpen) {
@@ -49,8 +48,7 @@ const BudgetModal: React.FC<BudgetModalProps> = ({ isOpen, onClose, onSuccess, c
       user_id: currentUser.id,
       category_id: categoryId,
       competence,
-      amount: parsedAmount,
-      alert_threshold: alertThreshold,
+      amount: parsedAmount
     };
 
     const { error } = await financeService.createBudget(data);
@@ -61,7 +59,6 @@ const BudgetModal: React.FC<BudgetModalProps> = ({ isOpen, onClose, onSuccess, c
       onClose();
       setAmount('');
       setCategoryId('');
-      setAlertThreshold(80);
     } else {
       toast.error('Erro ao criar orçamento');
     }
@@ -110,31 +107,13 @@ const BudgetModal: React.FC<BudgetModalProps> = ({ isOpen, onClose, onSuccess, c
             <label className="text-text-secondary text-sm font-medium">Monthly Limit</label>
             <div className="relative group">
               <span className="absolute left-4 top-1/2 -translate-y-1/2 text-white font-semibold text-xl">R$</span>
-              <input
+              <input 
                 required
-                className="w-full bg-input-dark border border-border-dark rounded-lg py-4 pl-12 pr-4 text-white text-2xl font-bold focus:border-primary focus:ring-1 focus:ring-primary outline-none"
-                placeholder="0,00"
+                className="w-full bg-input-dark border border-border-dark rounded-lg py-4 pl-12 pr-4 text-white text-2xl font-bold focus:border-primary focus:ring-1 focus:ring-primary outline-none" 
+                placeholder="0,00" 
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
               />
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-2">
-            <label className="text-text-secondary text-sm font-medium">
-              Alerta em (%) <span className="text-text-secondary font-normal">— padrão: 80%</span>
-            </label>
-            <div className="relative">
-              <input
-                type="number"
-                min={1}
-                max={100}
-                required
-                className="w-full bg-input-dark border border-border-dark rounded-lg h-12 px-4 pr-10 text-white outline-none focus:border-primary focus:ring-1 focus:ring-primary"
-                value={alertThreshold}
-                onChange={(e) => setAlertThreshold(Math.min(100, Math.max(1, Number(e.target.value))))}
-              />
-              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-text-secondary font-medium">%</span>
             </div>
           </div>
         </div>
