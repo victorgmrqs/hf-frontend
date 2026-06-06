@@ -65,8 +65,14 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({ expense, isOpen, onClose, o
 
   // DSP-07: sync participants when payer changes
   useEffect(() => {
-    if (!isShared || !payerId) return;
+    if (!payerId) return;
+
     const prevId = prevPayerIdRef.current;
+    // Keep prevPayerIdRef in sync even when not shared, so it doesn't become stale
+    prevPayerIdRef.current = payerId;
+
+    if (!isShared) return;
+
     if (prevId && prevId !== payerId) {
       setSelectedUserIds(prev => {
         const withoutNewPayer = prev.filter(uid => uid !== payerId);
@@ -76,8 +82,7 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({ expense, isOpen, onClose, o
         return withoutNewPayer;
       });
     }
-    prevPayerIdRef.current = payerId;
-  }, [payerId]);
+  }, [payerId, isShared]);
 
   const loadInitialData = async () => {
     if (!currentUser) return;
