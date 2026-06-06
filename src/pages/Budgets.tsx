@@ -114,7 +114,7 @@ const Budgets: React.FC = () => {
             {budgets.map((budget) => {
               const percentage = Math.min(Math.round((budget.current_spending / budget.amount) * 100), 100);
               const isExceeded = budget.current_spending > budget.amount;
-              const isNearLimit = percentage > 80 && !isExceeded;
+              const isNearLimit = percentage >= 80 && !isExceeded;
 
               return (
                 <div key={budget.id} className="bg-surface-dark border border-border-dark rounded-xl p-6 hover:border-primary/50 transition-all group">
