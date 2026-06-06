@@ -86,7 +86,7 @@ export const financeService = {
       method: 'DELETE',
     }),
   getBudgetStatus: (userId: string, competence: string) =>
-    apiFetch<{ id: string; category_name: string; amount: number; current_spending: number; alert_threshold: number }[]>(`/budgets/status?user_id=${userId}&competence=${competence}`),
+    apiFetch<{ id: string; category_name: string; amount: number; current_spending: number }[]>(`/budgets/status?user_id=${userId}&competence=${competence}`),
   
   // Categories
   createCategory: (data: Record<string, unknown>) => apiFetch<Category>('/categories', {
