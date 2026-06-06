@@ -8,11 +8,9 @@ import {
 } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { useUser } from '../hooks/useUser';
-import { useBudgetAlerts } from '../hooks/useBudgetAlerts';
 
 const Sidebar: React.FC = () => {
   const { currentUser, allUsers, setCurrentUser } = useUser();
-  const budgetAlertCount = useBudgetAlerts();
   const [isUserMenuOpen, setIsUserMenuOpen] = React.useState(false);
 
   const menuItems = [
@@ -43,14 +41,7 @@ const Sidebar: React.FC = () => {
               }`
             }
           >
-            <div className="mr-3 relative">
-              {item.icon}
-              {item.path === '/budgets' && budgetAlertCount > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 bg-yellow-500 text-black text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center leading-none">
-                  {budgetAlertCount > 9 ? '9+' : budgetAlertCount}
-                </span>
-              )}
-            </div>
+            <div className="mr-3">{item.icon}</div>
             <span className="font-medium">{item.label}</span>
           </NavLink>
         ))}

@@ -22,7 +22,6 @@ interface BudgetStatus {
   category_name: string;
   amount: number;
   current_spending: number;
-  alert_threshold: number;
 }
 
 const Budgets: React.FC = () => {
@@ -115,7 +114,7 @@ const Budgets: React.FC = () => {
             {budgets.map((budget) => {
               const percentage = Math.min(Math.round((budget.current_spending / budget.amount) * 100), 100);
               const isExceeded = budget.current_spending > budget.amount;
-              const isNearLimit = percentage >= (budget.alert_threshold ?? 80) && !isExceeded;
+              const isNearLimit = percentage > 80 && !isExceeded;
 
               return (
                 <div key={budget.id} className="bg-surface-dark border border-border-dark rounded-xl p-6 hover:border-primary/50 transition-all group">
