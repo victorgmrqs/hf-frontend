@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { 
+import {
   Plus,
   CalendarDays,
   Filter,
@@ -8,7 +8,8 @@ import {
   Clock,
   Trash2,
   TrendingUp,
-  History
+  History,
+  Pencil
 } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
 import AccountPayableModal from '../components/AccountPayableModal';
@@ -23,7 +24,9 @@ const AccountsPayable: React.FC = () => {
   const { currentUser } = useUser();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isPayModalOpen, setIsPayModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedAccount, setSelectedAccount] = useState<AccountPayable | null>(null);
+  const [editingAccount, setEditingAccount] = useState<AccountPayable | null>(null);
   
   const [accounts, setAccounts] = useState<AccountPayable[]>([]);
   const [statusFilter, setStatusFilter] = useState<string>('PENDING');
@@ -88,6 +91,11 @@ const AccountsPayable: React.FC = () => {
     } else {
       toast.error('Erro ao excluir conta a pagar');
     }
+  };
+
+  const handleEdit = (account: AccountPayable) => {
+    setEditingAccount(account);
+    setIsEditModalOpen(true);
   };
 
   const handlePay = (account: AccountPayable) => {
@@ -249,7 +257,7 @@ const AccountsPayable: React.FC = () => {
                         Future recurrence
                       </div>
                     ) : account.status === 'PENDING' ? (
-                      <button 
+                      <button
                         onClick={() => handlePay(account)}
                         className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold py-2 rounded-lg transition-colors flex items-center justify-center gap-2"
                       >
@@ -262,9 +270,18 @@ const AccountsPayable: React.FC = () => {
                         Paid
                       </div>
                     )}
-                    
+
+                    {!account.isProjected && account.status === 'PENDING' && (
+                      <button
+                        onClick={() => handleEdit(account)}
+                        className="p-2 text-text-secondary hover:text-primary hover:bg-primary/10 rounded-lg transition-all"
+                      >
+                        <Pencil size={18} />
+                      </button>
+                    )}
+
                     {!account.isProjected && (
-                      <button 
+                      <button
                         onClick={() => handleDelete(account.id)}
                         className="p-2 text-text-secondary hover:text-rose-500 hover:bg-rose-500/10 rounded-lg transition-all"
                       >
@@ -288,9 +305,16 @@ const AccountsPayable: React.FC = () => {
         </div>
       </main>
 
-      <AccountPayableModal 
-        isOpen={isCreateModalOpen} 
-        onClose={() => setIsCreateModalOpen(false)} 
+      <AccountPayableModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onSuccess={fetchAccounts}
+      />
+
+      <AccountPayableModal
+        isOpen={isEditModalOpen}
+        account={editingAccount}
+        onClose={() => { setIsEditModalOpen(false); setEditingAccount(null); }}
         onSuccess={fetchAccounts}
       />
 
