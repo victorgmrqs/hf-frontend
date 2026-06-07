@@ -88,6 +88,12 @@ export const financeService = {
   getBudgetStatus: (userId: string, competence: string) =>
     apiFetch<{ id: string; category_name: string; amount: number; current_spending: number }[]>(`/budgets/status?user_id=${userId}&competence=${competence}`),
   
+  copyBudgetsFromPrevious: (userId: string, targetCompetence: string) =>
+    apiFetch<{ copied: number; skipped: number }>('/budgets/copy-from-previous', {
+      method: 'POST',
+      body: JSON.stringify({ user_id: userId, target_competence: targetCompetence }),
+    }),
+
   // Categories
   createCategory: (data: Record<string, unknown>) => apiFetch<Category>('/categories', {
     method: 'POST',

@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { 
+import {
   Plus,
   CalendarDays,
   Target,
   Trash2,
   TrendingUp,
-  AlertTriangle
+  AlertTriangle,
+  Copy
 } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
 import BudgetModal from '../components/BudgetModal';
@@ -31,6 +32,7 @@ const Budgets: React.FC = () => {
   const [competence, setCompetence] = useState(new Date().toISOString().substring(0, 7));
   const [budgets, setBudgets] = useState<BudgetStatus[]>([]);
   const [loading, setLoading] = useState(true);
+  const [copying, setCopying] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
   useEffect(() => {
@@ -49,6 +51,24 @@ const Budgets: React.FC = () => {
       toast.error('Erro ao carregar orçamentos');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleCopyFromPrevious = async () => {
+    if (!currentUser) return;
+    setCopying(true);
+    const { data, error } = await financeService.copyBudgetsFromPrevious(currentUser.id, competence);
+    setCopying(false);
+    if (error) {
+      toast.error('Erro ao copiar orçamentos');
+      return;
+    }
+    if (data && data.copied === 0) {
+      toast.info('Nenhum orçamento novo para copiar do mês anterior');
+    } else if (data) {
+      toast.success(`${data.copied} orçamento(s) copiado(s) com sucesso`);
+      fetchBudgets();
+      refreshCompetences();
     }
   };
 
@@ -97,7 +117,15 @@ const Budgets: React.FC = () => {
                 ))}
               </select>
             </div>
-            <button 
+            <button
+              onClick={handleCopyFromPrevious}
+              disabled={copying}
+              className="border border-border-dark hover:border-primary/50 text-text-secondary hover:text-white px-4 py-2.5 rounded-lg flex items-center font-medium transition-colors disabled:opacity-50"
+            >
+              <Copy className="mr-2" size={18} />
+              {copying ? 'Copiando...' : 'Copiar mês anterior'}
+            </button>
+            <button
               onClick={() => setIsModalOpen(true)}
               className="bg-primary hover:bg-blue-600 text-white px-4 py-2.5 rounded-lg flex items-center font-medium transition-colors shadow-lg shadow-blue-900/20"
             >
