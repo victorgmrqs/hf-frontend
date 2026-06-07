@@ -164,7 +164,12 @@ export const financeService = {
       method: 'POST',
       body: JSON.stringify(payData),
     }),
-  deleteAccountPayable: (id: string, requesterId: string) => 
+  updateAccountPayable: (id: string, requesterId: string, data: Record<string, unknown>) =>
+    apiFetch<AccountPayable>(`/accounts-payable/${id}?requester_id=${requesterId}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+  deleteAccountPayable: (id: string, requesterId: string) =>
     apiFetch<void>(`/accounts-payable/${id}?requester_id=${requesterId}`, {
       method: 'DELETE',
     }),
