@@ -59,10 +59,11 @@ export const financeService = {
   getUsers: () => apiFetch<User[]>('/users'),
   getCategories: () => apiFetch<Category[]>('/categories'),
   getPaymentMethods: (userId: string) => apiFetch<PaymentMethod[]>(`/payment-methods/user/${userId}`),
-  getExpenses: (userId: string, competence?: string, type?: string) => {
+  getExpenses: (userId: string, competence?: string, type?: string, categoryId?: string) => {
     const params = new URLSearchParams();
     if (competence) params.append('competence', competence);
     if (type) params.append('type', type);
+    if (categoryId) params.append('category_id', categoryId);
     const query = params.toString();
     return apiFetch<Expense[]>(`/expenses/user/${userId}${query ? `?${query}` : ''}`);
   },
