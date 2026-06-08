@@ -21,7 +21,7 @@ import EditCategoryModal from '../components/EditCategoryModal';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import EmptyState from '../components/EmptyState';
 import { toast } from 'sonner';
-import { financeService, Expense } from '../services/financeService';
+import { financeService, Expense, Category } from '../services/financeService';
 import { useUser } from '../hooks/useUser';
 import { useCompetences } from '../hooks/useCompetence';
 import { formatCompetence } from '../utils/formatCompetence';
@@ -34,8 +34,10 @@ const Expenses: React.FC = () => {
   const [selectedExpense, setSelectedExpense] = useState<Expense | null>(null);
   
   const [expenses, setExpenses] = useState<Expense[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [competence, setCompetence] = useState(new Date().toISOString().substring(0, 7));
   const [typeFilter, setTypeFilter] = useState<string>('');
+  const [categoryFilter, setCategoryFilter] = useState<string>('');
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
 
@@ -48,12 +50,21 @@ const Expenses: React.FC = () => {
   );
   const totalPages = Math.max(1, Math.ceil(filteredExpenses.length / PAGE_SIZE));
   const paginatedExpenses = filteredExpenses.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+  const hasActiveFilters = !!(typeFilter || categoryFilter || searchTerm);
+
+  useEffect(() => {
+    financeService.getCategories()
+      .then(({ data }) => {
+        if (data) setCategories(data);
+      })
+      .catch(() => toast.error('Erro ao carregar categorias'));
+  }, []);
 
   useEffect(() => {
     if (currentUser) {
       fetchExpenses();
     }
-  }, [competence, typeFilter, currentUser]);
+  }, [competence, typeFilter, categoryFilter, currentUser]);
 
   useEffect(() => {
     setCurrentPage(1);
@@ -63,13 +74,24 @@ const Expenses: React.FC = () => {
     if (!currentUser) return;
     setLoading(true);
     try {
-      const { data } = await financeService.getExpenses(currentUser.id, competence, typeFilter || undefined);
+      const { data } = await financeService.getExpenses(
+        currentUser.id,
+        competence,
+        typeFilter || undefined,
+        categoryFilter || undefined,
+      );
       if (data) setExpenses(data);
     } catch {
       toast.error('Erro ao carregar despesas');
     } finally {
       setLoading(false);
     }
+  };
+
+  const clearFilters = () => {
+    setTypeFilter('');
+    setCategoryFilter('');
+    setSearchTerm('');
   };
 
   const handleDelete = (id: string, description: string) => {
@@ -157,6 +179,25 @@ const Expenses: React.FC = () => {
               <option value="CHILD">Child</option>
               <option value="HOME">Home</option>
             </select>
+            <select
+              value={categoryFilter}
+              onChange={(e) => setCategoryFilter(e.target.value)}
+              className="bg-input-dark border border-border-dark text-white text-sm rounded-lg focus:ring-primary focus:border-primary px-4 py-2 outline-none cursor-pointer"
+            >
+              <option value="">All Categories</option>
+              {categories.map(cat => (
+                <option key={cat.id} value={cat.id}>{cat.name}</option>
+              ))}
+            </select>
+            {hasActiveFilters && (
+              <button
+                onClick={clearFilters}
+                className="flex items-center gap-1.5 text-sm text-text-secondary hover:text-white border border-border-dark hover:border-primary/50 px-3 py-2 rounded-lg transition-colors"
+              >
+                <X size={14} />
+                Limpar filtros
+              </button>
+            )}
             <div className="relative">
               <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary pointer-events-none" />
               <input
@@ -289,12 +330,24 @@ const Expenses: React.FC = () => {
               ) : (
                 <tr>
                   <td colSpan={6}>
-                    {searchTerm ? (
+                    {hasActiveFilters ? (
                       <EmptyState
                         icon={<Search size={40} />}
-                        title={`Nenhuma despesa encontrada para "${searchTerm}".`}
-                        actionLabel="Limpar busca"
-                        onAction={() => setSearchTerm('')}
+                        title={
+                          searchTerm && !(typeFilter || categoryFilter)
+                            ? `Nenhuma despesa encontrada para "${searchTerm}".`
+                            : !searchTerm
+                              ? 'Nenhuma despesa encontrada para os filtros aplicados.'
+                              : `Nenhuma despesa encontrada para "${searchTerm}" e filtros aplicados.`
+                        }
+                        actionLabel={
+                          searchTerm && !(typeFilter || categoryFilter)
+                            ? 'Limpar busca'
+                            : !searchTerm
+                              ? 'Limpar filtros'
+                              : 'Limpar busca e filtros'
+                        }
+                        onAction={clearFilters}
                       />
                     ) : (
                       <EmptyState
