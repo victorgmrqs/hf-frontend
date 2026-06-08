@@ -11,7 +11,9 @@ import {
   Edit2,
   Trash2,
   Search,
-  X
+  X,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
 import ExpenseModal from '../components/ExpenseModal';
@@ -37,16 +39,25 @@ const Expenses: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; description: string } | null>(null);
+
+  const PAGE_SIZE = 20;
   const filteredExpenses = expenses.filter(e =>
     e.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
-  const [deleteTarget, setDeleteTarget] = useState<{ id: string; description: string } | null>(null);
+  const totalPages = Math.max(1, Math.ceil(filteredExpenses.length / PAGE_SIZE));
+  const paginatedExpenses = filteredExpenses.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
   useEffect(() => {
     if (currentUser) {
       fetchExpenses();
     }
   }, [competence, typeFilter, currentUser]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [competence, typeFilter, searchTerm]);
 
   const fetchExpenses = async () => {
     if (!currentUser) return;
@@ -167,8 +178,8 @@ const Expenses: React.FC = () => {
           </div>
 
           <div className="text-sm text-text-secondary">
-            Showing <span className="text-white font-medium">{filteredExpenses.length}</span>
-            {searchTerm && <span className="text-text-secondary"> of {expenses.length}</span>} transactions
+            <span className="text-white font-medium">{filteredExpenses.length}</span> despesa{filteredExpenses.length !== 1 ? 's' : ''} encontrada{filteredExpenses.length !== 1 ? 's' : ''}
+            {searchTerm && <span className="text-text-secondary"> de {expenses.length} no total</span>}
           </div>
         </div>
 
@@ -203,7 +214,7 @@ const Expenses: React.FC = () => {
                   <td colSpan={6} className="px-6 py-10 text-center">Loading expenses...</td>
                 </tr>
               ) : filteredExpenses.length > 0 ? (
-                filteredExpenses.map(expense => (
+                paginatedExpenses.map(expense => (
                   <tr key={expense.id} className="hover:bg-white/5 transition-colors group">
                     <td className="px-6 py-4 font-medium text-white flex items-center gap-3">
                       <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
@@ -278,7 +289,6 @@ const Expenses: React.FC = () => {
               ) : (
                 <tr>
                   <td colSpan={6}>
-<<<<<<< HEAD
                     {searchTerm ? (
                       <EmptyState
                         icon={<Search size={40} />}
@@ -295,21 +305,37 @@ const Expenses: React.FC = () => {
                         onAction={() => setIsModalOpen(true)}
                       />
                     )}
-=======
-                    <EmptyState
-                      icon={<ShoppingCart size={40} />}
-                      title={`Nenhuma despesa em ${formatCompetence(competence)}.`}
-                      description="Que tal registrar a primeira?"
-                      actionLabel="Nova Despesa"
-                      onAction={() => setIsModalOpen(true)}
-                    />
->>>>>>> 604b1d36c53cf163bac0aecac4d3ec85084aaa37
                   </td>
                 </tr>
               )}
             </tbody>
           </table>
         </div>
+
+        {/* Pagination Controls */}
+        {!loading && filteredExpenses.length > PAGE_SIZE && (
+          <div className="flex items-center justify-center gap-4 mt-6">
+            <button
+              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+              className="flex items-center gap-1.5 px-4 py-2 rounded-lg border border-border-dark text-sm text-text-secondary hover:text-white hover:border-primary/50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              <ChevronLeft size={16} />
+              Anterior
+            </button>
+            <span className="text-sm text-text-secondary">
+              Página <span className="text-white font-semibold">{currentPage}</span> de <span className="text-white font-semibold">{totalPages}</span>
+            </span>
+            <button
+              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+              className="flex items-center gap-1.5 px-4 py-2 rounded-lg border border-border-dark text-sm text-text-secondary hover:text-white hover:border-primary/50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              Próxima
+              <ChevronRight size={16} />
+            </button>
+          </div>
+        )}
       </main>
 
       <ExpenseModal 
