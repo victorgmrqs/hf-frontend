@@ -19,7 +19,7 @@ import EditCategoryModal from '../components/EditCategoryModal';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import EmptyState from '../components/EmptyState';
 import { toast } from 'sonner';
-import { financeService, Expense } from '../services/financeService';
+import { financeService, Expense, Category } from '../services/financeService';
 import { useUser } from '../hooks/useUser';
 import { useCompetences } from '../hooks/useCompetence';
 import { formatCompetence } from '../utils/formatCompetence';
@@ -32,33 +32,55 @@ const Expenses: React.FC = () => {
   const [selectedExpense, setSelectedExpense] = useState<Expense | null>(null);
   
   const [expenses, setExpenses] = useState<Expense[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [competence, setCompetence] = useState(new Date().toISOString().substring(0, 7));
   const [typeFilter, setTypeFilter] = useState<string>('');
+  const [categoryFilter, setCategoryFilter] = useState<string>('');
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
 
   const filteredExpenses = expenses.filter(e =>
     e.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
+  const hasActiveFilters = !!(typeFilter || categoryFilter || searchTerm);
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; description: string } | null>(null);
+
+  useEffect(() => {
+    financeService.getCategories()
+      .then(({ data }) => {
+        if (data) setCategories(data);
+      })
+      .catch(() => toast.error('Erro ao carregar categorias'));
+  }, []);
 
   useEffect(() => {
     if (currentUser) {
       fetchExpenses();
     }
-  }, [competence, typeFilter, currentUser]);
+  }, [competence, typeFilter, categoryFilter, currentUser]);
 
   const fetchExpenses = async () => {
     if (!currentUser) return;
     setLoading(true);
     try {
-      const { data } = await financeService.getExpenses(currentUser.id, competence, typeFilter || undefined);
+      const { data } = await financeService.getExpenses(
+        currentUser.id,
+        competence,
+        typeFilter || undefined,
+        categoryFilter || undefined,
+      );
       if (data) setExpenses(data);
     } catch {
       toast.error('Erro ao carregar despesas');
     } finally {
       setLoading(false);
     }
+  };
+
+  const clearFilters = () => {
+    setTypeFilter('');
+    setCategoryFilter('');
+    setSearchTerm('');
   };
 
   const handleDelete = (id: string, description: string) => {
@@ -146,6 +168,25 @@ const Expenses: React.FC = () => {
               <option value="CHILD">Child</option>
               <option value="HOME">Home</option>
             </select>
+            <select
+              value={categoryFilter}
+              onChange={(e) => setCategoryFilter(e.target.value)}
+              className="bg-input-dark border border-border-dark text-white text-sm rounded-lg focus:ring-primary focus:border-primary px-4 py-2 outline-none cursor-pointer"
+            >
+              <option value="">All Categories</option>
+              {categories.map(cat => (
+                <option key={cat.id} value={cat.id}>{cat.name}</option>
+              ))}
+            </select>
+            {hasActiveFilters && (
+              <button
+                onClick={clearFilters}
+                className="flex items-center gap-1.5 text-sm text-text-secondary hover:text-white border border-border-dark hover:border-primary/50 px-3 py-2 rounded-lg transition-colors"
+              >
+                <X size={14} />
+                Limpar filtros
+              </button>
+            )}
             <div className="relative">
               <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary pointer-events-none" />
               <input
@@ -167,8 +208,11 @@ const Expenses: React.FC = () => {
           </div>
 
           <div className="text-sm text-text-secondary">
-            Showing <span className="text-white font-medium">{filteredExpenses.length}</span>
-            {searchTerm && <span className="text-text-secondary"> of {expenses.length}</span>} transactions
+            <span className="text-white font-medium">{filteredExpenses.length}</span>
+            {searchTerm
+              ? ` de ${expenses.length} despesas encontradas`
+              : ' despesas encontradas'
+            }
           </div>
         </div>
 
@@ -278,13 +322,24 @@ const Expenses: React.FC = () => {
               ) : (
                 <tr>
                   <td colSpan={6}>
-<<<<<<< HEAD
-                    {searchTerm ? (
+                    {hasActiveFilters ? (
                       <EmptyState
                         icon={<Search size={40} />}
-                        title={`Nenhuma despesa encontrada para "${searchTerm}".`}
-                        actionLabel="Limpar busca"
-                        onAction={() => setSearchTerm('')}
+                        title={
+                          searchTerm && !(typeFilter || categoryFilter)
+                            ? `Nenhuma despesa encontrada para "${searchTerm}".`
+                            : !searchTerm
+                              ? 'Nenhuma despesa encontrada para os filtros aplicados.'
+                              : `Nenhuma despesa encontrada para "${searchTerm}" e filtros aplicados.`
+                        }
+                        actionLabel={
+                          searchTerm && !(typeFilter || categoryFilter)
+                            ? 'Limpar busca'
+                            : !searchTerm
+                              ? 'Limpar filtros'
+                              : 'Limpar busca e filtros'
+                        }
+                        onAction={clearFilters}
                       />
                     ) : (
                       <EmptyState
@@ -295,15 +350,6 @@ const Expenses: React.FC = () => {
                         onAction={() => setIsModalOpen(true)}
                       />
                     )}
-=======
-                    <EmptyState
-                      icon={<ShoppingCart size={40} />}
-                      title={`Nenhuma despesa em ${formatCompetence(competence)}.`}
-                      description="Que tal registrar a primeira?"
-                      actionLabel="Nova Despesa"
-                      onAction={() => setIsModalOpen(true)}
-                    />
->>>>>>> 604b1d36c53cf163bac0aecac4d3ec85084aaa37
                   </td>
                 </tr>
               )}
