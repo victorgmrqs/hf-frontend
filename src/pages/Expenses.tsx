@@ -42,13 +42,15 @@ const Expenses: React.FC = () => {
   const filteredExpenses = expenses.filter(e =>
     e.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
-  const hasActiveFilters = !!(typeFilter || categoryFilter);
+  const hasActiveFilters = !!(typeFilter || categoryFilter || searchTerm);
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; description: string } | null>(null);
 
   useEffect(() => {
-    financeService.getCategories().then(({ data }) => {
-      if (data) setCategories(data);
-    });
+    financeService.getCategories()
+      .then(({ data }) => {
+        if (data) setCategories(data);
+      })
+      .catch(() => toast.error('Erro ao carregar categorias'));
   }, []);
 
   useEffect(() => {
@@ -78,6 +80,7 @@ const Expenses: React.FC = () => {
   const clearFilters = () => {
     setTypeFilter('');
     setCategoryFilter('');
+    setSearchTerm('');
   };
 
   const handleDelete = (id: string, description: string) => {
@@ -319,12 +322,24 @@ const Expenses: React.FC = () => {
               ) : (
                 <tr>
                   <td colSpan={6}>
-                    {searchTerm || hasActiveFilters ? (
+                    {hasActiveFilters ? (
                       <EmptyState
                         icon={<Search size={40} />}
-                        title="Nenhuma despesa encontrada para os filtros aplicados."
-                        actionLabel="Limpar filtros"
-                        onAction={() => { setSearchTerm(''); clearFilters(); }}
+                        title={
+                          searchTerm && !(typeFilter || categoryFilter)
+                            ? `Nenhuma despesa encontrada para "${searchTerm}".`
+                            : !searchTerm
+                              ? 'Nenhuma despesa encontrada para os filtros aplicados.'
+                              : `Nenhuma despesa encontrada para "${searchTerm}" e filtros aplicados.`
+                        }
+                        actionLabel={
+                          searchTerm && !(typeFilter || categoryFilter)
+                            ? 'Limpar busca'
+                            : !searchTerm
+                              ? 'Limpar filtros'
+                              : 'Limpar busca e filtros'
+                        }
+                        onAction={clearFilters}
                       />
                     ) : (
                       <EmptyState
