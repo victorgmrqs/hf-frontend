@@ -70,6 +70,10 @@ const Expenses: React.FC = () => {
     setCurrentPage(1);
   }, [competence, typeFilter, searchTerm]);
 
+  useEffect(() => {
+    setCurrentPage(prev => Math.min(prev, totalPages));
+  }, [totalPages]);
+
   const fetchExpenses = async () => {
     if (!currentUser) return;
     setLoading(true);
