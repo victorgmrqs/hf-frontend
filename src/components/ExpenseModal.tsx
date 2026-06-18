@@ -306,7 +306,7 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({ expense, isOpen, onClose, o
                       onClick={() => toggleUser(user.id)}
                       className={`flex items-center gap-2 border rounded-full pl-1 pr-3 py-1 transition-all ${
                         selectedUserIds.includes(user.id)
-                          ? 'bg-primary/20 border-primary/50 text-primary'
+                          ? 'bg-primary/20 border-primary/50 text-primary-text'
                           : 'bg-surface-dark border-border-dark text-text-secondary'
                       }`}
                     >
@@ -335,7 +335,7 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({ expense, isOpen, onClose, o
           <button
             type="submit"
             disabled={loading || sharedError}
-            className="px-6 py-2.5 rounded-lg bg-primary hover:bg-blue-600 text-white font-semibold shadow-lg flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-6 py-2.5 rounded-lg bg-primary-strong hover:bg-blue-700 text-white font-semibold shadow-lg flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading && <Loader2 size={18} className="animate-spin" />}
             Save Expense

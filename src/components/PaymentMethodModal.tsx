@@ -130,7 +130,7 @@ const PaymentMethodModal: React.FC<PaymentMethodModalProps> = ({ paymentMethod, 
                   onClick={() => setType(t.value)}
                   className={`flex items-center gap-3 px-4 py-3 rounded-lg border transition-all ${
                     type === t.value 
-                      ? 'bg-primary/10 border-primary text-primary' 
+                      ? 'bg-primary/10 border-primary text-primary-text' 
                       : 'bg-input-dark border-border-dark text-text-secondary hover:border-border-dark/80'
                   }`}
                 >
@@ -174,7 +174,7 @@ const PaymentMethodModal: React.FC<PaymentMethodModalProps> = ({ paymentMethod, 
                       onClick={() => toggleUser(user.id)}
                       className={`flex items-center gap-2 border rounded-full pl-1 pr-3 py-1 transition-all ${
                         selectedUserIds.includes(user.id) 
-                          ? 'bg-primary/20 border-primary/50 text-primary' 
+                          ? 'bg-primary/20 border-primary/50 text-primary-text' 
                           : 'bg-surface-dark border-border-dark text-text-secondary'
                       } ${user.id === currentUser?.id ? 'opacity-70 cursor-not-allowed' : ''}`}
                     >
@@ -198,7 +198,7 @@ const PaymentMethodModal: React.FC<PaymentMethodModalProps> = ({ paymentMethod, 
           <button 
             type="submit" 
             disabled={loading}
-            className="px-6 py-2.5 rounded-lg bg-primary hover:bg-blue-600 text-white font-semibold shadow-lg flex items-center gap-2 disabled:opacity-50"
+            className="px-6 py-2.5 rounded-lg bg-primary-strong hover:bg-blue-700 text-white font-semibold shadow-lg flex items-center gap-2 disabled:opacity-50"
           >
             {loading && <Loader2 size={18} className="animate-spin" />}
             {paymentMethod ? 'Save Changes' : 'Create Method'}
