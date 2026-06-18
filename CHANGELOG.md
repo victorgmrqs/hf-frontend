@@ -6,6 +6,15 @@ versionamento [SemVer](https://semver.org/lang/pt-BR/).
 
 ## [Unreleased]
 
+### Fixed
+
+- (HF-82) Acessibilidade da home (WCAG 2 A/AA): `<select>` de competência com
+  `aria-label`; contraste corrigido via tokens `--color-primary-text` (#5aa9ff, texto
+  sobre fundo escuro) e `--color-primary-strong` (#0b6bd6, fundo de botão com texto branco)
+  no Dashboard e na Sidebar; `text-emerald-500/80` → `text-emerald-500`. Baseline de a11y
+  removido em `e2e/a11y.spec.ts` — o gate agora exige `violations === []` na home.
+  `scripts/docs-guard.sh` passa a aceitar também testes e2e (`*.spec.ts[x]`) como teste no diff.
+
 ### Added
 
 - (HF-12) [MET-03] Alerta de orçamento configurável por percentual: campo "Alerta em (%)"
