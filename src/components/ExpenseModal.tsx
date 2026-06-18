@@ -210,9 +210,10 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({ expense, isOpen, onClose, o
               />
             </div>
             <div className="flex flex-col gap-2">
-              <label className="text-text-secondary text-sm font-medium">Paid by</label>
+              <label htmlFor="expense-paidby" className="text-text-secondary text-sm font-medium">Paid by</label>
               <div className="relative">
-                <select 
+                <select
+                  id="expense-paidby"
                   required
                   className="w-full bg-input-dark border border-border-dark rounded-lg h-12 px-4 text-white appearance-none cursor-pointer outline-none"
                   value={payerId}
@@ -231,9 +232,10 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({ expense, isOpen, onClose, o
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex flex-col gap-2">
-              <label className="text-text-secondary text-sm font-medium">Category</label>
+              <label htmlFor="expense-category" className="text-text-secondary text-sm font-medium">Category</label>
               <div className="relative">
-                <select 
+                <select
+                  id="expense-category"
                   className="w-full bg-input-dark border border-border-dark rounded-lg h-12 px-4 text-white appearance-none cursor-pointer outline-none"
                   value={categoryId}
                   onChange={(e) => setCategoryId(e.target.value)}
@@ -249,9 +251,10 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({ expense, isOpen, onClose, o
               </div>
             </div>
             <div className="flex flex-col gap-2">
-              <label className="text-text-secondary text-sm font-medium">Payment Method</label>
+              <label htmlFor="expense-payment-method" className="text-text-secondary text-sm font-medium">Payment Method</label>
               <div className="relative">
-                <select 
+                <select
+                  id="expense-payment-method"
                   required
                   className="w-full bg-input-dark border border-border-dark rounded-lg h-12 px-4 text-white appearance-none cursor-pointer outline-none"
                   value={paymentMethodId}

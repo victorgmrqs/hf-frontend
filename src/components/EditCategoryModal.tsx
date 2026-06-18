@@ -69,11 +69,12 @@ const EditCategoryModal: React.FC<EditCategoryModalProps> = ({ expense, isOpen, 
 
         <div className="p-6 space-y-6">
           <div className="flex flex-col gap-2">
-            <label className="text-text-secondary text-sm font-medium flex items-center gap-2">
+            <label htmlFor="edit-category-select" className="text-text-secondary text-sm font-medium flex items-center gap-2">
               <Tag size={16} /> Select Category
             </label>
             <div className="relative">
-              <select 
+              <select
+                id="edit-category-select"
                 className="w-full bg-input-dark border border-border-dark rounded-lg h-12 px-4 text-white appearance-none cursor-pointer outline-none"
                 value={selectedCategoryId}
                 onChange={(e) => setSelectedCategoryId(e.target.value)}

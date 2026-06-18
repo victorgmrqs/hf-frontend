@@ -124,8 +124,9 @@ const AccountPayableModal: React.FC<AccountPayableModalProps> = ({ isOpen, onClo
               />
             </div>
             <div className="flex flex-col gap-2">
-              <label className="text-text-secondary text-sm font-medium">Recurrence</label>
+              <label htmlFor="ap-recurrence" className="text-text-secondary text-sm font-medium">Recurrence</label>
               <select
+                id="ap-recurrence"
                 className="w-full bg-input-dark border border-border-dark rounded-lg h-12 px-4 text-white appearance-none cursor-pointer outline-none"
                 value={recurrence}
                 onChange={(e) => setRecurrence(e.target.value)}
