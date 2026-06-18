@@ -41,7 +41,7 @@ const Sidebar: React.FC = () => {
             className={({ isActive }) =>
               `flex items-center px-4 py-3 rounded-lg group transition-colors ${
                 isActive
-                  ? 'bg-primary/10 text-primary'
+                  ? 'bg-primary/10 text-primary-text'
                   : 'text-text-secondary hover:bg-white/5 hover:text-white'
               }`
             }
@@ -70,7 +70,7 @@ const Sidebar: React.FC = () => {
                   setCurrentUser(user);
                   setIsUserMenuOpen(false);
                 }}
-                className={`w-full flex items-center px-4 py-2 hover:bg-white/5 transition-colors ${currentUser?.id === user.id ? 'text-primary' : 'text-white'}`}
+                className={`w-full flex items-center px-4 py-2 hover:bg-white/5 transition-colors ${currentUser?.id === user.id ? 'text-primary-text' : 'text-white'}`}
               >
                 <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center mr-3 text-[10px] font-bold">
                   {user.name.charAt(0)}
@@ -84,7 +84,7 @@ const Sidebar: React.FC = () => {
           onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
           className="w-full flex items-center px-4 py-3 hover:bg-white/5 rounded-lg transition-colors group"
         >
-          <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center mr-3 font-bold text-sm text-white">
+          <div className="w-8 h-8 rounded-full bg-primary-strong flex items-center justify-center mr-3 font-bold text-sm text-white">
             {currentUser?.name.charAt(0) || '?'}
           </div>
           <div className="flex flex-col items-start flex-1 overflow-hidden">

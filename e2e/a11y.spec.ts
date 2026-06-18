@@ -11,15 +11,10 @@ test.beforeEach(async ({ page }) => {
   );
 });
 
-// Baseline de a11y da home (HF-81): o axe está cablado no Playwright, mas a home
-// tem dívida de acessibilidade pré-existente. Estas regras ficam como baseline
-// CONHECIDO e não bloqueiam o CI; a correção é o follow-up HF-82.
-// Qualquer violação NOVA (fora do baseline) falha o teste — guarda de regressão.
-const KNOWN_BASELINE_RULES = ['color-contrast', 'select-name'];
-
-test('home não introduz novas violações de acessibilidade (WCAG A/AA)', async ({
-  page,
-}) => {
+// Gate estrito de a11y da home (HF-82): a dívida pré-existente (select-name +
+// color-contrast) foi corrigida, então a home não pode ter NENHUMA violação
+// WCAG 2 A/AA. Sem baseline.
+test('home não tem violações de acessibilidade (WCAG A/AA)', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('heading', { name: 'Home Finance' }).waitFor();
 
@@ -27,17 +22,5 @@ test('home não introduz novas violações de acessibilidade (WCAG A/AA)', async
     .withTags(['wcag2a', 'wcag2aa'])
     .analyze();
 
-  const newViolations = results.violations.filter(
-    (v) => !KNOWN_BASELINE_RULES.includes(v.id),
-  );
-
-  // Diagnóstico do baseline conhecido (não falha o teste).
-  const baselineHit = results.violations
-    .filter((v) => KNOWN_BASELINE_RULES.includes(v.id))
-    .map((v) => v.id);
-  if (baselineHit.length > 0) {
-    console.warn(`a11y baseline conhecido (follow-up): ${baselineHit.join(', ')}`);
-  }
-
-  expect(newViolations).toEqual([]);
+  expect(results.violations).toEqual([]);
 });
