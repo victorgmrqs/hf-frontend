@@ -1100,6 +1100,7 @@ components:
         category_id: { type: string, format: uuid }
         competence: { type: string, pattern: '^\d{4}-\d{2}$' }
         amount: { type: number }
+        alert_threshold: { type: integer, minimum: 1, maximum: 100, default: 80 }
 
     CreateBudgetRequest:
       type: object
@@ -1109,12 +1110,14 @@ components:
         category_id: { type: string, format: uuid }
         competence: { type: string, pattern: '^\d{4}-\d{2}$' }
         amount: { type: number }
+        alert_threshold: { type: integer, minimum: 1, maximum: 100, default: 80 }
 
     UpdateBudgetRequest:
       type: object
       required: [amount]
       properties:
         amount: { type: number }
+        alert_threshold: { type: integer, minimum: 1, maximum: 100 }
 
     ApiResponseBudget:
       type: object
@@ -1135,6 +1138,7 @@ components:
         category_name: { type: string }
         amount: { type: number }
         current_spending: { type: number }
+        alert_threshold: { type: integer, minimum: 1, maximum: 100, default: 80 }
 
     ApiResponseBudgetStatus:
       type: object
