@@ -11,16 +11,20 @@ test.beforeEach(async ({ page }) => {
   );
 });
 
-// Gate estrito de a11y da home (HF-82): a dívida pré-existente (select-name +
-// color-contrast) foi corrigida, então a home não pode ter NENHUMA violação
-// WCAG 2 A/AA. Sem baseline.
-test('home não tem violações de acessibilidade (WCAG A/AA)', async ({ page }) => {
-  await page.goto('/');
-  await page.getByRole('heading', { name: 'Home Finance' }).waitFor();
+// Gate estrito de a11y (HF-82 home; HF-84 app-wide): nenhuma das rotas principais
+// pode ter violação WCAG 2 A/AA. Sem baseline.
+const ROUTES = ['/', '/expenses', '/accounts-payable', '/budgets', '/settings'];
 
-  const results = await new AxeBuilder({ page })
-    .withTags(['wcag2a', 'wcag2aa'])
-    .analyze();
+for (const path of ROUTES) {
+  test(`rota ${path} não tem violações de acessibilidade (WCAG A/AA)`, async ({ page }) => {
+    await page.goto(path);
+    // A Sidebar (h1 "Home Finance") é comum a todas as rotas — espera o app montar.
+    await page.getByRole('heading', { name: 'Home Finance' }).waitFor();
 
-  expect(results.violations).toEqual([]);
-});
+    const results = await new AxeBuilder({ page })
+      .withTags(['wcag2a', 'wcag2aa'])
+      .analyze();
+
+    expect(results.violations).toEqual([]);
+  });
+}

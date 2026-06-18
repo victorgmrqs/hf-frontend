@@ -130,7 +130,7 @@ const CategoryModal: React.FC<CategoryModalProps> = ({ category, isOpen, onClose
           <button 
             type="submit" 
             disabled={loading}
-            className="px-6 py-2.5 rounded-lg bg-primary hover:bg-blue-600 text-white font-semibold shadow-lg flex items-center gap-2 disabled:opacity-50"
+            className="px-6 py-2.5 rounded-lg bg-primary-strong hover:bg-blue-700 text-white font-semibold shadow-lg flex items-center gap-2 disabled:opacity-50"
           >
             {loading && <Loader2 size={18} className="animate-spin" />}
             Create Category

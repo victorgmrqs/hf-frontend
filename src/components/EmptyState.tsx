@@ -30,7 +30,7 @@ const EmptyState: React.FC<EmptyStateProps> = ({
     {actionLabel && onAction && (
       <button
         onClick={onAction}
-        className="bg-primary hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-bold transition-all shadow-lg shadow-blue-900/20"
+        className="bg-primary-strong hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-bold transition-all shadow-lg shadow-blue-900/20"
       >
         {actionLabel}
       </button>
