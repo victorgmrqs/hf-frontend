@@ -8,6 +8,10 @@ versionamento [SemVer](https://semver.org/lang/pt-BR/).
 
 ### Tests
 
+- (HF-78) Backfill de testes dos componentes (8 sem cobertura): EmptyState, ConfirmDeleteModal,
+  Category/EditCategory/Expense/AccountPayable/PayAccount/PaymentMethod modais. RTL + user-event,
+  queries por role/text, MSW; cobrem caminho feliz, erro de envelope (toast/banner) e validação
+  inline. `sonner` e `useUser` mockados. `src/components` agregado em 82.8% (≥80%). Sem produção.
 - (HF-77) Backfill de testes dos hooks (`useUser`, `useCompetence`) via `renderHook` + MSW:
   carregamento/seleção de usuário, restauração do `localStorage` e fallbacks, persistência,
   estado de erro (envelope), e default/populamento/refresh de competências. Cobertura
