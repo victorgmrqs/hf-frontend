@@ -9,6 +9,7 @@ export interface User {
 export interface Category {
   id: string;
   name: string;
+  description?: string;
   color: string;
 }
 
@@ -17,6 +18,7 @@ export interface PaymentMethod {
   name: string;
   type: string;
   shared: boolean;
+  users?: User[];
 }
 
 export interface Expense {
