@@ -8,6 +8,13 @@ versionamento [SemVer](https://semver.org/lang/pt-BR/).
 
 ### Fixed
 
+- (HF-85) Acessibilidade de modais/formulários: selects de `ExpenseModal` (Paid by,
+  Category, Payment Method), `AccountPayableModal` (Recurrence), `PayAccountModal`
+  (Payment Method, Category) e `EditCategoryModal` agora têm nome acessível (label
+  associado via `htmlFor`/`id`); estado de hover em `Expenses.tsx` passou a usar
+  `bg-primary-strong` (texto branco ≥ AA). Testes de componente validam o nome
+  acessível de cada select (`getByRole('combobox', { name })`).
+
 - (HF-84) Acessibilidade AA app-wide: tokens `--color-primary-text`/`--color-primary-strong`
   aplicados em Expenses, Budgets, AccountsPayable e Settings (+ botões dos modais e do
   `EmptyState`); `aria-label` nos selects de filtro das páginas (competência, tipo,

@@ -103,9 +103,10 @@ const PayAccountModal: React.FC<PayAccountModalProps> = ({ account, isOpen, onCl
           </div>
 
           <div className="flex flex-col gap-2">
-            <label className="text-text-secondary text-sm font-medium">Payment Method</label>
+            <label htmlFor="pay-payment-method" className="text-text-secondary text-sm font-medium">Payment Method</label>
             <div className="relative">
-              <select 
+              <select
+                id="pay-payment-method"
                 required
                 className="w-full bg-input-dark border border-border-dark rounded-lg h-12 px-4 text-white appearance-none cursor-pointer outline-none"
                 value={paymentMethodId}
@@ -122,9 +123,10 @@ const PayAccountModal: React.FC<PayAccountModalProps> = ({ account, isOpen, onCl
           </div>
 
           <div className="flex flex-col gap-2">
-            <label className="text-text-secondary text-sm font-medium">Category (Optional)</label>
+            <label htmlFor="pay-category" className="text-text-secondary text-sm font-medium">Category (Optional)</label>
             <div className="relative">
-              <select 
+              <select
+                id="pay-category"
                 className="w-full bg-input-dark border border-border-dark rounded-lg h-12 px-4 text-white appearance-none cursor-pointer outline-none"
                 value={categoryId}
                 onChange={(e) => setCategoryId(e.target.value)}
