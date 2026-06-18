@@ -149,7 +149,8 @@ const Dashboard: React.FC = () => {
               <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-text-secondary">
                 <CalendarDays size={18} />
               </div>
-              <select 
+              <select
+                aria-label="Selecionar competência"
                 value={competence}
                 onChange={(e) => setCompetence(e.target.value)}
                 className="bg-surface-dark border border-border-dark text-white text-sm rounded-lg focus:ring-primary focus:border-primary block pl-10 pr-4 py-2.5 appearance-none cursor-pointer"
@@ -161,7 +162,7 @@ const Dashboard: React.FC = () => {
             </div>
             <button 
               onClick={() => setIsModalOpen(true)}
-              className="bg-primary hover:bg-blue-600 text-white px-4 py-2.5 rounded-lg flex items-center font-medium transition-colors shadow-lg shadow-blue-900/20"
+              className="bg-primary-strong hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg flex items-center font-medium transition-colors shadow-lg shadow-blue-900/20"
             >
               <Plus className="mr-2" size={20} />
               New Expense
@@ -173,11 +174,11 @@ const Dashboard: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="bg-surface-dark rounded-xl p-6 border border-border-dark/50 shadow-sm relative overflow-hidden group">
             <div className="absolute right-0 top-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-              <UserIcon size={64} className="text-primary" />
+              <UserIcon size={64} className="text-primary-text" />
             </div>
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-text-secondary text-sm font-medium uppercase tracking-wider">Personal Total</h3>
-              <span className="bg-primary/10 text-primary text-xs font-semibold px-2 py-1 rounded">Monthly</span>
+              <span className="bg-primary/10 text-primary-text text-xs font-semibold px-2 py-1 rounded">Monthly</span>
             </div>
             <div className="flex items-baseline">
               <span className="text-3xl font-bold text-white">{formatCurrency(totals.total_personal)}</span>
@@ -215,11 +216,11 @@ const Dashboard: React.FC = () => {
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 mb-8">
           <div className="xl:col-span-2 bg-surface-dark rounded-xl border border-border-dark/50 shadow-sm p-6 overflow-hidden relative">
             <div className="absolute top-0 right-0 p-8 opacity-5">
-              <ArrowRightLeft size={120} className="text-primary" />
+              <ArrowRightLeft size={120} className="text-primary-text" />
             </div>
             
             <div className="flex items-center gap-3 mb-6">
-              <div className="p-2 bg-primary/10 text-primary rounded-lg">
+              <div className="p-2 bg-primary/10 text-primary-text rounded-lg">
                 <ArrowRightLeft size={24} />
               </div>
               <h3 className="font-bold text-xl text-white">Monthly Settlement</h3>
@@ -246,7 +247,7 @@ const Dashboard: React.FC = () => {
                   </span>
                   {settlement.balance > 0 ? <ArrowUpRight className="text-emerald-400" /> : <ArrowDownLeft className="text-rose-400" />}
                 </div>
-                <p className={`text-[10px] font-medium mt-1 ${settlement.balance >= 0 ? 'text-emerald-500/80' : 'text-rose-500/80'}`}>
+                <p className={`text-[10px] font-medium mt-1 ${settlement.balance >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
                   {settlement.balance >= 0 
                     ? 'You have credit to receive from others.' 
                     : 'You spent less than your share. You owe others.'}
@@ -268,8 +269,8 @@ const Dashboard: React.FC = () => {
               </div>
               <div className="h-px bg-border-dark/50 my-2"></div>
               <div className="flex justify-between items-center">
-                <span className="text-primary font-bold">Total Responsibility</span>
-                <span className="text-primary font-bold text-lg">{formatCurrency(totals.total_general)}</span>
+                <span className="text-primary-text font-bold">Total Responsibility</span>
+                <span className="text-primary-text font-bold text-lg">{formatCurrency(totals.total_general)}</span>
               </div>
             </div>
           </div>
@@ -280,7 +281,7 @@ const Dashboard: React.FC = () => {
           <div className="lg:col-span-2 bg-surface-dark rounded-xl border border-border-dark/50 shadow-sm flex flex-col">
             <div className="p-6 border-b border-border-dark flex justify-between items-center">
               <h3 className="font-semibold text-lg text-white">Recent Expenses</h3>
-              <a className="text-sm text-primary hover:text-blue-400 font-medium" href="#">View All</a>
+              <a className="text-sm text-primary-text hover:text-blue-400 font-medium" href="#">View All</a>
             </div>
             <div className="overflow-x-auto flex-1">
               {loading ? (
@@ -299,7 +300,7 @@ const Dashboard: React.FC = () => {
                     {expenses.map(expense => (
                       <tr key={expense.id} className="hover:bg-white/5 transition-colors">
                         <td className="px-6 py-4 font-medium text-white flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+                          <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary-text">
                             {getCategoryIcon(expense.category?.name)}
                           </div>
                           <div>
@@ -319,7 +320,7 @@ const Dashboard: React.FC = () => {
                           </div>
                         </td>
                         <td className="px-6 py-4">
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary-text">
                             {expense.category?.name || 'Uncategorized'}
                           </span>
                         </td>
@@ -341,7 +342,7 @@ const Dashboard: React.FC = () => {
           <div className="bg-surface-dark rounded-xl border border-border-dark/50 shadow-sm p-6 h-fit">
             <div className="flex justify-between items-center mb-6">
               <h3 className="font-semibold text-lg text-white">Budget Status</h3>
-              <a className="text-xs text-primary hover:underline" href="/budgets">View All</a>
+              <a className="text-xs text-primary-text hover:underline" href="/budgets">View All</a>
             </div>
             <div className="space-y-6 mb-8">
               {budgets.length > 0 ? budgets.map((budget, index) => {
@@ -371,7 +372,7 @@ const Dashboard: React.FC = () => {
             <div className="border-t border-border-dark pt-6">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="font-semibold text-white">Upcoming Payments</h3>
-                <a className="text-xs text-primary hover:underline" href="/accounts-payable">Manage</a>
+                <a className="text-xs text-primary-text hover:underline" href="/accounts-payable">Manage</a>
               </div>
               <div className="space-y-3">
                 {upcomingAccounts.length > 0 ? upcomingAccounts.map(account => {
@@ -379,7 +380,7 @@ const Dashboard: React.FC = () => {
                   return (
                     <div key={account.id} className="flex items-center justify-between p-3 rounded-lg bg-white/5 border border-border-dark/30">
                       <div className="flex items-center gap-3">
-                        <div className={`p-2 rounded-md ${isOverdue ? 'bg-rose-500/10 text-rose-500' : 'bg-primary/10 text-primary'}`}>
+                        <div className={`p-2 rounded-md ${isOverdue ? 'bg-rose-500/10 text-rose-500' : 'bg-primary/10 text-primary-text'}`}>
                           {isOverdue ? <AlertCircle size={16} /> : <Clock size={16} />}
                         </div>
                         <div>

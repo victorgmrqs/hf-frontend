@@ -2,6 +2,10 @@
 
 @theme {
   --color-primary: #137fec;
+  /* Azul acessível para TEXTO sobre fundos escuros (AA ≥ 4.5:1) — ver HF-82. */
+  --color-primary-text: #5aa9ff;
+  /* Azul mais escuro para FUNDO de botão com texto branco (AA ≥ 4.5:1) — ver HF-82. */
+  --color-primary-strong: #0b6bd6;
   --color-background-light: #f6f7f8;
   --color-background-dark: #101922;
   --color-surface-dark: #192633;

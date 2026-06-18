@@ -30,7 +30,8 @@ if [ -z "$SRC_PROD" ]; then
 fi
 
 HAS_CHANGELOG="$(echo "$CHANGED" | grep -E '^CHANGELOG\.md$' || true)"
-HAS_TEST="$(echo "$CHANGED" | grep -E '\.test\.(ts|tsx)$' || true)"
+# Teste no diff = unit/component (*.test.ts[x]) OU e2e (*.spec.ts[x], ex.: a11y).
+HAS_TEST="$(echo "$CHANGED" | grep -E '\.(test|spec)\.(ts|tsx)$' || true)"
 
 FAIL=0
 if [ -z "$HAS_CHANGELOG" ]; then
@@ -38,7 +39,7 @@ if [ -z "$HAS_CHANGELOG" ]; then
   FAIL=1
 fi
 if [ -z "$HAS_TEST" ]; then
-  echo "docs-guard: ERRO — src/ mudou mas nenhum teste (*.test.ts[x]) está no diff."
+  echo "docs-guard: ERRO — src/ mudou mas nenhum teste (*.test.ts[x] ou e2e *.spec.ts[x]) está no diff."
   FAIL=1
 fi
 
