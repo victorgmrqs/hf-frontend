@@ -163,3 +163,6 @@ task-brief.yaml
 /test-results/
 /blob-report/
 /playwright/.cache/
+
+# Evidência de PR (screenshots locais, não versionar)
+/evidence/

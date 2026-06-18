@@ -8,16 +8,21 @@ import {
 } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { useUser } from '../hooks/useUser';
+import { useBudgets } from '../contexts/BudgetsContext';
+import { countBudgetsInAlert } from '../utils/budgetAlert';
 
 const Sidebar: React.FC = () => {
   const { currentUser, allUsers, setCurrentUser } = useUser();
+  const { budgetStatuses } = useBudgets();
   const [isUserMenuOpen, setIsUserMenuOpen] = React.useState(false);
+
+  const budgetAlertCount = countBudgetsInAlert(budgetStatuses);
 
   const menuItems = [
     { icon: <LayoutDashboard size={20} />, label: 'Dashboard', path: '/' },
     { icon: <ReceiptText size={20} />, label: 'Expenses', path: '/expenses' },
     { icon: <CreditCard size={20} />, label: 'Accounts Payable', path: '/accounts-payable' },
-    { icon: <PieChart size={20} />, label: 'Budgets', path: '/budgets' },
+    { icon: <PieChart size={20} />, label: 'Budgets', path: '/budgets', badge: budgetAlertCount },
     { icon: <Settings size={20} />, label: 'Settings', path: '/settings' },
   ];
 
@@ -43,6 +48,14 @@ const Sidebar: React.FC = () => {
           >
             <div className="mr-3">{item.icon}</div>
             <span className="font-medium">{item.label}</span>
+            {item.badge && item.badge > 0 ? (
+              <span
+                aria-label={`${item.badge} orçamento(s) em alerta`}
+                className="ml-auto min-w-5 h-5 px-1.5 flex items-center justify-center rounded-full bg-orange-400 text-[11px] font-bold text-background-dark"
+              >
+                {item.badge}
+              </span>
+            ) : null}
           </NavLink>
         ))}
       </nav>
