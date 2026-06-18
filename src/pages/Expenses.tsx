@@ -265,7 +265,7 @@ const Expenses: React.FC = () => {
                 paginatedExpenses.map(expense => (
                   <tr key={expense.id} className="hover:bg-white/5 transition-colors group">
                     <td className="px-6 py-4 font-medium text-white flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary-text group-hover:bg-primary group-hover:text-white transition-colors">
+                      <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary-text group-hover:bg-primary-strong group-hover:text-white transition-colors">
                         {getCategoryIcon(expense.category?.name)}
                       </div>
                       <div>
