@@ -6,6 +6,15 @@ versionamento [SemVer](https://semver.org/lang/pt-BR/).
 
 ## [Unreleased]
 
+### Tests
+
+- (HF-76) Backfill de testes da camada de maior risco: `financeService.ts` (contrato de
+  método/URL/query/body, propagação de `error.code`, `getAvailableCompetences`) e
+  `formatCompetence.ts`. `financeService.ts` reincluído no coverage (exclusão da rampa da
+  HF-81 removida). Per-file de `src/services` e `src/utils` em 100% de linhas.
+  Cenários de refresh de token e mapeamento `error.code`→pt-BR descopados (não há código
+  ainda) → follow-ups HF-86 (auth/refresh) e HF-87 (mapeador pt-BR).
+
 ### Fixed
 
 - (HF-85) Acessibilidade de modais/formulários: selects de `ExpenseModal` (Paid by,
