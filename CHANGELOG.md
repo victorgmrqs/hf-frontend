@@ -8,6 +8,10 @@ versionamento [SemVer](https://semver.org/lang/pt-BR/).
 
 ### Tests
 
+- (HF-77) Backfill de testes dos hooks (`useUser`, `useCompetence`) via `renderHook` + MSW:
+  carregamento/seleção de usuário, restauração do `localStorage` e fallbacks, persistência,
+  estado de erro (envelope), e default/populamento/refresh de competências. Cobertura
+  `useUser` 97% e `useCompetence` 94% (linha não coberta = `catch` defensivo inalcançável).
 - (HF-76) Backfill de testes da camada de maior risco: `financeService.ts` (contrato de
   método/URL/query/body, propagação de `error.code`, `getAvailableCompetences`) e
   `formatCompetence.ts`. `financeService.ts` reincluído no coverage (exclusão da rampa da
