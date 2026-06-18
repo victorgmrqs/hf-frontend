@@ -8,6 +8,12 @@ versionamento [SemVer](https://semver.org/lang/pt-BR/).
 
 ### Fixed
 
+- (HF-84) Acessibilidade AA app-wide: tokens `--color-primary-text`/`--color-primary-strong`
+  aplicados em Expenses, Budgets, AccountsPayable e Settings (+ botões dos modais e do
+  `EmptyState`); `aria-label` nos selects de filtro das páginas (competência, tipo,
+  categoria, status, projeção). Gate axe estendido para 5 rotas (`/`, `/expenses`,
+  `/accounts-payable`, `/budgets`, `/settings`) exigindo `violations === []`.
+
 - (HF-82) Acessibilidade da home (WCAG 2 A/AA): `<select>` de competência com
   `aria-label`; contraste corrigido via tokens `--color-primary-text` (#5aa9ff, texto
   sobre fundo escuro) e `--color-primary-strong` (#0b6bd6, fundo de botão com texto branco)

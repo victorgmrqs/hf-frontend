@@ -95,6 +95,7 @@ const Budgets: React.FC = () => {
                 <CalendarDays size={18} />
               </div>
               <select
+                aria-label="Selecionar competência"
                 value={competence}
                 onChange={(e) => setCompetence(e.target.value)}
                 className="bg-surface-dark border border-border-dark text-white text-sm rounded-lg focus:ring-primary focus:border-primary block pl-10 pr-4 py-2.5 appearance-none cursor-pointer"
@@ -114,7 +115,7 @@ const Budgets: React.FC = () => {
             </button>
             <button
               onClick={openCreate}
-              className="bg-primary hover:bg-blue-600 text-white px-4 py-2.5 rounded-lg flex items-center font-medium transition-colors shadow-lg shadow-blue-900/20"
+              className="bg-primary-strong hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg flex items-center font-medium transition-colors shadow-lg shadow-blue-900/20"
             >
               <Plus className="mr-2" size={20} />
               Set Budget
@@ -132,14 +133,14 @@ const Budgets: React.FC = () => {
               return (
                 <div key={budget.id} className="bg-surface-dark border border-border-dark rounded-xl p-6 hover:border-primary/50 transition-all group">
                   <div className="flex justify-between items-start mb-6">
-                    <div className="p-3 rounded-lg bg-primary/10 text-primary">
+                    <div className="p-3 rounded-lg bg-primary/10 text-primary-text">
                       <Target size={24} />
                     </div>
                     <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all">
                       <button
                         onClick={() => openEdit(budget)}
                         aria-label={`Editar orçamento de ${budget.category_name}`}
-                        className="p-2 text-text-secondary hover:text-primary hover:bg-primary/10 rounded-lg transition-all"
+                        className="p-2 text-text-secondary hover:text-primary-text hover:bg-primary/10 rounded-lg transition-all"
                       >
                         <Pencil size={18} />
                       </button>
