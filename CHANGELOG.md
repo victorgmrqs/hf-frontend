@@ -8,6 +8,12 @@ versionamento [SemVer](https://semver.org/lang/pt-BR/).
 
 ### Added
 
+- (HF-12) [MET-03] Alerta de orçamento configurável por percentual: campo "Alerta em (%)"
+  (padrão 80, 1–100) no modal de orçamento, com criação e edição; cor do badge/barra do
+  card passa a usar o `alert_threshold` de cada orçamento (amarelo no limiar, vermelho ≥100%);
+  contador de orçamentos em alerta no item Budgets da Sidebar (segue a competência selecionada
+  via `BudgetsContext`). Regra de cor isolada em `src/utils/budgetAlert.ts`.
+
 - (HF-81) Fundação de testes: Vitest (jsdom) + Testing Library, coverage v8 com
   thresholds per-file 90% em `src/services` e `src/utils` (rampa — mede apenas
   arquivos exercitados; cobertura real chega na HF-76, gate global 80% na HF-80).
