@@ -155,3 +155,11 @@ thumb
 sketch
 
 # End of https://www.toptal.com/developers/gitignore/api/react,node
+# /task workflow brief (não versionado)
+task-brief.yaml
+
+# Artefatos de teste (Playwright)
+/playwright-report/
+/test-results/
+/blob-report/
+/playwright/.cache/
