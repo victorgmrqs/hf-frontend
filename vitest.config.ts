@@ -24,10 +24,6 @@ export default defineConfig({
         'src/test/**',
         'src/vite-env.d.ts',
         'src/main.tsx',
-        // Mapa fino de endpoints, sem teste dedicado ainda — cobertura entra na HF-76.
-        // O smoke do App o importa transitivamente; excluí-lo mantém o gate per-file
-        // 90% honesto (aplica-se só a arquivos com teste real, ex.: api.ts).
-        'src/services/financeService.ts',
       ],
       // NÃO usar passWithNoTests. Thresholds per-file 90% nas camadas puras.
       thresholds: {
