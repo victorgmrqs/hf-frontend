@@ -78,7 +78,7 @@ Gerenciador financeiro doméstico para casal com filhos. Permite controlar despe
 |-------|-----------|
 | MET-01 | Usuário pode definir orçamento mensal por categoria |
 | MET-02 | Sistema alerta visualmente quando gastos ultrapassam 80% do orçamento da categoria; exibe em vermelho quando o limite é excedido |
-| MET-03 | *(planejado)* Percentual de alerta configurável pelo usuário |
+| MET-03 | Percentual de alerta é configurável por orçamento (padrão 80%, intervalo 1–100); salvo no campo `alert_threshold` do modelo Budget |
 
 ---
 

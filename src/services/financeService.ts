@@ -55,6 +55,15 @@ export interface Budget {
   category_id: string;
   competence: string;
   amount: number;
+  alert_threshold: number;
+}
+
+export interface BudgetStatus {
+  id: string;
+  category_name: string;
+  amount: number;
+  current_spending: number;
+  alert_threshold: number;
 }
 
 export const financeService = {
@@ -79,17 +88,17 @@ export const financeService = {
     method: 'POST',
     body: JSON.stringify(data),
   }),
-  updateBudget: (id: string, requesterId: string, amount: number) =>
+  updateBudget: (id: string, requesterId: string, data: { amount: number; alert_threshold?: number }) =>
     apiFetch<Budget>(`/budgets/${id}?requester_id=${requesterId}`, {
       method: 'PUT',
-      body: JSON.stringify({ amount }),
+      body: JSON.stringify(data),
     }),
   deleteBudget: (id: string, requesterId: string) =>
     apiFetch<void>(`/budgets/${id}?requester_id=${requesterId}`, {
       method: 'DELETE',
     }),
   getBudgetStatus: (userId: string, competence: string) =>
-    apiFetch<{ id: string; category_name: string; amount: number; current_spending: number }[]>(`/budgets/status?user_id=${userId}&competence=${competence}`),
+    apiFetch<BudgetStatus[]>(`/budgets/status?user_id=${userId}&competence=${competence}`),
   
   copyBudgetsFromPrevious: (userId: string, targetCompetence: string) =>
     apiFetch<{ copied: number; skipped: number }>('/budgets/copy-from-previous', {
