@@ -94,7 +94,7 @@ const SettingsPage: React.FC = () => {
       <main className="flex-1 ml-64 p-8">
         <header className="mb-8">
           <h2 className="text-2xl font-bold text-white flex items-center gap-3">
-            <Settings className="text-primary" /> Settings
+            <Settings className="text-primary-text" /> Settings
           </h2>
           <p className="text-text-secondary mt-1">Manage your categories and payment methods</p>
         </header>
@@ -104,7 +104,7 @@ const SettingsPage: React.FC = () => {
           <section className="bg-surface-dark border border-border-dark rounded-xl overflow-hidden shadow-sm">
             <div className="p-6 border-b border-border-dark flex justify-between items-center bg-white/5">
               <div className="flex items-center gap-3">
-                <Tag className="text-primary" size={20} />
+                <Tag className="text-primary-text" size={20} />
                 <h3 className="font-semibold text-lg text-white">Categories</h3>
               </div>
               <button 
@@ -112,7 +112,7 @@ const SettingsPage: React.FC = () => {
                   setSelectedCategory(null);
                   setIsCategoryModalOpen(true);
                 }}
-                className="text-primary hover:text-blue-400 text-sm font-bold flex items-center gap-1 transition-colors"
+                className="text-primary-text hover:text-blue-400 text-sm font-bold flex items-center gap-1 transition-colors"
               >
                 <Plus size={16} /> Add Category
               </button>
@@ -166,7 +166,7 @@ const SettingsPage: React.FC = () => {
           <section className="bg-surface-dark border border-border-dark rounded-xl overflow-hidden shadow-sm">
             <div className="p-6 border-b border-border-dark flex justify-between items-center bg-white/5">
               <div className="flex items-center gap-3">
-                <CreditCard className="text-primary" size={20} />
+                <CreditCard className="text-primary-text" size={20} />
                 <h3 className="font-semibold text-lg text-white">Payment Methods</h3>
               </div>
               <button 
@@ -174,7 +174,7 @@ const SettingsPage: React.FC = () => {
                   setSelectedPaymentMethod(null);
                   setIsPaymentModalOpen(true);
                 }}
-                className="text-primary hover:text-blue-400 text-sm font-bold flex items-center gap-1 transition-colors"
+                className="text-primary-text hover:text-blue-400 text-sm font-bold flex items-center gap-1 transition-colors"
               >
                 <Plus size={16} /> Add Method
               </button>
@@ -194,7 +194,7 @@ const SettingsPage: React.FC = () => {
                           setIsPaymentModalOpen(true);
                         }}
                       >
-                        <div className="p-2 bg-primary/10 text-primary rounded-lg">
+                        <div className="p-2 bg-primary/10 text-primary-text rounded-lg">
                           <CreditCard size={20} />
                         </div>
                         <div>

@@ -145,7 +145,8 @@ const Expenses: React.FC = () => {
               <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-text-secondary">
                 <CalendarDays size={18} />
               </div>
-              <select 
+              <select
+                aria-label="Selecionar competência"
                 value={competence}
                 onChange={(e) => setCompetence(e.target.value)}
                 className="bg-surface-dark border border-border-dark text-white text-sm rounded-lg focus:ring-primary focus:border-primary block pl-10 pr-4 py-2.5 appearance-none cursor-pointer"
@@ -157,7 +158,7 @@ const Expenses: React.FC = () => {
             </div>
             <button 
               onClick={() => setIsModalOpen(true)}
-              className="bg-primary hover:bg-blue-600 text-white px-4 py-2.5 rounded-lg flex items-center font-medium transition-colors shadow-lg shadow-blue-900/20"
+              className="bg-primary-strong hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg flex items-center font-medium transition-colors shadow-lg shadow-blue-900/20"
             >
               <Plus className="mr-2" size={20} />
               Add Expense
@@ -173,6 +174,7 @@ const Expenses: React.FC = () => {
               <span>Filter by:</span>
             </div>
             <select
+              aria-label="Filtrar por tipo"
               value={typeFilter}
               onChange={(e) => setTypeFilter(e.target.value)}
               className="bg-input-dark border border-border-dark text-white text-sm rounded-lg focus:ring-primary focus:border-primary px-4 py-2 outline-none cursor-pointer"
@@ -184,6 +186,7 @@ const Expenses: React.FC = () => {
               <option value="HOME">Home</option>
             </select>
             <select
+              aria-label="Filtrar por categoria"
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
               className="bg-input-dark border border-border-dark text-white text-sm rounded-lg focus:ring-primary focus:border-primary px-4 py-2 outline-none cursor-pointer"
@@ -262,7 +265,7 @@ const Expenses: React.FC = () => {
                 paginatedExpenses.map(expense => (
                   <tr key={expense.id} className="hover:bg-white/5 transition-colors group">
                     <td className="px-6 py-4 font-medium text-white flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+                      <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary-text group-hover:bg-primary group-hover:text-white transition-colors">
                         {getCategoryIcon(expense.category?.name)}
                       </div>
                       <div>
@@ -283,7 +286,7 @@ const Expenses: React.FC = () => {
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2 group/cat">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary-text">
                           {expense.category?.name || 'Uncategorized'}
                         </span>
                         <button 
@@ -315,7 +318,7 @@ const Expenses: React.FC = () => {
                             setSelectedExpense(expense);
                             setIsModalOpen(true);
                           }}
-                          className="p-2 text-text-secondary hover:text-primary transition-all rounded-lg hover:bg-primary/10"
+                          className="p-2 text-text-secondary hover:text-primary-text transition-all rounded-lg hover:bg-primary/10"
                           title="Edit Full Expense"
                         >
                           <Edit2 size={16} />

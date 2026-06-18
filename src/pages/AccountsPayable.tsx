@@ -127,7 +127,7 @@ const AccountsPayable: React.FC = () => {
           </div>
           <button 
             onClick={() => setIsCreateModalOpen(true)}
-            className="bg-primary hover:bg-blue-600 text-white px-4 py-2.5 rounded-lg flex items-center font-medium transition-colors shadow-lg shadow-blue-900/20"
+            className="bg-primary-strong hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg flex items-center font-medium transition-colors shadow-lg shadow-blue-900/20"
           >
             <Plus className="mr-2" size={20} />
             New Account
@@ -142,7 +142,8 @@ const AccountsPayable: React.FC = () => {
                 <Filter size={16} />
                 <span>Status:</span>
               </div>
-              <select 
+              <select
+                aria-label="Filtrar por status"
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
                 className="bg-input-dark border border-border-dark text-white text-sm rounded-lg focus:ring-primary focus:border-primary px-4 py-2 outline-none cursor-pointer"
@@ -160,7 +161,8 @@ const AccountsPayable: React.FC = () => {
                 <TrendingUp size={16} />
                 <span>Projection:</span>
               </div>
-              <select 
+              <select
+                aria-label="Meses de projeção"
                 value={projectionMonths}
                 onChange={(e) => setProjectionMonths(Number(e.target.value))}
                 className="bg-input-dark border border-border-dark text-white text-sm rounded-lg focus:ring-primary focus:border-primary px-4 py-2 outline-none cursor-pointer"
@@ -206,7 +208,7 @@ const AccountsPayable: React.FC = () => {
                     : 'border-border-dark hover:border-primary/50'
                 }`}>
                   {account.isProjected && (
-                    <div className="absolute top-0 right-0 bg-primary/10 text-primary text-[10px] font-black uppercase px-3 py-1 rounded-bl-lg tracking-widest border-l border-b border-primary/20">
+                    <div className="absolute top-0 right-0 bg-primary/10 text-primary-text text-[10px] font-black uppercase px-3 py-1 rounded-bl-lg tracking-widest border-l border-b border-primary/20">
                       Projected
                     </div>
                   )}
@@ -220,7 +222,7 @@ const AccountsPayable: React.FC = () => {
                   <div className="flex justify-between items-start mb-4">
                     <div className={`p-3 rounded-lg ${
                       account.status === 'PAID' ? 'bg-emerald-500/10 text-emerald-500' : 
-                      account.isProjected ? 'bg-white/5 text-slate-400' : 'bg-primary/10 text-primary'
+                      account.isProjected ? 'bg-white/5 text-slate-400' : 'bg-primary/10 text-primary-text'
                     }`}>
                       {account.status === 'PAID' ? <CheckCircle2 size={24} /> : 
                        account.isProjected ? <History size={24} /> : <Clock size={24} />}
@@ -274,7 +276,7 @@ const AccountsPayable: React.FC = () => {
                     {!account.isProjected && account.status === 'PENDING' && (
                       <button
                         onClick={() => handleEdit(account)}
-                        className="p-2 text-text-secondary hover:text-primary hover:bg-primary/10 rounded-lg transition-all"
+                        className="p-2 text-text-secondary hover:text-primary-text hover:bg-primary/10 rounded-lg transition-all"
                       >
                         <Pencil size={18} />
                       </button>
