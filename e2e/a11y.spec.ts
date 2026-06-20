@@ -13,7 +13,7 @@ test.beforeEach(async ({ page }) => {
 
 // Gate estrito de a11y (HF-82 home; HF-84 app-wide): nenhuma das rotas principais
 // pode ter violação WCAG 2 A/AA. Sem baseline.
-const ROUTES = ['/', '/expenses', '/accounts-payable', '/budgets', '/settings'];
+const ROUTES = ['/', '/expenses', '/accounts-payable', '/budgets', '/income', '/settings'];
 
 for (const path of ROUTES) {
   test(`rota ${path} não tem violações de acessibilidade (WCAG A/AA)`, async ({ page }) => {
