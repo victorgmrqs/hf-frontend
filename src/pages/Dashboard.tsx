@@ -17,10 +17,11 @@ import {
 } from 'lucide-react';
 import ExpenseModal from '../components/ExpenseModal';
 import Sidebar from '../components/Sidebar';
-import { financeService, Expense, AccountPayable } from '../services/financeService';
+import { financeService, Expense, AccountPayable, CategoryTotal } from '../services/financeService';
 import { useUser } from '../hooks/useUser';
 import { useCompetences } from '../hooks/useCompetence';
 import { formatCompetence } from '../utils/formatCompetence';
+import CategoryDonutChart from '../components/CategoryDonutChart';
 
 const Dashboard: React.FC = () => {
   const { currentUser, allUsers } = useUser();
@@ -30,6 +31,7 @@ const Dashboard: React.FC = () => {
   const [totals, setTotals] = useState({ total_personal: 0, total_shared: 0, total_general: 0 });
   const [budgets, setBudgets] = useState<{ category_name: string; amount: number; current_spending: number }[]>([]);
   const [upcomingAccounts, setUpcomingAccounts] = useState<AccountPayable[]>([]);
+  const [categoryTotals, setCategoryTotals] = useState<CategoryTotal[]>([]);
   const [competence, setCompetence] = useState(new Date().toISOString().substring(0, 7));
   const [loading, setLoading] = useState(true);
 
@@ -52,11 +54,12 @@ const Dashboard: React.FC = () => {
     if (!currentUser) return;
     setLoading(true);
     try {
-      const [expensesRes, totalsRes, budgetsRes, accountsRes] = await Promise.all([
+      const [expensesRes, totalsRes, budgetsRes, accountsRes, categoryRes] = await Promise.all([
         financeService.getExpenses(currentUser.id, competence),
         financeService.getTotals(currentUser.id, competence),
         financeService.getBudgetStatus(currentUser.id, competence),
-        financeService.getAccountsPayable(currentUser.id, 'PENDING')
+        financeService.getAccountsPayable(currentUser.id, 'PENDING'),
+        financeService.getExpenseTotalsByCategory(currentUser.id, competence)
       ]);
 
       if (expensesRes.data) {
@@ -71,6 +74,7 @@ const Dashboard: React.FC = () => {
           .slice(0, 3);
         setUpcomingAccounts(sorted);
       }
+      setCategoryTotals(categoryRes.data ?? []);
     } catch {
       toast.error('Erro ao carregar dados do dashboard');
     } finally {
@@ -210,6 +214,16 @@ const Dashboard: React.FC = () => {
               <span className="text-3xl font-bold text-white">{formatCurrency(totals.total_general)}</span>
             </div>
           </div>
+        </div>
+
+        {/* Gastos por Categoria */}
+        <div className="bg-surface-dark rounded-xl border border-border-dark/50 shadow-sm p-6 mb-8">
+          <h3 className="font-bold text-lg text-white mb-4">Gastos por Categoria</h3>
+          {loading ? (
+            <div className="py-10 text-center text-text-secondary">Carregando gráfico...</div>
+          ) : (
+            <CategoryDonutChart data={categoryTotals} />
+          )}
         </div>
 
         {/* Settlement & Detailed Totals */}

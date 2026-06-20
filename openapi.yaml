@@ -356,6 +356,43 @@ paths:
         '500':
           $ref: '#/components/responses/InternalError'
 
+  /api/v1/expenses/totals/by-category:
+    get:
+      tags: [Expenses]
+      summary: Total de gastos por categoria na competência (HF-29)
+      parameters:
+        - name: user_id
+          in: query
+          required: true
+          schema: { type: string, format: uuid }
+        - name: competence
+          in: query
+          required: true
+          description: Competência no formato YYYY-MM
+          schema: { type: string, pattern: '^\d{4}-\d{2}$', example: '2025-01' }
+      responses:
+        '200':
+          description: Gastos por categoria (ordenado por total desc; categorias sem gasto omitidas)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        category_id: { type: string, format: uuid }
+                        category_name: { type: string }
+                        total: { type: string, example: '150.00' }
+                        percentage: { type: string, example: '83.33' }
+                  error: { type: 'null' }
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
   /api/v1/expenses/user/{user_id}/totals:
     get:
       tags: [Expenses]
