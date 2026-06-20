@@ -8,6 +8,11 @@ versionamento [SemVer](https://semver.org/lang/pt-BR/).
 
 ### Tests
 
+- (HF-79) Backfill de testes de integração das 5 páginas (Dashboard, Expenses, Budgets,
+  AccountsPayable, Settings) com MSW + react-router via harness `renderWithProviders`
+  (`src/test/renderWithProviders.tsx`) e handlers padrão (`src/test/msw/pageHandlers.ts`):
+  carregamento, dados, vazio, erro de envelope e fluxos (delete/filtro/paginação/copiar/
+  pagar/abrir modais). `src/pages` agregado em 80%. Sem mudança de produção.
 - (HF-78) Backfill de testes dos componentes (8 sem cobertura): EmptyState, ConfirmDeleteModal,
   Category/EditCategory/Expense/AccountPayable/PayAccount/PaymentMethod modais. RTL + user-event,
   queries por role/text, MSW; cobrem caminho feliz, erro de envelope (toast/banner) e validação
