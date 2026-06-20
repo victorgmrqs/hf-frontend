@@ -58,6 +58,15 @@ describe('financeService — construção de query (GET)', () => {
     expect(p.get('competence')).toBe('2026-06');
   });
 
+  it('getExpenseTotalsByCategory monta GET /expenses/totals/by-category?user_id&competence', async () => {
+    await financeService.getExpenseTotalsByCategory('u1', '2026-06');
+    expect(captured?.method).toBe('GET');
+    expect(captured?.pathname).toBe('/api/v1/expenses/totals/by-category');
+    const p = new URLSearchParams(captured?.search);
+    expect(p.get('user_id')).toBe('u1');
+    expect(p.get('competence')).toBe('2026-06');
+  });
+
   it('getAccountsPayable inclui status só quando informado', async () => {
     await financeService.getAccountsPayable('u1');
     expect(new URLSearchParams(captured?.search).has('status')).toBe(false);

@@ -67,4 +67,23 @@ describe('Dashboard (integração)', () => {
     expect(await screen.findByText('Alimentação')).toBeInTheDocument();
     expect(await screen.findByText('Aluguel')).toBeInTheDocument();
   });
+
+  it('renderiza o gráfico de gastos por categoria com dados do endpoint', async () => {
+    server.use(
+      http.get('*/expenses/totals/by-category', () =>
+        HttpResponse.json({
+          data: [
+            { category_id: 'c1', category_name: 'Transporte', total: '300.00', percentage: '60.00' },
+            { category_id: 'c2', category_name: 'Saúde', total: '200.00', percentage: '40.00' },
+          ],
+          error: null,
+        }),
+      ),
+    );
+    renderWithProviders(<Dashboard />);
+
+    expect(await screen.findByText('Gastos por Categoria')).toBeInTheDocument();
+    expect(await screen.findByText('Transporte')).toBeInTheDocument();
+    expect(await screen.findByText('Saúde')).toBeInTheDocument();
+  });
 });
