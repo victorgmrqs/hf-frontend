@@ -66,6 +66,14 @@ export interface BudgetStatus {
   alert_threshold: number;
 }
 
+export interface CategoryTotal {
+  category_id: string;
+  category_name: string;
+  /** Valores vêm como string do backend (ex.: '150.00', '83.33'). */
+  total: string;
+  percentage: string;
+}
+
 export const financeService = {
   getUsers: () => apiFetch<User[]>('/users'),
   getCategories: () => apiFetch<Category[]>('/categories'),
@@ -78,8 +86,10 @@ export const financeService = {
     const query = params.toString();
     return apiFetch<Expense[]>(`/expenses/user/${userId}${query ? `?${query}` : ''}`);
   },
-  getTotals: (userId: string, competence: string) => 
+  getTotals: (userId: string, competence: string) =>
     apiFetch<{ total_personal: number; total_shared: number; total_general: number }>(`/expenses/user/${userId}/totals?competence=${competence}`),
+  getExpenseTotalsByCategory: (userId: string, competence: string) =>
+    apiFetch<CategoryTotal[]>(`/expenses/totals/by-category?user_id=${userId}&competence=${competence}`),
   
   // Budgets
   getBudgets: (userId: string, competence: string) =>
