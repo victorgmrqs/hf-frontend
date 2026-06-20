@@ -1,9 +1,10 @@
 import React from 'react';
-import { 
-  LayoutDashboard, 
-  ReceiptText, 
-  CreditCard, 
-  PieChart, 
+import {
+  LayoutDashboard,
+  ReceiptText,
+  CreditCard,
+  PieChart,
+  Wallet,
   Settings
 } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
@@ -23,6 +24,7 @@ const Sidebar: React.FC = () => {
     { icon: <ReceiptText size={20} />, label: 'Expenses', path: '/expenses' },
     { icon: <CreditCard size={20} />, label: 'Accounts Payable', path: '/accounts-payable' },
     { icon: <PieChart size={20} />, label: 'Budgets', path: '/budgets', badge: budgetAlertCount },
+    { icon: <Wallet size={20} />, label: 'Receitas', path: '/income' },
     { icon: <Settings size={20} />, label: 'Settings', path: '/settings' },
   ];
 
