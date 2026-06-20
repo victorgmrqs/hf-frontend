@@ -6,6 +6,7 @@ import Dashboard from './pages/Dashboard';
 import Expenses from './pages/Expenses';
 import AccountsPayable from './pages/AccountsPayable';
 import Budgets from './pages/Budgets';
+import Income from './pages/Income';
 import SettingsPage from './pages/Settings';
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
               <Route path="/expenses" element={<Expenses />} />
               <Route path="/accounts-payable" element={<AccountsPayable />} />
               <Route path="/budgets" element={<Budgets />} />
+              <Route path="/income" element={<Income />} />
               <Route path="/settings" element={<SettingsPage />} />
             </Routes>
           </div>

@@ -1,10 +1,12 @@
 import { config } from '../config';
 
-const BASE_URL = config.api.baseUrl;
-
-export async function apiFetch<T>(endpoint: string, options?: RequestInit): Promise<{ data: T | null; error: unknown }> {
+export async function apiFetch<T>(
+  endpoint: string,
+  options?: RequestInit,
+  baseUrl: string = config.api.baseUrl,
+): Promise<{ data: T | null; error: unknown }> {
   try {
-    const response = await fetch(`${BASE_URL}${endpoint}`, {
+    const response = await fetch(`${baseUrl}${endpoint}`, {
       ...options,
       headers: {
         'Content-Type': 'application/json',
