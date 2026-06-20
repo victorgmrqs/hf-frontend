@@ -10,6 +10,7 @@ const ok = (data: unknown) => HttpResponse.json({ data, error: null });
 export const pageHandlers = [
   http.get('*/users', () => ok([{ id: 'u1', name: 'Ana', email: 'ana@hf.com' }])),
   http.get('*/expenses/user/:id/totals', () => ok({ total_personal: 0, total_shared: 0, total_general: 0 })),
+  http.get('*/expenses/totals/by-category', () => ok([])),
   http.get('*/expenses/user/:id', () => ok([])),
   http.get('*/budgets/status', () => ok([])),
   http.get('*/budgets', () => ok([])),

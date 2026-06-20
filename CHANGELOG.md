@@ -52,6 +52,11 @@ versionamento [SemVer](https://semver.org/lang/pt-BR/).
 
 ### Added
 
+- (HF-22) Gráfico (donut) de gastos por categoria no Dashboard: seção "Gastos por Categoria"
+  com donut SVG próprio (sem dependência nova), legenda (nome/valor/percentual) e detalhe no
+  hover (centro + `<title>`); estados loading/vazio. Consome `GET /expenses/totals/by-category`
+  (HF-29) via cliente tipado; geometria/parse isolados em `src/utils/donut.ts`. Mirror do
+  `openapi.yaml` atualizado com o endpoint. Runtime depende da HF-29 (In Review).
 - (HF-12) [MET-03] Alerta de orçamento configurável por percentual: campo "Alerta em (%)"
   (padrão 80, 1–100) no modal de orçamento, com criação e edição; cor do badge/barra do
   card passa a usar o `alert_threshold` de cada orçamento (amarelo no limiar, vermelho ≥100%);
