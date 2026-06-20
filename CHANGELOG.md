@@ -52,6 +52,12 @@ versionamento [SemVer](https://semver.org/lang/pt-BR/).
 
 ### Added
 
+- (HF-39) Página de gerenciamento de receitas (rota `/income` + item "Receitas" na Sidebar):
+  listagem por competência (descrição/valor/tipo/data + badge "Recorrente"), total do mês,
+  empty state e exclusão (com confirmação + toast). Novo cliente do **hf-income-service**
+  (`incomeService` + `config.incomeApi.baseUrl`/`VITE_INCOME_API_URL`; `apiFetch` ganhou
+  `baseUrl` opcional, reusando o envelope). O modal de criação/edição é a HF-40.
+  Runtime depende do hf-income-service (em desenvolvimento); até subir, degrada para erro/vazio.
 - (HF-22) Gráfico (donut) de gastos por categoria no Dashboard: seção "Gastos por Categoria"
   com donut SVG próprio (sem dependência nova), legenda (nome/valor/percentual) e detalhe no
   hover (centro + `<title>`); estados loading/vazio. Consome `GET /expenses/totals/by-category`
