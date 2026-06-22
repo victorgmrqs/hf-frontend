@@ -52,6 +52,13 @@ versionamento [SemVer](https://semver.org/lang/pt-BR/).
 
 ### Added
 
+- (HF-40) Formulário de criação e edição de receita (`IncomeModal`): campos descrição, valor,
+  tipo, data e toggle "Repetir todo mês"; validação inline (valor>0, descrição); na edição,
+  tipo/data são read-only e exibe-se o aviso "vale a partir deste mês" para recorrentes;
+  `incomeService.createIncome`/`updateIncome`; mapeamento dos `error.code` REC→pt-BR
+  (`INVALID_AMOUNT`, `MISSING_REQUIRED_FIELD`, `CANNOT_EDIT_PROPAGATED_INCOME`…). Na página,
+  o botão editar fica desabilitado em receitas propagadas (`origin_id`). Mapa de erro inline
+  até a centralização (HF-87).
 - (HF-39) Página de gerenciamento de receitas (rota `/income` + item "Receitas" na Sidebar):
   listagem por competência (descrição/valor/tipo/data + badge "Recorrente"), total do mês,
   empty state e exclusão (com confirmação + toast). Novo cliente do **hf-income-service**
