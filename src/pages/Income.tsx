@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Plus, CalendarDays, Wallet, Trash2, Repeat } from 'lucide-react';
+import { Plus, CalendarDays, Wallet, Trash2, Pencil, Repeat } from 'lucide-react';
 import { toast } from 'sonner';
 import Sidebar from '../components/Sidebar';
 import EmptyState from '../components/EmptyState';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
+import IncomeModal from '../components/IncomeModal';
 import { incomeService, Income as IncomeRecord, IncomeType } from '../services/incomeService';
 import { useUser } from '../hooks/useUser';
 import { useCompetences } from '../hooks/useCompetence';
@@ -26,9 +27,22 @@ const Income: React.FC = () => {
   const [competence, setCompetence] = useState(new Date().toISOString().substring(0, 7));
   const [incomes, setIncomes] = useState<IncomeRecord[]>([]);
   const [loading, setLoading] = useState(true);
-  // Modal de criação/edição é a HF-40; aqui só preparamos o gatilho.
-  const [, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editTarget, setEditTarget] = useState<IncomeRecord | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<IncomeRecord | null>(null);
+
+  const openCreate = () => {
+    setEditTarget(null);
+    setIsModalOpen(true);
+  };
+  const openEdit = (income: IncomeRecord) => {
+    setEditTarget(income);
+    setIsModalOpen(true);
+  };
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setEditTarget(null);
+  };
 
   useEffect(() => {
     if (!currentUser) return;
@@ -97,7 +111,7 @@ const Income: React.FC = () => {
               </select>
             </div>
             <button
-              onClick={() => setIsModalOpen(true)}
+              onClick={openCreate}
               className="bg-primary-strong hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg flex items-center font-medium transition-colors shadow-lg shadow-blue-900/20"
             >
               <Plus className="mr-2" size={20} />
@@ -135,8 +149,17 @@ const Income: React.FC = () => {
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center gap-4">
-                  <span className="font-semibold text-white">{formatCurrency(Number(income.amount))}</span>
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold text-white mr-2">{formatCurrency(Number(income.amount))}</span>
+                  <button
+                    onClick={() => openEdit(income)}
+                    disabled={!!income.origin_id}
+                    aria-label={`Editar receita ${income.description}`}
+                    title={income.origin_id ? 'Receitas propagadas não podem ser editadas' : undefined}
+                    className="p-2 text-text-secondary hover:text-primary-text hover:bg-primary/10 rounded-lg transition-all opacity-0 group-hover:opacity-100 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+                  >
+                    <Pencil size={18} />
+                  </button>
                   <button
                     onClick={() => setDeleteTarget(income)}
                     aria-label={`Excluir receita ${income.description}`}
@@ -155,13 +178,19 @@ const Income: React.FC = () => {
               title={`Nenhuma receita em ${formatCompetence(competence)}.`}
               description="Registre sua primeira receita do mês."
               actionLabel="Nova Receita"
-              onAction={() => setIsModalOpen(true)}
+              onAction={openCreate}
             />
           </div>
         )}
       </main>
 
-      {/* IncomeModal (criação/edição) será entregue na HF-40. */}
+      <IncomeModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        onSuccess={refetch}
+        competence={competence}
+        income={editTarget}
+      />
       <ConfirmDeleteModal
         isOpen={!!deleteTarget}
         title="Excluir Receita"

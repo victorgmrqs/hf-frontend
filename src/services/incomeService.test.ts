@@ -42,6 +42,28 @@ describe('incomeService', () => {
     expect(new URLSearchParams(captured?.search).get('requester_id')).toBe('u1');
   });
 
+  it('createIncome faz POST /income com o corpo', async () => {
+    let seen: { url: string; body: Record<string, unknown> } | undefined;
+    server.use(http.post('*/income', async ({ request }) => {
+      seen = { url: request.url, body: (await request.json()) as Record<string, unknown> };
+      return HttpResponse.json({ data: { id: 'i1' }, error: null }, { status: 201 });
+    }));
+    await incomeService.createIncome({ user_id: 'u1', description: 'Salário', amount: 7500, type: 'SALARY', date: '2026-06-05', competence: '2026-06', recurrent: true });
+    expect(seen?.url).toMatch(/\/income$/);
+    expect(seen?.body).toMatchObject({ description: 'Salário', amount: 7500, type: 'SALARY', recurrent: true });
+  });
+
+  it('updateIncome faz PUT /income/:id com os campos editáveis', async () => {
+    let seen: { url: string; body: Record<string, unknown> } | undefined;
+    server.use(http.put('*/income/i1', async ({ request }) => {
+      seen = { url: request.url, body: (await request.json()) as Record<string, unknown> };
+      return HttpResponse.json({ data: { id: 'i1' }, error: null });
+    }));
+    await incomeService.updateIncome('i1', { requester_id: 'u1', description: 'Reajuste', amount: 8200, recurrent: true });
+    expect(seen?.url).toMatch(/\/income\/i1$/);
+    expect(seen?.body).toMatchObject({ requester_id: 'u1', description: 'Reajuste', amount: 8200, recurrent: true });
+  });
+
   it('propaga erro do envelope (error.code REC)', async () => {
     server.use(http.delete('*/income/i1', () => HttpResponse.json({ data: null, error: { code: 'REC-03' } }, { status: 400 })));
     const { data, error } = await incomeService.deleteIncome('i1', 'u1');
