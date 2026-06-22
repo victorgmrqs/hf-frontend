@@ -26,6 +26,11 @@ export const incomeService = {
     if (type) params.append('type', type);
     return apiFetch<Income[]>(`/income?${params.toString()}`, undefined, base);
   },
+  createIncome: (data: Record<string, unknown>) =>
+    apiFetch<Income>('/income', { method: 'POST', body: JSON.stringify(data) }, base),
+  updateIncome: (id: string, data: Record<string, unknown>) =>
+    apiFetch<Income>(`/income/${id}`, { method: 'PUT', body: JSON.stringify(data) }, base),
   deleteIncome: (id: string, requesterId: string) =>
     apiFetch<void>(`/income/${id}?requester_id=${requesterId}`, { method: 'DELETE' }, base),
 };
+

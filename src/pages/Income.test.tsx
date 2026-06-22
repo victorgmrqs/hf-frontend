@@ -67,4 +67,31 @@ describe('Income (integração)', () => {
 
     await waitFor(() => expect(deleted).toBe(true));
   });
+
+  it('abre o modal de Nova Receita', async () => {
+    const user = userEvent.setup();
+    server.use(http.get('*/income', () => HttpResponse.json({ data: [], error: null })));
+    renderWithProviders(<Income />);
+
+    await user.click(await screen.findByRole('button', { name: 'Nova Receita' }));
+    expect(await screen.findByRole('heading', { name: 'Nova Receita' })).toBeInTheDocument();
+  });
+
+  it('abre o modal em edição ao clicar em editar', async () => {
+    const user = userEvent.setup();
+    server.use(http.get('*/income', () => HttpResponse.json({ data: [income], error: null })));
+    renderWithProviders(<Income />);
+
+    await user.click(await screen.findByRole('button', { name: 'Editar receita Salário' }));
+    expect(await screen.findByRole('heading', { name: 'Editar Receita' })).toBeInTheDocument();
+  });
+
+  it('desabilita editar em receita propagada (origin_id)', async () => {
+    server.use(
+      http.get('*/income', () => HttpResponse.json({ data: [{ ...income, id: 'i9', description: 'Salário propagado', origin_id: 'i1' }], error: null })),
+    );
+    renderWithProviders(<Income />);
+
+    expect(await screen.findByRole('button', { name: 'Editar receita Salário propagado' })).toBeDisabled();
+  });
 });
