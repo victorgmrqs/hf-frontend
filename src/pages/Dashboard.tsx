@@ -22,6 +22,7 @@ import { useUser } from '../hooks/useUser';
 import { useCompetences } from '../hooks/useCompetence';
 import { formatCompetence } from '../utils/formatCompetence';
 import CategoryDonutChart from '../components/CategoryDonutChart';
+import FamilyVisionSection from '../components/FamilyVisionSection';
 
 const Dashboard: React.FC = () => {
   const { currentUser, allUsers } = useUser();
@@ -215,6 +216,9 @@ const Dashboard: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* Visão Familiar */}
+        <FamilyVisionSection competence={competence} />
 
         {/* Gastos por Categoria */}
         <div className="bg-surface-dark rounded-xl border border-border-dark/50 shadow-sm p-6 mb-8">

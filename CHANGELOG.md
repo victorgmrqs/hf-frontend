@@ -6,6 +6,16 @@ versionamento [SemVer](https://semver.org/lang/pt-BR/).
 
 ## [Unreleased]
 
+### Added
+
+- (HF-23) Seção "Visão Familiar" no Dashboard: cards lado a lado com os totais
+  (pessoal, compartilhado e geral) de cada membro da família + card "Total Família"
+  com a soma dos gastos totais. Novo hook `useFamilyTotals` (busca paralela de
+  `GET /expenses/user/{id}/totals` por usuário, com estados loading/erro/vazio e
+  mapeamento de `error.code` VALIDATION_ERROR/INTERNAL_ERROR → pt-BR) e componente
+  `FamilyVisionSection`. Seção sempre visível; estado informativo quando há menos
+  de 2 usuários.
+
 ### Tests
 
 - (HF-79) Backfill de testes de integração das 5 páginas (Dashboard, Expenses, Budgets,

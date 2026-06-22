@@ -68,6 +68,56 @@ describe('Dashboard (integração)', () => {
     expect(await screen.findByText('Aluguel')).toBeInTheDocument();
   });
 
+  it('renderiza a seção Visão Familiar com os totais de cada usuário da família', async () => {
+    const totalsByUser: Record<string, { total_personal: number; total_shared: number; total_general: number }> = {
+      u1: { total_personal: 100, total_shared: 50, total_general: 150 },
+      u2: { total_personal: 200, total_shared: 30, total_general: 230 },
+    };
+    server.use(
+      http.get('*/users', () =>
+        HttpResponse.json({
+          data: [
+            { id: 'u1', name: 'Ana', email: 'ana@hf.com' },
+            { id: 'u2', name: 'Bia', email: 'bia@hf.com' },
+          ],
+          error: null,
+        }),
+      ),
+      http.get('*/expenses/user/:id/totals', ({ params }) =>
+        HttpResponse.json({ data: totalsByUser[params.id as string], error: null }),
+      ),
+    );
+    renderWithProviders(<Dashboard />);
+
+    expect(await screen.findByText('Visão Familiar')).toBeInTheDocument();
+    expect(await screen.findByText('Bia')).toBeInTheDocument();
+    expect(screen.getByText('Total Família')).toBeInTheDocument();
+    // 150 + 230 = 380
+    expect(screen.getByText('R$ 380,00')).toBeInTheDocument();
+  });
+
+  it('exibe erro pt-BR na Visão Familiar quando uma das chamadas paralelas falha', async () => {
+    server.use(
+      http.get('*/users', () =>
+        HttpResponse.json({
+          data: [
+            { id: 'u1', name: 'Ana', email: 'ana@hf.com' },
+            { id: 'u2', name: 'Bia', email: 'bia@hf.com' },
+          ],
+          error: null,
+        }),
+      ),
+      http.get('*/expenses/user/:id/totals', ({ params }) =>
+        params.id === 'u2'
+          ? HttpResponse.json({ data: null, error: { code: 'INTERNAL_ERROR', message: 'boom' } }, { status: 500 })
+          : HttpResponse.json({ data: { total_personal: 100, total_shared: 50, total_general: 150 }, error: null }),
+      ),
+    );
+    renderWithProviders(<Dashboard />);
+
+    expect(await screen.findByText('Erro interno ao carregar visão familiar.')).toBeInTheDocument();
+  });
+
   it('renderiza o gráfico de gastos por categoria com dados do endpoint', async () => {
     server.use(
       http.get('*/expenses/totals/by-category', () =>
