@@ -8,6 +8,14 @@ versionamento [SemVer](https://semver.org/lang/pt-BR/).
 
 ### Added
 
+- (HF-42) Cards "Saldo Hoje" e "Saldo Projetado" no Dashboard (SAL-04/05): consomem
+  `GET hf-income-service/balance` via novo método `incomeService.getBalance` (converte
+  os valores monetários string do envelope em number) e o hook `useBalance` (estados
+  loading/erro, mapeamento de `error.code` MISSING_REQUIRED_FIELD/INVALID_COMPETENCE/
+  UPSTREAM_TIMEOUT/UPSTREAM_ERROR → pt-BR). Novo componente `BalanceCards` com skeleton
+  de carregamento, tooltip explicando a diferença entre os saldos e alerta visual
+  (borda + texto vermelho + ícone) quando `is_projected_negative` (SAL-05). Cálculo é
+  do backend — o frontend só exibe.
 - (HF-23) Seção "Visão Familiar" no Dashboard: cards lado a lado com os totais
   (pessoal, compartilhado e geral) de cada membro da família + card "Total Família"
   com a soma dos gastos totais. Novo hook `useFamilyTotals` (busca paralela de

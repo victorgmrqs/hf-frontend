@@ -17,4 +17,9 @@ export const pageHandlers = [
   http.get('*/categories', () => ok([])),
   http.get('*/payment-methods/user/:id', () => ok([])),
   http.get('*/accounts-payable', () => ok([])),
+  http.get('*/balance', () => ok({
+    user_id: 'u1', competence: '2026-06', total_income: '0', total_personal: '0',
+    total_shared: '0', total_expenses: '0', balance_today: '0', committed_bills: '0',
+    projected_balance: '0', is_projected_negative: false,
+  })),
 ];
