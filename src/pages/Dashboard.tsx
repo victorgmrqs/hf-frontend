@@ -23,6 +23,7 @@ import { useCompetences } from '../hooks/useCompetence';
 import { formatCompetence } from '../utils/formatCompetence';
 import CategoryDonutChart from '../components/CategoryDonutChart';
 import FamilyVisionSection from '../components/FamilyVisionSection';
+import BalanceCards from '../components/BalanceCards';
 
 const Dashboard: React.FC = () => {
   const { currentUser, allUsers } = useUser();
@@ -174,6 +175,9 @@ const Dashboard: React.FC = () => {
             </button>
           </div>
         </header>
+
+        {/* Saldo do Mês (SAL-04/05) */}
+        <BalanceCards competence={competence} />
 
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
