@@ -3,6 +3,41 @@ import { config } from '../config';
 
 export type IncomeType = 'SALARY' | 'FREELANCE' | 'INVESTMENT' | 'RENTAL' | 'OTHER';
 
+/**
+ * Saldo do mês calculado pelo hf-income-service (domínio SAL). O backend é a
+ * autoridade do cálculo — o frontend só exibe. Valores monetários chegam como
+ * string ("4300.00") no envelope; `getBalance` os converte para number.
+ */
+export interface Balance {
+  user_id: string;
+  competence: string;
+  total_income: number;
+  total_personal: number;
+  total_shared: number;
+  total_expenses: number;
+  /** Saldo Hoje = receita − gastos realizados (SAL-04). */
+  balance_today: number;
+  committed_bills: number;
+  /** Saldo Projetado = saldo hoje − contas a vencer (SAL-03/04). */
+  projected_balance: number;
+  /** SAL-05: sinaliza alerta visual quando projected_balance < 0. */
+  is_projected_negative: boolean;
+}
+
+/** Resposta crua do /balance — valores monetários como string. */
+interface RawBalance {
+  user_id: string;
+  competence: string;
+  total_income: string;
+  total_personal: string;
+  total_shared: string;
+  total_expenses: string;
+  balance_today: string;
+  committed_bills: string;
+  projected_balance: string;
+  is_projected_negative: boolean;
+}
+
 export interface Income {
   id: string;
   user_id: string;
@@ -32,5 +67,28 @@ export const incomeService = {
     apiFetch<Income>(`/income/${id}`, { method: 'PUT', body: JSON.stringify(data) }, base),
   deleteIncome: (id: string, requesterId: string) =>
     apiFetch<void>(`/income/${id}?requester_id=${requesterId}`, { method: 'DELETE' }, base),
+
+  // Saldo do mês (SAL-04/05). Converte os valores string do envelope em number;
+  // sem reimplementar cálculo — o backend já entrega balance_today/projected_balance.
+  getBalance: async (userId: string, competence: string) => {
+    const params = new URLSearchParams({ user_id: userId, competence });
+    const { data, error } = await apiFetch<RawBalance>(`/balance?${params.toString()}`, undefined, base);
+    if (!data) return { data: null as Balance | null, error };
+    return {
+      data: {
+        user_id: data.user_id,
+        competence: data.competence,
+        total_income: Number(data.total_income),
+        total_personal: Number(data.total_personal),
+        total_shared: Number(data.total_shared),
+        total_expenses: Number(data.total_expenses),
+        balance_today: Number(data.balance_today),
+        committed_bills: Number(data.committed_bills),
+        projected_balance: Number(data.projected_balance),
+        is_projected_negative: data.is_projected_negative,
+      } as Balance,
+      error,
+    };
+  },
 };
 

@@ -70,4 +70,41 @@ describe('incomeService', () => {
     expect(data).toBeNull();
     expect(error).toEqual({ code: 'REC-03' });
   });
+
+  it('getBalance faz GET /balance no base URL do income com user_id e competence', async () => {
+    await incomeService.getBalance('u1', '2026-06');
+    expect(captured?.href.startsWith(config.incomeApi.baseUrl)).toBe(true);
+    expect(captured?.method).toBe('GET');
+    expect(captured?.pathname).toMatch(/\/balance$/);
+    const p = new URLSearchParams(captured?.search);
+    expect(p.get('user_id')).toBe('u1');
+    expect(p.get('competence')).toBe('2026-06');
+  });
+
+  it('getBalance converte os valores monetários string em number', async () => {
+    server.use(http.get('*/balance', () =>
+      HttpResponse.json({ data: rawBalance({ balance_today: '4300.00', projected_balance: '3450.50' }), error: null })));
+    const { data, error } = await incomeService.getBalance('u1', '2026-06');
+    expect(error).toBeNull();
+    expect(data?.balance_today).toBe(4300);
+    expect(data?.projected_balance).toBe(3450.5);
+    expect(data?.is_projected_negative).toBe(false);
+  });
+
+  it('getBalance propaga o envelope de erro (UPSTREAM_TIMEOUT) sem mapear', async () => {
+    server.use(http.get('*/balance', () =>
+      HttpResponse.json({ data: null, error: { code: 'UPSTREAM_TIMEOUT', message: 'x' } }, { status: 503 })));
+    const { data, error } = await incomeService.getBalance('u1', '2026-06');
+    expect(data).toBeNull();
+    expect(error).toEqual({ code: 'UPSTREAM_TIMEOUT', message: 'x' });
+  });
 });
+
+function rawBalance(overrides: Record<string, unknown> = {}) {
+  return {
+    user_id: 'u1', competence: '2026-06', total_income: '7500.00', total_personal: '1800.00',
+    total_shared: '1400.00', total_expenses: '3200.00', balance_today: '4300.00',
+    committed_bills: '850.00', projected_balance: '3450.00', is_projected_negative: false,
+    ...overrides,
+  };
+}
