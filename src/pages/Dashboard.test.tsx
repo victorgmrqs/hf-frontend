@@ -118,6 +118,44 @@ describe('Dashboard (integração)', () => {
     expect(await screen.findByText('Erro interno ao carregar visão familiar.')).toBeInTheDocument();
   });
 
+  it('renderiza os cards de saldo (Hoje e Projetado) vindos do /balance', async () => {
+    server.use(
+      http.get('*/balance', () =>
+        HttpResponse.json({
+          data: {
+            user_id: 'u1', competence: currentMonth, total_income: '7500.00', total_personal: '1800.00',
+            total_shared: '1400.00', total_expenses: '3200.00', balance_today: '4300.00',
+            committed_bills: '850.00', projected_balance: '3450.00', is_projected_negative: false,
+          },
+          error: null,
+        }),
+      ),
+    );
+    renderWithProviders(<Dashboard />);
+
+    expect(await screen.findByText('Saldo Hoje')).toBeInTheDocument();
+    expect(await screen.findByText('R$ 4.300,00')).toBeInTheDocument();
+    expect(screen.getByText('R$ 3.450,00')).toBeInTheDocument();
+  });
+
+  it('sinaliza alerta no card de Saldo Projetado quando negativo (SAL-05)', async () => {
+    server.use(
+      http.get('*/balance', () =>
+        HttpResponse.json({
+          data: {
+            user_id: 'u1', competence: currentMonth, total_income: '1000.00', total_personal: '800.00',
+            total_shared: '400.00', total_expenses: '1200.00', balance_today: '-200.00',
+            committed_bills: '300.00', projected_balance: '-500.00', is_projected_negative: true,
+          },
+          error: null,
+        }),
+      ),
+    );
+    renderWithProviders(<Dashboard />);
+
+    expect(await screen.findByLabelText('Saldo projetado negativo')).toBeInTheDocument();
+  });
+
   it('renderiza o gráfico de gastos por categoria com dados do endpoint', async () => {
     server.use(
       http.get('*/expenses/totals/by-category', () =>
