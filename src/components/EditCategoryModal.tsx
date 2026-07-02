@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, ChevronDown, Loader2, Tag } from 'lucide-react';
 import { toast } from 'sonner';
 import { financeService, Category, Expense } from '../services/financeService';
+import { messageForError } from '../utils/errorMessage';
 import { useUser } from '../hooks/useUser';
 
 interface EditCategoryModalProps {
@@ -45,7 +46,7 @@ const EditCategoryModal: React.FC<EditCategoryModalProps> = ({ expense, isOpen, 
       onSuccess();
       onClose();
     } else {
-      toast.error('Erro ao atualizar categoria');
+      toast.error(messageForError(error, 'Erro ao atualizar categoria'));
     }
     setLoading(false);
   };

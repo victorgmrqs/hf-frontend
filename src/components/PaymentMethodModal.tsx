@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, Loader2, CreditCard, Wallet, Landmark, Smartphone, Users } from 'lucide-react';
 import { toast } from 'sonner';
 import { financeService, User, PaymentMethod } from '../services/financeService';
+import { messageForError } from '../utils/errorMessage';
 import { useUser } from '../hooks/useUser';
 
 interface PaymentMethodModalProps {
@@ -71,7 +72,7 @@ const PaymentMethodModal: React.FC<PaymentMethodModalProps> = ({ paymentMethod, 
       onSuccess();
       onClose();
     } else {
-      toast.error(paymentMethod ? 'Erro ao atualizar forma de pagamento' : 'Erro ao criar forma de pagamento');
+      toast.error(messageForError(error, paymentMethod ? 'Erro ao atualizar forma de pagamento' : 'Erro ao criar forma de pagamento'));
     }
     setLoading(false);
   };

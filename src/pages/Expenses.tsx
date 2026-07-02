@@ -25,6 +25,7 @@ import { financeService, Expense, Category } from '../services/financeService';
 import { useUser } from '../hooks/useUser';
 import { useCompetences } from '../hooks/useCompetence';
 import { formatCompetence } from '../utils/formatCompetence';
+import { messageForError } from '../utils/errorMessage';
 
 const Expenses: React.FC = () => {
   const { currentUser, allUsers } = useUser();
@@ -57,7 +58,7 @@ const Expenses: React.FC = () => {
       .then(({ data }) => {
         if (data) setCategories(data);
       })
-      .catch(() => toast.error('Erro ao carregar categorias'));
+      .catch((err) => toast.error(messageForError(err, 'Erro ao carregar categorias')));
   }, []);
 
   useEffect(() => {
@@ -85,8 +86,8 @@ const Expenses: React.FC = () => {
         categoryFilter || undefined,
       );
       if (data) setExpenses(data);
-    } catch {
-      toast.error('Erro ao carregar despesas');
+    } catch (err) {
+      toast.error(messageForError(err, 'Erro ao carregar despesas'));
     } finally {
       setLoading(false);
     }
@@ -110,7 +111,7 @@ const Expenses: React.FC = () => {
       fetchExpenses();
       toast.success('Despesa excluída com sucesso');
     } else {
-      toast.error('Erro ao excluir despesa');
+      toast.error(messageForError(error, 'Erro ao excluir despesa'));
     }
   };
 
