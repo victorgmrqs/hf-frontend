@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, Loader2, Palette } from 'lucide-react';
 import { toast } from 'sonner';
 import { financeService, Category } from '../services/financeService';
+import { messageForError } from '../utils/errorMessage';
 
 interface CategoryModalProps {
   category?: Category | null;
@@ -56,7 +57,7 @@ const CategoryModal: React.FC<CategoryModalProps> = ({ category, isOpen, onClose
       onSuccess();
       onClose();
     } else {
-      toast.error(category ? 'Erro ao atualizar categoria' : 'Erro ao criar categoria');
+      toast.error(messageForError(error, category ? 'Erro ao atualizar categoria' : 'Erro ao criar categoria'));
     }
     setLoading(false);
   };

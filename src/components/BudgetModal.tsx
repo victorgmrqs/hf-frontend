@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, ChevronDown, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { financeService, Category, BudgetStatus } from '../services/financeService';
+import { messageForError } from '../utils/errorMessage';
 import { useUser } from '../hooks/useUser';
 import { DEFAULT_ALERT_THRESHOLD } from '../utils/budgetAlert';
 
@@ -76,7 +77,7 @@ const BudgetModal: React.FC<BudgetModalProps> = ({ isOpen, onClose, onSuccess, c
       onSuccess();
       onClose();
     } else {
-      toast.error(isEditing ? 'Erro ao atualizar orçamento' : 'Erro ao criar orçamento');
+      toast.error(messageForError(error, isEditing ? 'Erro ao atualizar orçamento' : 'Erro ao criar orçamento'));
     }
     setLoading(false);
   };

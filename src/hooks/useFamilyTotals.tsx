@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { financeService, User } from '../services/financeService';
+import { messageForError } from '../utils/errorMessage';
 import { useUser } from './useUser';
 
 export interface UserTotals {
@@ -13,16 +14,7 @@ export interface FamilyTotal {
   totals: UserTotals;
 }
 
-// Mapa mínimo error.code → pt-BR (centralização é a HF-87).
-const ERROR_MESSAGES: Record<string, string> = {
-  VALIDATION_ERROR: 'Parâmetro de competência inválido.',
-  INTERNAL_ERROR: 'Erro interno ao carregar visão familiar.',
-};
-
-const messageForError = (error: unknown): string => {
-  const code = (error as { code?: string } | null)?.code;
-  return (code && ERROR_MESSAGES[code]) || 'Erro ao carregar visão familiar.';
-};
+const FAMILY_TOTALS_FALLBACK = 'Erro ao carregar visão familiar.';
 
 /**
  * Busca, em paralelo, os totais de despesa de todos os usuários da família para
@@ -56,7 +48,7 @@ export function useFamilyTotals(competence: string) {
         if (cancelled) return;
         const failed = results.find((r) => r.res.error || !r.res.data);
         if (failed) {
-          setError(messageForError(failed.res.error));
+          setError(messageForError(failed.res.error, FAMILY_TOTALS_FALLBACK));
           setData([]);
           return;
         }
@@ -64,7 +56,7 @@ export function useFamilyTotals(competence: string) {
       })
       .catch(() => {
         if (cancelled) return;
-        setError('Erro ao carregar visão familiar.');
+        setError(FAMILY_TOTALS_FALLBACK);
         setData([]);
       })
       .finally(() => {

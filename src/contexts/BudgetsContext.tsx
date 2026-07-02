@@ -1,6 +1,7 @@
 import React, { createContext, useCallback, useContext, useEffect, useState, ReactNode } from 'react';
 import { toast } from 'sonner';
 import { financeService, BudgetStatus } from '../services/financeService';
+import { messageForError } from '../utils/errorMessage';
 import { useUser } from '../hooks/useUser';
 
 interface BudgetsContextType {
@@ -32,8 +33,8 @@ export const BudgetsProvider: React.FC<{ children: ReactNode }> = ({ children })
     try {
       const { data } = await financeService.getBudgetStatus(currentUser.id, competence);
       setBudgetStatuses(data ?? []);
-    } catch {
-      toast.error('Erro ao carregar orçamentos');
+    } catch (err) {
+      toast.error(messageForError(err, 'Erro ao carregar orçamentos'));
       setBudgetStatuses([]);
     } finally {
       setLoading(false);
@@ -52,9 +53,9 @@ export const BudgetsProvider: React.FC<{ children: ReactNode }> = ({ children })
       .then(({ data }) => {
         if (active) setBudgetStatuses(data ?? []);
       })
-      .catch(() => {
+      .catch((err) => {
         if (active) {
-          toast.error('Erro ao carregar orçamentos');
+          toast.error(messageForError(err, 'Erro ao carregar orçamentos'));
           setBudgetStatuses([]);
         }
       })

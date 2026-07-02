@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, ChevronDown, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { financeService, PaymentMethod, Category, AccountPayable } from '../services/financeService';
+import { messageForError } from '../utils/errorMessage';
 import { useUser } from '../hooks/useUser';
 
 interface PayAccountModalProps {
@@ -61,7 +62,7 @@ const PayAccountModal: React.FC<PayAccountModalProps> = ({ account, isOpen, onCl
       onSuccess();
       onClose();
     } else {
-      toast.error('Erro ao registrar pagamento');
+      toast.error(messageForError(error, 'Erro ao registrar pagamento'));
     }
     setLoading(false);
   };

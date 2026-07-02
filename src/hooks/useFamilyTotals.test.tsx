@@ -78,7 +78,7 @@ describe('useFamilyTotals', () => {
 
     const { result } = renderHook(() => useFamilyTotals('2026-13'), { wrapper });
 
-    await waitFor(() => expect(result.current.error).toBe('Parâmetro de competência inválido.'));
+    await waitFor(() => expect(result.current.error).toBe('Alguns dados são inválidos. Verifique e tente novamente.'));
     expect(result.current.data).toEqual([]);
   });
 
@@ -96,17 +96,17 @@ describe('useFamilyTotals', () => {
     expect(result.current.data).toEqual([]);
   });
 
-  it('mapeia error.code INTERNAL_ERROR para mensagem pt-BR', async () => {
+  it('mapeia error.code INTERNAL_SERVER_ERROR para mensagem pt-BR', async () => {
     server.use(
       usersOk(),
       http.get('*/expenses/user/:id/totals', () =>
-        HttpResponse.json({ data: null, error: { code: 'INTERNAL_ERROR', message: 'boom' } }, { status: 500 }),
+        HttpResponse.json({ data: null, error: { code: 'INTERNAL_SERVER_ERROR', message: 'boom' } }, { status: 500 }),
       ),
     );
 
     const { result } = renderHook(() => useFamilyTotals('2026-06'), { wrapper });
 
-    await waitFor(() => expect(result.current.error).toBe('Erro interno ao carregar visão familiar.'));
+    await waitFor(() => expect(result.current.error).toBe('Erro interno no servidor. Tente novamente mais tarde.'));
     expect(result.current.data).toEqual([]);
   });
 });

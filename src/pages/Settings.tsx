@@ -14,6 +14,7 @@ import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import EmptyState from '../components/EmptyState';
 import { toast } from 'sonner';
 import { financeService, Category, PaymentMethod } from '../services/financeService';
+import { messageForError } from '../utils/errorMessage';
 import { useUser } from '../hooks/useUser';
 
 const SettingsPage: React.FC = () => {
@@ -45,8 +46,8 @@ const SettingsPage: React.FC = () => {
       ]);
       if (cats.data) setCategories(cats.data);
       if (pms.data) setPaymentMethods(pms.data);
-    } catch {
-      toast.error('Erro ao carregar configurações');
+    } catch (err) {
+      toast.error(messageForError(err, 'Erro ao carregar configurações'));
     } finally {
       setLoading(false);
     }
@@ -69,7 +70,7 @@ const SettingsPage: React.FC = () => {
         fetchData();
         toast.success('Categoria excluída com sucesso');
       } else {
-        toast.error('Erro ao excluir categoria. Verifique se há despesas vinculadas.');
+        toast.error(messageForError(error, 'Erro ao excluir categoria. Verifique se há despesas vinculadas.'));
       }
     } else {
       const { error } = await financeService.deletePaymentMethod(deleteTarget.id, currentUser.id);
@@ -78,7 +79,7 @@ const SettingsPage: React.FC = () => {
         fetchData();
         toast.success('Forma de pagamento excluída com sucesso');
       } else {
-        toast.error('Erro ao excluir forma de pagamento. Verifique se há despesas vinculadas.');
+        toast.error(messageForError(error, 'Erro ao excluir forma de pagamento. Verifique se há despesas vinculadas.'));
       }
     }
   };

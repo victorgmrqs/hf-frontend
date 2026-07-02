@@ -2,7 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { X, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { incomeService, Income, IncomeType } from '../services/incomeService';
+import { messageForError } from '../utils/errorMessage';
 import { useUser } from '../hooks/useUser';
+
+const SAVE_INCOME_FALLBACK = 'Erro ao salvar receita.';
 
 interface IncomeModalProps {
   isOpen: boolean;
@@ -20,20 +23,6 @@ const TYPE_OPTIONS: { value: IncomeType; label: string }[] = [
   { value: 'RENTAL', label: 'Aluguel' },
   { value: 'OTHER', label: 'Outro' },
 ];
-
-// Mapa mínimo error.code → pt-BR (centralização é a HF-87).
-const ERROR_MESSAGES: Record<string, string> = {
-  INVALID_AMOUNT: 'O valor deve ser maior que zero.',
-  MISSING_REQUIRED_FIELD: 'Preencha os campos obrigatórios.',
-  INVALID_INCOME_TYPE: 'Tipo de receita inválido.',
-  INVALID_COMPETENCE: 'Competência inválida.',
-  CANNOT_EDIT_PROPAGATED_INCOME: 'Receitas recorrentes propagadas não podem ser editadas.',
-};
-
-const messageForError = (error: unknown): string => {
-  const code = (error as { code?: string } | null)?.code;
-  return (code && ERROR_MESSAGES[code]) || 'Erro ao salvar receita.';
-};
 
 const IncomeModal: React.FC<IncomeModalProps> = ({ isOpen, onClose, onSuccess, competence, income }) => {
   const { currentUser } = useUser();
@@ -101,7 +90,7 @@ const IncomeModal: React.FC<IncomeModalProps> = ({ isOpen, onClose, onSuccess, c
       onSuccess();
       onClose();
     } else {
-      toast.error(messageForError(error));
+      toast.error(messageForError(error, SAVE_INCOME_FALLBACK));
     }
     setLoading(false);
   };

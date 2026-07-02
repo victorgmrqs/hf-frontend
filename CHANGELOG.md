@@ -8,6 +8,17 @@ versionamento [SemVer](https://semver.org/lang/pt-BR/).
 
 ### Added
 
+- (HF-87) Mapeador central de erro `src/utils/errorMessage.ts` (`messageForError(error, fallback?)`):
+  traduz `error.code` do envelope dos dois backends (income + transaction) para mensagens
+  pt-BR, com narrowing seguro de `unknown`, fallback contextual e garantia de nunca expor
+  `message`/`trace_id`/stack do backend. Removidas as cópias locais e duplicadas de
+  `messageForError` (`useBalance`, `useFamilyTotals`, `IncomeModal`) e adotado o mapeador
+  nas páginas/componentes/contexto que antes usavam toast genérico (Dashboard, Income,
+  Expenses, Settings, AccountsPayable, Budgets, BudgetsContext, Expense/Budget/Category/
+  EditCategory/PaymentMethod/PayAccount/AccountPayable modais), preservando o texto atual
+  como fallback. Pendência registrada para o backend: typo `INTERNAL_SEVER_ERROR`
+  (mapeado defensivamente junto de `INTERNAL_SERVER_ERROR`).
+
 - (HF-42) Cards "Saldo Hoje" e "Saldo Projetado" no Dashboard (SAL-04/05): consomem
   `GET hf-income-service/balance` via novo método `incomeService.getBalance` (converte
   os valores monetários string do envelope em number) e o hook `useBalance` (estados

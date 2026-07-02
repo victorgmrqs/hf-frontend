@@ -9,6 +9,7 @@ import { incomeService, Income as IncomeRecord, IncomeType } from '../services/i
 import { useUser } from '../hooks/useUser';
 import { useCompetences } from '../hooks/useCompetence';
 import { formatCompetence } from '../utils/formatCompetence';
+import { messageForError } from '../utils/errorMessage';
 
 const TYPE_LABELS: Record<IncomeType, string> = {
   SALARY: 'Salário',
@@ -53,8 +54,8 @@ const Income: React.FC = () => {
       .then(({ data }) => {
         if (active) setIncomes(data ?? []);
       })
-      .catch(() => {
-        if (active) toast.error('Erro ao carregar receitas');
+      .catch((err) => {
+        if (active) toast.error(messageForError(err, 'Erro ao carregar receitas'));
       })
       .finally(() => {
         if (active) setLoading(false);
@@ -78,7 +79,7 @@ const Income: React.FC = () => {
       toast.success('Receita excluída com sucesso');
       refetch();
     } else {
-      toast.error('Erro ao excluir receita');
+      toast.error(messageForError(error, 'Erro ao excluir receita'));
     }
   };
 

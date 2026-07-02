@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { X, ChevronDown, Check, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { financeService, Category, PaymentMethod, Expense } from '../services/financeService';
+import { messageForError } from '../utils/errorMessage';
 import { useUser } from '../hooks/useUser';
 
 interface ExpenseModalProps {
@@ -137,7 +138,7 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({ expense, isOpen, onClose, o
       onSuccess();
       onClose();
     } else {
-      setApiError(expense ? 'Erro ao atualizar despesa. Verifique os dados e tente novamente.' : 'Erro ao criar despesa. Verifique os dados e tente novamente.');
+      setApiError(messageForError(error, expense ? 'Erro ao atualizar despesa. Verifique os dados e tente novamente.' : 'Erro ao criar despesa. Verifique os dados e tente novamente.'));
     }
     setLoading(false);
   };
