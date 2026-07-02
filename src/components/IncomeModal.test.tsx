@@ -57,7 +57,7 @@ describe('IncomeModal — criação', () => {
     await user.type(screen.getByLabelText('Valor'), '10');
     await user.click(screen.getByRole('button', { name: 'Salvar' }));
 
-    await waitFor(() => expect(toast.error).toHaveBeenCalledWith('O valor deve ser maior que zero.'));
+    await waitFor(() => expect(toast.error).toHaveBeenCalledWith('O valor informado é inválido.'));
   });
 });
 

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { financeService, AccountPayable } from '../services/financeService';
+import { messageForError } from '../utils/errorMessage';
 import { useUser } from '../hooks/useUser';
 
 interface AccountPayableModalProps {
@@ -65,7 +66,7 @@ const AccountPayableModal: React.FC<AccountPayableModalProps> = ({ isOpen, onClo
       onSuccess();
       onClose();
     } else {
-      toast.error(isEditing ? 'Erro ao atualizar conta' : 'Erro ao criar conta a pagar');
+      toast.error(messageForError(error, isEditing ? 'Erro ao atualizar conta' : 'Erro ao criar conta a pagar'));
     }
     setLoading(false);
   };

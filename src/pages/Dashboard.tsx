@@ -21,6 +21,7 @@ import { financeService, Expense, AccountPayable, CategoryTotal } from '../servi
 import { useUser } from '../hooks/useUser';
 import { useCompetences } from '../hooks/useCompetence';
 import { formatCompetence } from '../utils/formatCompetence';
+import { messageForError } from '../utils/errorMessage';
 import CategoryDonutChart from '../components/CategoryDonutChart';
 import FamilyVisionSection from '../components/FamilyVisionSection';
 import BalanceCards from '../components/BalanceCards';
@@ -77,8 +78,8 @@ const Dashboard: React.FC = () => {
         setUpcomingAccounts(sorted);
       }
       setCategoryTotals(categoryRes.data ?? []);
-    } catch {
-      toast.error('Erro ao carregar dados do dashboard');
+    } catch (err) {
+      toast.error(messageForError(err, 'Erro ao carregar dados do dashboard'));
     } finally {
       setLoading(false);
     }

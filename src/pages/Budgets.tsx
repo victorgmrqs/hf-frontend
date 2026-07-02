@@ -20,6 +20,7 @@ import { useCompetences } from '../hooks/useCompetence';
 import { useBudgets } from '../contexts/BudgetsContext';
 import { formatCompetence } from '../utils/formatCompetence';
 import { getBudgetState } from '../utils/budgetAlert';
+import { messageForError } from '../utils/errorMessage';
 
 const Budgets: React.FC = () => {
   const { currentUser } = useUser();
@@ -36,7 +37,7 @@ const Budgets: React.FC = () => {
     const { data, error } = await financeService.copyBudgetsFromPrevious(currentUser.id, competence);
     setCopying(false);
     if (error) {
-      toast.error('Erro ao copiar orçamentos');
+      toast.error(messageForError(error, 'Erro ao copiar orçamentos'));
       return;
     }
     if (data && data.copied === 0) {
@@ -56,7 +57,7 @@ const Budgets: React.FC = () => {
       refresh();
       toast.success('Orçamento excluído com sucesso');
     } else {
-      toast.error('Erro ao excluir orçamento');
+      toast.error(messageForError(error, 'Erro ao excluir orçamento'));
     }
   };
 

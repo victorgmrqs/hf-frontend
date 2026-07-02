@@ -18,6 +18,7 @@ import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import EmptyState from '../components/EmptyState';
 import { toast } from 'sonner';
 import { financeService, AccountPayable } from '../services/financeService';
+import { messageForError } from '../utils/errorMessage';
 import { useUser } from '../hooks/useUser';
 
 const AccountsPayable: React.FC = () => {
@@ -46,8 +47,8 @@ const AccountsPayable: React.FC = () => {
     try {
       const { data } = await financeService.getAccountsPayable(currentUser.id, statusFilter || undefined);
       if (data) setAccounts(data);
-    } catch {
-      toast.error('Erro ao carregar contas a pagar');
+    } catch (err) {
+      toast.error(messageForError(err, 'Erro ao carregar contas a pagar'));
     } finally {
       setLoading(false);
     }
@@ -89,7 +90,7 @@ const AccountsPayable: React.FC = () => {
       fetchAccounts();
       toast.success('Conta excluída com sucesso');
     } else {
-      toast.error('Erro ao excluir conta a pagar');
+      toast.error(messageForError(error, 'Erro ao excluir conta a pagar'));
     }
   };
 

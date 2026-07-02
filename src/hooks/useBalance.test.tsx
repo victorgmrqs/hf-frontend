@@ -72,7 +72,7 @@ describe('useBalance', () => {
   it('mapeia MISSING_REQUIRED_FIELD para mensagem pt-BR', async () => {
     server.use(usersOk, balanceErr('MISSING_REQUIRED_FIELD', 400));
     const { result } = renderHook(() => useBalance('2026-06'), { wrapper });
-    await waitFor(() => expect(result.current.error).toBe('Não foi possível identificar o usuário.'));
+    await waitFor(() => expect(result.current.error).toBe('Preencha todos os campos obrigatórios.'));
     expect(result.current.data).toBeNull();
   });
 
@@ -85,13 +85,13 @@ describe('useBalance', () => {
   it('mapeia UPSTREAM_TIMEOUT para mensagem pt-BR', async () => {
     server.use(usersOk, balanceErr('UPSTREAM_TIMEOUT', 503));
     const { result } = renderHook(() => useBalance('2026-06'), { wrapper });
-    await waitFor(() => expect(result.current.error).toBe('Serviço de despesas indisponível. Tente novamente.'));
+    await waitFor(() => expect(result.current.error).toBe('Serviço temporariamente indisponível. Tente novamente.'));
   });
 
   it('mapeia UPSTREAM_ERROR para mensagem pt-BR', async () => {
     server.use(usersOk, balanceErr('UPSTREAM_ERROR', 502));
     const { result } = renderHook(() => useBalance('2026-06'), { wrapper });
-    await waitFor(() => expect(result.current.error).toBe('Resposta inesperada do serviço de despesas.'));
+    await waitFor(() => expect(result.current.error).toBe('Resposta inesperada do serviço. Tente novamente.'));
   });
 
   it('usa mensagem genérica pt-BR para erro sem código conhecido', async () => {
