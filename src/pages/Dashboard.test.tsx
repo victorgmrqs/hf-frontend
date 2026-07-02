@@ -109,13 +109,13 @@ describe('Dashboard (integração)', () => {
       ),
       http.get('*/expenses/user/:id/totals', ({ params }) =>
         params.id === 'u2'
-          ? HttpResponse.json({ data: null, error: { code: 'INTERNAL_ERROR', message: 'boom' } }, { status: 500 })
+          ? HttpResponse.json({ data: null, error: { code: 'INTERNAL_SERVER_ERROR', message: 'boom' } }, { status: 500 })
           : HttpResponse.json({ data: { total_personal: 100, total_shared: 50, total_general: 150 }, error: null }),
       ),
     );
     renderWithProviders(<Dashboard />);
 
-    expect(await screen.findByText('Erro interno ao carregar visão familiar.')).toBeInTheDocument();
+    expect(await screen.findByText('Erro interno no servidor. Tente novamente mais tarde.')).toBeInTheDocument();
   });
 
   it('renderiza os cards de saldo (Hoje e Projetado) vindos do /balance', async () => {
