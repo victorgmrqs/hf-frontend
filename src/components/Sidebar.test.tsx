@@ -1,14 +1,27 @@
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import Sidebar from './Sidebar';
 import type { BudgetStatus } from '../services/financeService';
 
+type TestUser = { id: string; name: string; email: string };
+
+const ana: TestUser = { id: 'u1', name: 'Ana', email: 'ana@hf.com' };
+const bruno: TestUser = { id: 'u2', name: 'Bruno', email: 'bruno@hf.com' };
+
+const userHolder = vi.hoisted(() => ({
+  currentUser: { id: 'u1', name: 'Ana', email: 'ana@hf.com' } as
+    | { id: string; name: string; email: string }
+    | null,
+  allUsers: [] as { id: string; name: string; email: string }[],
+  setCurrentUser: vi.fn(),
+}));
 vi.mock('../hooks/useUser', () => ({
   useUser: () => ({
-    currentUser: { id: 'u1', name: 'Ana', email: 'a@a.com' },
-    allUsers: [],
-    setCurrentUser: () => {},
+    currentUser: userHolder.currentUser,
+    allUsers: userHolder.allUsers,
+    setCurrentUser: userHolder.setCurrentUser,
   }),
 }));
 
@@ -17,9 +30,16 @@ vi.mock('../contexts/BudgetsContext', () => ({
   useBudgets: () => ({ budgetStatuses: holder.statuses }),
 }));
 
-const renderSidebar = () =>
+beforeEach(() => {
+  holder.statuses = [];
+  userHolder.currentUser = ana;
+  userHolder.allUsers = [];
+  userHolder.setCurrentUser.mockClear();
+});
+
+const renderSidebar = (route = '/') =>
   render(
-    <MemoryRouter>
+    <MemoryRouter initialEntries={[route]}>
       <Sidebar />
     </MemoryRouter>,
   );
@@ -43,5 +63,58 @@ describe('Sidebar — badge de orçamentos em alerta', () => {
     renderSidebar();
 
     expect(screen.queryByLabelText(/orçamento\(s\) em alerta/)).not.toBeInTheDocument();
+  });
+});
+
+describe('Sidebar — navegação', () => {
+  it('marca como ativo apenas o item da rota atual', () => {
+    renderSidebar('/expenses');
+
+    expect(screen.getByRole('link', { name: 'Expenses' })).toHaveAttribute('aria-current', 'page');
+    expect(screen.getByRole('link', { name: 'Dashboard' })).not.toHaveAttribute('aria-current');
+  });
+
+  it('marca o Dashboard como ativo somente na rota raiz exata', () => {
+    renderSidebar('/');
+
+    expect(screen.getByRole('link', { name: 'Dashboard' })).toHaveAttribute('aria-current', 'page');
+    expect(screen.getByRole('link', { name: 'Budgets' })).not.toHaveAttribute('aria-current');
+  });
+});
+
+describe('Sidebar — menu de troca de usuário', () => {
+  it('abre o menu, troca o usuário selecionado e fecha o menu', async () => {
+    userHolder.allUsers = [ana, bruno];
+    const user = userEvent.setup();
+    renderSidebar();
+
+    await user.click(screen.getByRole('button', { name: /ana@hf\.com/ }));
+    expect(screen.getByText('Switch User')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: /Bruno/ }));
+
+    expect(userHolder.setCurrentUser).toHaveBeenCalledWith(bruno);
+    expect(screen.queryByText('Switch User')).not.toBeInTheDocument();
+  });
+
+  it('fecha o menu ao clicar novamente no usuário atual', async () => {
+    userHolder.allUsers = [ana, bruno];
+    const user = userEvent.setup();
+    renderSidebar();
+
+    const trigger = screen.getByRole('button', { name: /ana@hf\.com/ });
+    await user.click(trigger);
+    expect(screen.getByText('Switch User')).toBeInTheDocument();
+
+    await user.click(trigger);
+    expect(screen.queryByText('Switch User')).not.toBeInTheDocument();
+  });
+
+  it('mostra placeholder enquanto não há usuário carregado', () => {
+    userHolder.currentUser = null;
+    renderSidebar();
+
+    expect(screen.getByText('?')).toBeInTheDocument();
+    expect(screen.getByText('Loading...')).toBeInTheDocument();
   });
 });
