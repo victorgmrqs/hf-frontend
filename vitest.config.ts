@@ -15,9 +15,8 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'text-summary', 'html', 'lcov'],
-      // Rampa (HF-81): no Vitest 4 o `include` reporta, por padrão, apenas arquivos
-      // exercitados por testes. A cobertura real de src/services e src/utils entra
-      // na HF-76; o gate global 80% na HF-80.
+      // No Vitest 4 o `include` reporta, por padrão, apenas arquivos exercitados
+      // por testes. A rampa (HF-81 → HF-76..79 → HF-80) terminou: gate global 80%.
       include: ['src/**/*.{ts,tsx}'],
       exclude: [
         'src/**/*.test.{ts,tsx}',
@@ -25,9 +24,16 @@ export default defineConfig({
         'src/vite-env.d.ts',
         'src/main.tsx',
       ],
-      // NÃO usar passWithNoTests. Thresholds per-file 90% nas camadas puras.
+      // NÃO usar passWithNoTests. Gate global 80% agregado (HF-80) + 90% agregado
+      // nas camadas puras. A flag `perFile` do Vitest é única para todos os grupos
+      // (não existe per-glob) — com o gate global ela precisaria valer 80% por
+      // arquivo, o que não é o pedido; services/utils passam a 90% por pasta.
+      // Arquivos casados pelos globs saem do cálculo do grupo global.
       thresholds: {
-        perFile: true,
+        lines: 80,
+        branches: 80,
+        functions: 80,
+        statements: 80,
         'src/services/**': {
           lines: 90,
           branches: 90,

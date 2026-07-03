@@ -8,6 +8,19 @@ versionamento [SemVer](https://semver.org/lang/pt-BR/).
 
 ### Added
 
+- (HF-80) E2E dos fluxos críticos e gate global de cobertura 80% ativo — fim da rampa de
+  testes (HF-75). Novos specs Playwright com backend stubado por endpoint:
+  `e2e/expense.spec.ts` (criar despesa compartilhada, validar payload SHARED +
+  `shared_user_ids`, bloqueio com <2 participantes) e `e2e/balance.spec.ts` (cards de
+  Saldo do Mês, status de orçamento e alerta de saldo projetado negativo — SAL-05).
+  Backfill dirigido de testes de comportamento (ExpenseModal, PaymentMethodModal,
+  Dashboard, Sidebar, Settings) para sustentar o gate. `vitest.config.ts` agora falha
+  abaixo de 80% global (lines/branches/functions/statements), mantendo 90% em
+  `src/services` e `src/utils` (agora agregado por pasta — a flag `perFile` do Vitest é
+  única para todos os grupos e conflitaria com o gate global). E2E de autenticação
+  (login + refresh) NÃO entrou: o
+  cliente ainda não tem tela de login/JWT — pendência registrada no ticket.
+
 - (HF-87) Mapeador central de erro `src/utils/errorMessage.ts` (`messageForError(error, fallback?)`):
   traduz `error.code` do envelope dos dois backends (income + transaction) para mensagens
   pt-BR, com narrowing seguro de `unknown`, fallback contextual e garantia de nunca expor
