@@ -2,25 +2,24 @@
 
 > Adaptada do padrão skillCraft (`sc-frontend/docs/testing-strategy.md`) para a stack **Vite + React**.
 > Fonte de verdade de processo (HF): [../../hf-income-service/docs/workflow.md](../../hf-income-service/docs/workflow.md).
-> Status: **fundação instalada** em HF-81 (Vitest+coverage v8, Testing Library, MSW, Playwright, axe, docs-guard, gates de CI). Data: 2026-06-17.
-> Rampa de cobertura: thresholds per-file 90% em `src/services` e `src/utils` medem apenas arquivos com teste; a cobertura real entra na HF-76 e o gate global 80% na HF-80.
+> Status: **aplicado** — fundação instalada em HF-81 (Vitest+coverage v8, Testing Library, MSW, Playwright, axe, docs-guard, gates de CI), cobertura real via backfill HF-76…HF-79 e **gate global 80% ativo desde a HF-80** (2026-07-02), com E2E dos fluxos críticos (despesa compartilhada e saldo/orçamento).
+> Pendência: E2E de autenticação (login + refresh) aguarda a implementação de auth no cliente — registrada no HF-80.
 
 ---
 
-## Estado atual (gap)
+## Estado atual
 
-| Área | Hoje | Lacuna |
-|------|------|--------|
-| Runner unit/component | — | Vitest não instalado |
-| Coverage | — | sem `@vitest/coverage-v8`, sem thresholds |
-| Integration (API mockada) | — | sem MSW |
-| E2E | — | sem Playwright |
-| a11y | — | sem axe |
-| CI de teste | `ci-cd.yml` | nenhum step de teste/coverage |
-| Scripts | `dev`, `build`, `lint` | sem `typecheck`, `test`, `test:coverage`, `e2e` |
-| Enforcement de docs | — | sem `docs-guard.sh` |
+| Área | Estado |
+|------|--------|
+| Runner unit/component | Vitest 4 + Testing Library (HF-81) |
+| Coverage | `@vitest/coverage-v8`; **gate global 80%** nas 4 métricas + 90% agregado por pasta em `src/services`/`src/utils` (HF-80) |
+| Integration (API mockada) | MSW com handlers derivados do `openapi.yaml` (HF-79) |
+| E2E | Playwright: smoke, despesa compartilhada, saldo/orçamento (HF-80) |
+| a11y | axe estrito WCAG 2 A/AA nas 6 rotas (HF-82/HF-84) |
+| CI de teste | `ci-cd.yml`: typecheck, `test:coverage` (gate bloqueante), e2e |
+| Enforcement de docs | `scripts/docs-guard.sh` no CI |
 
-**Consequência:** comportamento crítico (refresh de token, mapeamento de `error.code`→pt-BR, polling de estados) hoje não tem proteção de regressão.
+**Lacuna conhecida:** E2E de auth (login/refresh) — depende de o cliente ganhar tela de login/JWT.
 
 ---
 
@@ -54,7 +53,7 @@
 | Páginas/rotas | **80%** (E2E cobre o resto) |
 | Fluxos E2E críticos | **100% dos fluxos** (auth, despesa compartilhada, saldo) |
 
-**Gate de bloqueio no CI: 80% lines/branches global** (`coverage.thresholds`), `per-file` em `src/services` e `src/utils`.
+**Gate de bloqueio no CI: 80% global nas 4 métricas** (`coverage.thresholds`), 90% agregado por pasta em `src/services` e `src/utils` (a flag `perFile` do Vitest é única para todos os grupos de threshold — com o gate global ativo, o 90% das camadas puras passou de per-file para agregado por pasta na HF-80).
 Regra herdada do backend: **cada `error.code` do envelope que a UI mapeia → 1 teste nomeado**.
 
 > Coverage é piso necessário, **não suficiente** — ver Qualidade de teste.
