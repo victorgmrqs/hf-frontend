@@ -100,3 +100,71 @@ describe('Budgets (integração)', () => {
     expect(await screen.findByRole('heading', { name: 'New Budget' })).toBeInTheDocument();
   });
 });
+
+describe('Budgets — Teto Global do Mês (HF-45)', () => {
+  const rawGlobalBudget = (overrides: Record<string, unknown> = {}) => ({
+    id: 'gb1', user_id: 'u1', competence: '2026-07', ceiling: '2500.00',
+    auto_adjusted: false, ...overrides,
+  });
+
+  it('exibe o card com teto e gasto do mês vindos da API', async () => {
+    server.use(
+      http.get('*/budgets/global', () => HttpResponse.json({ data: rawGlobalBudget(), error: null })),
+      http.get('*/balance', () =>
+        HttpResponse.json({
+          data: {
+            user_id: 'u1', competence: '2026-07', total_income: '5000.00', total_personal: '800.00',
+            total_shared: '400.00', total_expenses: '2000.00', balance_today: '3000.00',
+            committed_bills: '0', projected_balance: '3000.00', is_projected_negative: false,
+          },
+          error: null,
+        }),
+      ),
+    );
+    renderWithProviders(<Budgets />);
+
+    expect(await screen.findByRole('heading', { name: 'Teto Global do Mês' })).toBeInTheDocument();
+    expect(await screen.findByText('R$ 2.500,00')).toBeInTheDocument();
+    expect(await screen.findByText('R$ 2.000,00')).toBeInTheDocument();
+    expect(screen.getByText('80%')).toBeInTheDocument();
+  });
+
+  it('sem teto (404): CTA "Definir Teto" cria o teto e o card passa a exibi-lo', async () => {
+    const user = userEvent.setup();
+    let created = false;
+    server.use(
+      http.get('*/budgets/global', () =>
+        created
+          ? HttpResponse.json({ data: rawGlobalBudget({ ceiling: '1800.00' }), error: null })
+          : HttpResponse.json({ data: null, error: { code: 'BUDGET_NOT_FOUND' } }, { status: 404 }),
+      ),
+      http.post('*/budgets/global', () => {
+        created = true;
+        return HttpResponse.json({ data: rawGlobalBudget({ ceiling: '1800.00' }), error: null }, { status: 201 });
+      }),
+    );
+    renderWithProviders(<Budgets />);
+
+    expect(await screen.findByText(/Nenhum teto definido para este mês/)).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: /Definir Teto/ }));
+    await user.type(await screen.findByLabelText('Teto do mês'), '1800');
+    await user.click(screen.getByRole('button', { name: 'Salvar Teto' }));
+
+    await waitFor(() => expect(toast.success).toHaveBeenCalledWith('Teto global definido com sucesso'));
+    // Teto e Restante (gasto 0 no handler padrão) exibem o novo valor.
+    expect(await screen.findAllByText('R$ 1.800,00')).toHaveLength(2);
+    expect(screen.queryByText(/Nenhum teto definido para este mês/)).not.toBeInTheDocument();
+  });
+
+  it('badge Auto-ajustado aparece quando o teto veio do auto-ajuste', async () => {
+    server.use(
+      http.get('*/budgets/global', () =>
+        HttpResponse.json({ data: rawGlobalBudget({ auto_adjusted: true }), error: null }),
+      ),
+    );
+    renderWithProviders(<Budgets />);
+
+    expect(await screen.findByText('Auto-ajustado')).toBeInTheDocument();
+  });
+});

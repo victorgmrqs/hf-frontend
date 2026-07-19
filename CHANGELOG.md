@@ -8,6 +8,21 @@ versionamento [SemVer](https://semver.org/lang/pt-BR/).
 
 ### Added
 
+- (HF-45) Card "Teto Global do Mês" no topo da página de Budgets (ORC): teto vindo de
+  `GET /budgets/global` do hf-income-service (novo cliente tipado
+  `incomeService.getGlobalBudget/createGlobalBudget/updateGlobalBudget`, `ceiling`
+  string→number), total gasto do mês via `GET /balance` (`total_expenses`), restante e
+  barra de progresso com alerta de estouro (apresentação sobre os dois valores do
+  backend — migração para `ceiling_usage_pct`/`ceiling_exceeded` pendente de ORC-06/07
+  no backend). Modal "Definir/Ajustar Teto" (POST/PUT; 409 `BUDGET_ALREADY_EXISTS` e
+  `INVALID_CEILING` mapeados em pt-BR), badge "Auto-ajustado" com tooltip quando
+  `auto_adjusted=true` (ORC-03/05), estados loading/erro/vazio (404 `BUDGET_NOT_FOUND`
+  = sem teto → CTA). Novo hook `useGlobalBudget` com cancelamento de respostas
+  obsoletas e `refresh()`. Codes novos no mapeador: `BUDGET_ALREADY_EXISTS`,
+  `INVALID_CEILING`, `NO_PREVIOUS_BUDGET`, `UPSTREAM_UNAVAILABLE`. Alerta ORC-06
+  (soma dos orçamentos por categoria × teto) fica para quando o backend expuser
+  `ceiling_exceeded` — pendência registrada no ticket.
+
 - (HF-80) E2E dos fluxos críticos e gate global de cobertura 80% ativo — fim da rampa de
   testes (HF-75). Novos specs Playwright com backend stubado por endpoint:
   `e2e/expense.spec.ts` (criar despesa compartilhada, validar payload SHARED +
