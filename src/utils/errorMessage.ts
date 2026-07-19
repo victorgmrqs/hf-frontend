@@ -24,9 +24,14 @@ export const ERROR_MESSAGES: Record<string, string> = {
   // --- Gateway (upstream) ---
   UPSTREAM_TIMEOUT: 'Serviço temporariamente indisponível. Tente novamente.',
   UPSTREAM_ERROR: 'Resposta inesperada do serviço. Tente novamente.',
+  UPSTREAM_UNAVAILABLE: 'Serviço temporariamente indisponível. Tente novamente.',
 
   // --- hf-income-service (REC/ORC/SAL/MET) ---
   INVALID_COMPETENCE: 'Competência inválida.',
+  // ORC (teto global — HF-45)
+  BUDGET_ALREADY_EXISTS: 'Já existe um teto definido para este mês. Edite o valor atual.',
+  INVALID_CEILING: 'O teto deve ser um valor maior que zero.',
+  NO_PREVIOUS_BUDGET: 'Não há teto no mês anterior para basear o ajuste.',
   INVALID_AMOUNT: 'O valor informado é inválido.',
   INVALID_DATE: 'Data inválida.',
   INVALID_INCOME_TYPE: 'Tipo de receita inválido.',

@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
 import BudgetModal from '../components/BudgetModal';
+import GlobalBudgetCard from '../components/GlobalBudgetCard';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import EmptyState from '../components/EmptyState';
 import { toast } from 'sonner';
@@ -123,6 +124,9 @@ const Budgets: React.FC = () => {
             </button>
           </div>
         </header>
+
+        {/* Teto Global do Mês (ORC — HF-45) */}
+        <GlobalBudgetCard competence={competence} />
 
         {loading ? (
           <div className="py-12 text-center text-text-secondary">Loading budgets...</div>
