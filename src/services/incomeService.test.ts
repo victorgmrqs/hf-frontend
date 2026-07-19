@@ -100,6 +100,82 @@ describe('incomeService', () => {
   });
 });
 
+describe('incomeService — teto global (ORC)', () => {
+  const rawGlobalBudget = (overrides: Record<string, unknown> = {}) => ({
+    id: 'gb1', user_id: 'u1', competence: '2026-07', ceiling: '2500.00',
+    auto_adjusted: false, created_at: '2026-07-01T00:00:00Z', updated_at: '2026-07-01T00:00:00Z',
+    ...overrides,
+  });
+
+  it('getGlobalBudget faz GET /budgets/global no base URL do income e converte ceiling para number', async () => {
+    let seenUrl: URL | undefined;
+    server.use(http.get('*/budgets/global', ({ request }) => {
+      seenUrl = new URL(request.url);
+      return HttpResponse.json({ data: rawGlobalBudget({ auto_adjusted: true }), error: null });
+    }));
+    const { data, error } = await incomeService.getGlobalBudget('u1', '2026-07');
+    expect(seenUrl?.href.startsWith(config.incomeApi.baseUrl)).toBe(true);
+    expect(seenUrl?.pathname).toMatch(/\/budgets\/global$/);
+    expect(seenUrl?.searchParams.get('user_id')).toBe('u1');
+    expect(seenUrl?.searchParams.get('competence')).toBe('2026-07');
+    expect(error).toBeNull();
+    expect(data?.ceiling).toBe(2500);
+    expect(data?.auto_adjusted).toBe(true);
+  });
+
+  it('getGlobalBudget propaga BUDGET_NOT_FOUND (404 = sem teto definido) com data null', async () => {
+    server.use(http.get('*/budgets/global', () =>
+      HttpResponse.json({ data: null, error: { code: 'BUDGET_NOT_FOUND' } }, { status: 404 })));
+    const { data, error } = await incomeService.getGlobalBudget('u1', '2026-07');
+    expect(data).toBeNull();
+    expect(error).toEqual({ code: 'BUDGET_NOT_FOUND' });
+  });
+
+  it('createGlobalBudget faz POST /budgets/global com user_id, competence e ceiling', async () => {
+    let seen: { url: string; body: Record<string, unknown> } | undefined;
+    server.use(http.post('*/budgets/global', async ({ request }) => {
+      seen = { url: request.url, body: (await request.json()) as Record<string, unknown> };
+      return HttpResponse.json({ data: rawGlobalBudget(), error: null }, { status: 201 });
+    }));
+    const { data, error } = await incomeService.createGlobalBudget('u1', '2026-07', 2500);
+    expect(seen?.url).toMatch(/\/budgets\/global$/);
+    expect(seen?.body).toEqual({ user_id: 'u1', competence: '2026-07', ceiling: 2500 });
+    expect(error).toBeNull();
+    expect(data?.ceiling).toBe(2500);
+  });
+
+  it('createGlobalBudget propaga BUDGET_ALREADY_EXISTS (409) sem mapear', async () => {
+    server.use(http.post('*/budgets/global', () =>
+      HttpResponse.json({ data: null, error: { code: 'BUDGET_ALREADY_EXISTS' } }, { status: 409 })));
+    const { data, error } = await incomeService.createGlobalBudget('u1', '2026-07', 2500);
+    expect(data).toBeNull();
+    expect(error).toEqual({ code: 'BUDGET_ALREADY_EXISTS' });
+  });
+
+  it('updateGlobalBudget faz PUT /budgets/global/:id só com ceiling e converte a resposta', async () => {
+    let seen: { url: string; body: Record<string, unknown> } | undefined;
+    server.use(http.put('*/budgets/global/gb1', async ({ request }) => {
+      seen = { url: request.url, body: (await request.json()) as Record<string, unknown> };
+      return HttpResponse.json({ data: rawGlobalBudget({ ceiling: '3100.50' }), error: null });
+    }));
+    const { data, error } = await incomeService.updateGlobalBudget('gb1', 3100.5);
+    expect(seen?.url).toMatch(/\/budgets\/global\/gb1$/);
+    expect(seen?.body).toEqual({ ceiling: 3100.5 });
+    expect(error).toBeNull();
+    expect(data?.ceiling).toBe(3100.5);
+    // Edição manual: backend responde auto_adjusted=false (ORC-05)
+    expect(data?.auto_adjusted).toBe(false);
+  });
+
+  it('updateGlobalBudget propaga INVALID_CEILING sem mapear', async () => {
+    server.use(http.put('*/budgets/global/gb1', () =>
+      HttpResponse.json({ data: null, error: { code: 'INVALID_CEILING' } }, { status: 400 })));
+    const { data, error } = await incomeService.updateGlobalBudget('gb1', -1);
+    expect(data).toBeNull();
+    expect(error).toEqual({ code: 'INVALID_CEILING' });
+  });
+});
+
 function rawBalance(overrides: Record<string, unknown> = {}) {
   return {
     user_id: 'u1', competence: '2026-06', total_income: '7500.00', total_personal: '1800.00',

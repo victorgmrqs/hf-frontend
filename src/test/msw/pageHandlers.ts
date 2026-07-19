@@ -13,6 +13,9 @@ export const pageHandlers = [
   http.get('*/expenses/totals/by-category', () => ok([])),
   http.get('*/expenses/user/:id', () => ok([])),
   http.get('*/budgets/status', () => ok([])),
+  // Padrão: sem teto global definido (404 BUDGET_NOT_FOUND) — HF-45.
+  http.get('*/budgets/global', () =>
+    HttpResponse.json({ data: null, error: { code: 'BUDGET_NOT_FOUND' } }, { status: 404 })),
   http.get('*/budgets', () => ok([])),
   http.get('*/categories', () => ok([])),
   http.get('*/payment-methods/user/:id', () => ok([])),

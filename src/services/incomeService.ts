@@ -51,6 +51,36 @@ export interface Income {
   origin_id?: string | null;
 }
 
+/**
+ * Teto global mensal (domínio ORC — HF-43/HF-44 no backend). `ceiling` chega
+ * como string decimal no envelope; o cliente converte para number.
+ * `auto_adjusted` indica teto definido pelo job de auto-ajuste (ORC-03/05).
+ */
+export interface GlobalBudget {
+  id: string;
+  user_id: string;
+  competence: string;
+  ceiling: number;
+  auto_adjusted: boolean;
+}
+
+/** Resposta crua de /budgets/global — ceiling como string. */
+interface RawGlobalBudget {
+  id: string;
+  user_id: string;
+  competence: string;
+  ceiling: string;
+  auto_adjusted: boolean;
+}
+
+const toGlobalBudget = (raw: RawGlobalBudget): GlobalBudget => ({
+  id: raw.id,
+  user_id: raw.user_id,
+  competence: raw.competence,
+  ceiling: Number(raw.ceiling),
+  auto_adjusted: raw.auto_adjusted,
+});
+
 const base = config.incomeApi.baseUrl;
 
 // Cliente do hf-income-service (serviço separado). Reusa o envelope { data, error }
@@ -89,6 +119,46 @@ export const incomeService = {
       } as Balance,
       error,
     };
+  },
+
+  // Teto global do mês (ORC). GET responde 404 BUDGET_NOT_FOUND quando não há
+  // teto para a competência — o chamador trata como estado "sem teto definido".
+  getGlobalBudget: async (userId: string, competence: string) => {
+    const params = new URLSearchParams({ user_id: userId, competence });
+    const { data, error } = await apiFetch<RawGlobalBudget>(
+      `/budgets/global?${params.toString()}`,
+      undefined,
+      base,
+    );
+    if (!data) return { data: null as GlobalBudget | null, error };
+    return { data: toGlobalBudget(data), error };
+  },
+
+  createGlobalBudget: async (userId: string, competence: string, ceiling: number) => {
+    const { data, error } = await apiFetch<RawGlobalBudget>(
+      '/budgets/global',
+      {
+        method: 'POST',
+        body: JSON.stringify({ user_id: userId, competence, ceiling }),
+      },
+      base,
+    );
+    if (!data) return { data: null as GlobalBudget | null, error };
+    return { data: toGlobalBudget(data), error };
+  },
+
+  // Edição manual do teto — o backend seta auto_adjusted=false (ORC-05).
+  updateGlobalBudget: async (id: string, ceiling: number) => {
+    const { data, error } = await apiFetch<RawGlobalBudget>(
+      `/budgets/global/${id}`,
+      {
+        method: 'PUT',
+        body: JSON.stringify({ ceiling }),
+      },
+      base,
+    );
+    if (!data) return { data: null as GlobalBudget | null, error };
+    return { data: toGlobalBudget(data), error };
   },
 };
 
