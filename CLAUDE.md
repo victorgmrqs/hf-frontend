@@ -44,7 +44,7 @@ Toda chamada à API passa por `services/` — nunca `fetch` direto no componente
 
 - **Processo canônico (HF):** [../hf-income-service/docs/workflow.md](../hf-income-service/docs/workflow.md) — mesmo Jira (`HF`), mesmas colunas, mesma estratégia de branches (`main` ← `development` ← `feat/HF-XX-*`).
 - Este repo implementa tickets com prefixo **`[frontend]`**.
-- **Skills:** `/task <HF-XX>` (ciclo completo), `/code-review-task <HF-XX>` (gate de review), `/docs-sync` (sincroniza docs). Ver `.claude/skills/`.
+- **Skills:** `/task <HF-XX>` (ciclo completo), `/code-review-task <HF-XX>` (gate de review), `/docs-sync` (sincroniza docs) — fornecidas pelo plugin `dev-workflow`, configurado em [.dev-workflow/workflow.config.yaml](.dev-workflow/workflow.config.yaml). `/backfill-tests` continua local em `.claude/skills/`.
 - Evidência de ticket frontend: **screenshot/GIF + passos de reprodução** no PR.
 - Documentação Viva local: `CHANGELOG.md` em toda task (docs-guard no CI).
 

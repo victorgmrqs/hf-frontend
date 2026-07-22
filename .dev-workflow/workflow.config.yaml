@@ -1,0 +1,105 @@
+# dev-workflow — configuração por projeto
+# Gerado por /setup-project em 2026-07-22, migrando o processo já em produção
+# neste repo (.claude/skills/{task,code-review-task,docs-sync} + docs-guard.sh)
+# para as skills dev-workflow:*. Este arquivo é a ÚNICA fonte de parâmetros
+# das skills /task, /code-review-task e /docs-sync.
+
+schema_version: 1
+
+platforms:
+  - claude-code
+
+project:
+  name: hf-frontend
+  language: pt-BR
+  repo_role: frontend            # multi-repo: hf-transaction-service + hf-income-service são os backends
+  canonical_docs_path: "../hf-income-service"   # processo canônico HF: docs/workflow.md
+
+tracker:
+  provider: jira
+  mcp_server: MCP_DOCKER
+  project_key: HF
+  cloud_id: ${HF_JIRA_CLOUD_ID}
+  url: ${HF_JIRA_URL}
+  ticket_prefix_guard: "[backend]"   # ticket de outro repo mais comum; outros prefixos do processo HF: [infra], [database], [observability], [cross-service], [docs] — se casar, /task para
+  columns:
+    todo: "To Do"
+    in_progress: "In Progress"
+    in_review: "In Review"
+    done: "Done"
+
+git:
+  base_branch: development
+  branch_pattern: "feat/{ticket}-{slug}"   # bugfix usa fix/{ticket}-{slug}
+  commit_pattern: "{type}({ticket}): {message}"
+
+commands:
+  lint: "npm run lint"
+  typecheck: "npm run typecheck"
+  test: "npm run test"
+  coverage: "npm run test:coverage"
+  build: "npm run build"
+  e2e: "npm run e2e"
+
+quality_gates:
+  review_pack: react-next   # mais próximo disponível (Vite+React, sem SSR); único item que não se aplica é NEXT_PUBLIC_* — aqui é VITE_*
+  coverage_threshold: 80
+  coverage_strict_paths:
+    src/services: 90        # agregado por pasta desde a HF-80 (thresholds.perFile do Vitest é único p/ todos os grupos)
+    src/utils: 90
+
+domains: []
+  # Não há docs/fdds/ neste repo — as regras de negócio (USR/DSP/FPG/CAT/PER/CAL/MET/CTP)
+  # vivem todas em RULES.md (ver context_files abaixo), não em FDDs por domínio.
+
+context_files:
+  - CLAUDE.md
+  - RULES.md
+  - docs/testing-strategy.md
+
+docs_map:
+  - if_diff_touches: "package.json"
+    update: ["CHANGELOG.md"]     # seção Dependencies
+    severity: blocker
+  - if_diff_touches: "src/**"
+    update: ["CHANGELOG.md"]
+    severity: blocker
+  - if_diff_touches: "src/test/msw/**"
+    update: ["docs/testing-strategy.md"]
+    severity: recommendation
+
+documentation_policy:
+  changelog:
+    required_for_every_task: true
+    path: CHANGELOG.md
+    section: Unreleased
+    require_ticket_link: true
+    allowed_categories: [Added, Changed, Fixed, Security, Deprecated, Removed, Maintenance]
+  technical:
+    source_of_truth: repository
+    paths: [CLAUDE.md, RULES.md, docs/]
+  functional:
+    source_of_truth: confluence
+  delivery_log:
+    required_for_every_task: true
+    page_title: "Histórico de entregas"
+    page_id: ${HF_CONFLUENCE_DELIVERY_LOG_PAGE_ID}
+
+evidence:
+  type: screenshot
+  path: "evidence/"
+
+confluence:
+  enabled: true
+  mcp_server: MCP_DOCKER
+  space: "HF"
+  business_docs: []
+
+dod_extra:
+  - "[ ] responsivo ≥ 360px nas telas tocadas"
+  - "[ ] tokens/segredos nunca em log/console; só VITE_* exposto no bundle"
+
+integrations:
+  atlassian:
+    capability_discovery: true
+    fallback: local
