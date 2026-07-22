@@ -87,6 +87,12 @@ versionamento [SemVer](https://semver.org/lang/pt-BR/).
 
 ### Fixed
 
+- (HF-120) `financeService.getExpenses` e `incomeService.getIncomes` agora toleram o
+  payload aninhado que o backend às vezes devolve (`{data: {data: [...]}}` em expenses,
+  `{data: {items: [...]}}` em income) além do array simples documentado em
+  `ApiResponseExpenses` (`openapi.yaml`), sempre normalizando para `Expense[]`/`Income[]`.
+  Divergência de contrato registrada no ticket para os times de backend avaliarem a
+  causa raiz — este é um workaround defensivo no cliente, não a correção definitiva.
 - (HF-85) Acessibilidade de modais/formulários: selects de `ExpenseModal` (Paid by,
   Category, Payment Method), `AccountPayableModal` (Recurrence), `PayAccountModal`
   (Payment Method, Category) e `EditCategoryModal` agora têm nome acessível (label

@@ -176,6 +176,53 @@ describe('incomeService — teto global (ORC)', () => {
   });
 });
 
+describe('incomeService.getIncomes — formatos de payload (HF-120)', () => {
+  it('retorna a lista quando data é um array simples (formato documentado)', async () => {
+    server.use(
+      http.get('*/income', () => HttpResponse.json({ data: [{ id: 'i1' }, { id: 'i2' }], error: null })),
+    );
+    const { data, error } = await incomeService.getIncomes('u1', '2026-06');
+    expect(error).toBeNull();
+    expect(data).toEqual([{ id: 'i1' }, { id: 'i2' }]);
+  });
+
+  it('desembrulha quando data vem como {items: Income[]} (divergência de contrato)', async () => {
+    server.use(
+      http.get('*/income', () => HttpResponse.json({ data: { items: [{ id: 'i1' }] }, error: null })),
+    );
+    const { data, error } = await incomeService.getIncomes('u1', '2026-06');
+    expect(error).toBeNull();
+    expect(data).toEqual([{ id: 'i1' }]);
+  });
+
+  it('retorna [] quando data aninhado não traz um array (formato inesperado)', async () => {
+    server.use(
+      http.get('*/income', () => HttpResponse.json({ data: { items: null }, error: null })),
+    );
+    const { data, error } = await incomeService.getIncomes('u1', '2026-06');
+    expect(error).toBeNull();
+    expect(data).toEqual([]);
+  });
+
+  it('retorna [] quando data é null sem erro (resposta vazia)', async () => {
+    server.use(http.get('*/income', () => HttpResponse.json({ data: null, error: null })));
+    const { data, error } = await incomeService.getIncomes('u1', '2026-06');
+    expect(error).toBeNull();
+    expect(data).toEqual([]);
+  });
+
+  it('propaga o erro do envelope sem tentar desembrulhar', async () => {
+    server.use(
+      http.get('*/income', () =>
+        HttpResponse.json({ data: null, error: { code: 'INVALID_USER_ID' } }, { status: 400 }),
+      ),
+    );
+    const { data, error } = await incomeService.getIncomes('u1', '2026-06');
+    expect(data).toBeNull();
+    expect(error).toEqual({ code: 'INVALID_USER_ID' });
+  });
+});
+
 function rawBalance(overrides: Record<string, unknown> = {}) {
   return {
     user_id: 'u1', competence: '2026-06', total_income: '7500.00', total_personal: '1800.00',
