@@ -78,13 +78,31 @@ export const financeService = {
   getUsers: () => apiFetch<User[]>('/users'),
   getCategories: () => apiFetch<Category[]>('/categories'),
   getPaymentMethods: (userId: string) => apiFetch<PaymentMethod[]>(`/payment-methods/user/${userId}`),
-  getExpenses: (userId: string, competence?: string, type?: string, categoryId?: string) => {
+  getExpenses: async (userId: string, competence?: string, type?: string, categoryId?: string) => {
     const params = new URLSearchParams();
     if (competence) params.append('competence', competence);
     if (type) params.append('type', type);
     if (categoryId) params.append('category_id', categoryId);
     const query = params.toString();
-    return apiFetch<Expense[]>(`/expenses/user/${userId}${query ? `?${query}` : ''}`);
+    const result = await apiFetch<Expense[] | { data: Expense[] }>(`/expenses/user/${userId}${query ? `?${query}` : ''}`);
+    
+    if (result.error) {
+      return { data: null, error: result.error };
+    }
+    
+    let expensesList: Expense[] = [];
+    if (result.data) {
+      if (Array.isArray(result.data)) {
+        expensesList = result.data;
+      } else if (typeof result.data === 'object' && 'data' in result.data) {
+        const nestedData = (result.data as { data: Expense[] }).data;
+        if (Array.isArray(nestedData)) {
+          expensesList = nestedData;
+        }
+      }
+    }
+    
+    return { data: expensesList, error: null };
   },
   getTotals: (userId: string, competence: string) =>
     apiFetch<{ total_personal: number; total_shared: number; total_general: number }>(`/expenses/user/${userId}/totals?competence=${competence}`),
