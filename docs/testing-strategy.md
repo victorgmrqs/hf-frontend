@@ -4,6 +4,11 @@
 > Fonte de verdade de processo (HF): [../../hf-income-service/docs/workflow.md](../../hf-income-service/docs/workflow.md).
 > Status: **aplicado** — fundação instalada em HF-81 (Vitest+coverage v8, Testing Library, MSW, Playwright, axe, docs-guard, gates de CI), cobertura real via backfill HF-76…HF-79 e **gate global 80% ativo desde a HF-80** (2026-07-02), com E2E dos fluxos críticos (despesa compartilhada e saldo/orçamento).
 > Pendência: E2E de autenticação (login + refresh) aguarda a implementação de auth no cliente — registrada no HF-80.
+>
+> Receita concreta por tipo de artefato (setup pattern, o que testar, quando pular): skill `testing-guide-hf-frontend`
+> (`.claude/skills/testing-guide-hf-frontend/`, gerada via `/generate-test-guide`, HF-121). Este documento é o status
+> de alto nível e a fonte de metas de cobertura/anti-padrões; a skill é o "como" por tipo (services/utils/hooks/
+> contexts/components/pages/e2e).
 
 ---
 
@@ -33,13 +38,8 @@
    a11y (axe) atravessa component + E2E
 ```
 
-| Camada | Ferramenta | Valida | Onde mora |
-|--------|-----------|--------|-----------|
-| Unit | Vitest | `src/utils`, `src/services` (cliente API, parsing, mapeamento de erro), auth/refresh | `*.test.ts` ao lado |
-| Component | Vitest + Testing Library | render, interação, **estados error/loading/empty** | `*.test.tsx` ao lado |
-| Integration | Vitest + RTL + **MSW** | tela ↔ API mockada, submit de form, navegação (react-router) | `*.test.tsx` |
-| E2E | **Playwright** | auth (login/refresh), criação de despesa compartilhada, fluxos de saldo/orçamento | `e2e/` |
-| a11y | **@axe-core/playwright** + `vitest-axe` | ARIA, teclado, contraste | dentro de E2E e component |
+Mapeamento por tipo de artefato (services, utils, hooks, contexts, components, pages, e2e) com setup pattern e
+exemplos reais do projeto: ver o quick reference da skill `testing-guide-hf-frontend` (`SKILL.md` §4).
 
 ---
 
