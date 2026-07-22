@@ -86,10 +86,28 @@ const base = config.incomeApi.baseUrl;
 // Cliente do hf-income-service (serviço separado). Reusa o envelope { data, error }
 // do apiFetch, apontando para o base URL do income.
 export const incomeService = {
-  getIncomes: (userId: string, competence: string, type?: string) => {
+  getIncomes: async (userId: string, competence: string, type?: string) => {
     const params = new URLSearchParams({ user_id: userId, competence });
     if (type) params.append('type', type);
-    return apiFetch<Income[]>(`/income?${params.toString()}`, undefined, base);
+    const result = await apiFetch<Income[] | { items: Income[] }>(`/income?${params.toString()}`, undefined, base);
+
+    if (result.error) {
+      return { data: null, error: result.error };
+    }
+
+    let incomeList: Income[] = [];
+    if (result.data) {
+      if (Array.isArray(result.data)) {
+        incomeList = result.data;
+      } else if (typeof result.data === 'object' && 'items' in result.data) {
+        const nestedItems = (result.data as { items: Income[] }).items;
+        if (Array.isArray(nestedItems)) {
+          incomeList = nestedItems;
+        }
+      }
+    }
+
+    return { data: incomeList, error: null };
   },
   createIncome: (data: Record<string, unknown>) =>
     apiFetch<Income>('/income', { method: 'POST', body: JSON.stringify(data) }, base),

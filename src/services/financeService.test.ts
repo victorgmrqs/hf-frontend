@@ -144,6 +144,57 @@ describe('financeService — propagação de erro do envelope', () => {
   });
 });
 
+describe('financeService.getExpenses — formatos de payload (HF-120)', () => {
+  it('retorna a lista quando data é um array simples (formato documentado)', async () => {
+    server.use(
+      http.get('*/expenses/user/*', () =>
+        HttpResponse.json({ data: [{ id: 'e1' }, { id: 'e2' }], error: null }),
+      ),
+    );
+    const { data, error } = await financeService.getExpenses('u1');
+    expect(error).toBeNull();
+    expect(data).toEqual([{ id: 'e1' }, { id: 'e2' }]);
+  });
+
+  it('desembrulha quando data vem aninhado como {data: Expense[]} (divergência de contrato)', async () => {
+    server.use(
+      http.get('*/expenses/user/*', () =>
+        HttpResponse.json({ data: { data: [{ id: 'e1' }] }, error: null }),
+      ),
+    );
+    const { data, error } = await financeService.getExpenses('u1');
+    expect(error).toBeNull();
+    expect(data).toEqual([{ id: 'e1' }]);
+  });
+
+  it('retorna [] quando data aninhado não traz um array (formato inesperado)', async () => {
+    server.use(
+      http.get('*/expenses/user/*', () => HttpResponse.json({ data: { data: null }, error: null })),
+    );
+    const { data, error } = await financeService.getExpenses('u1');
+    expect(error).toBeNull();
+    expect(data).toEqual([]);
+  });
+
+  it('retorna [] quando data é null sem erro (resposta vazia)', async () => {
+    server.use(http.get('*/expenses/user/*', () => HttpResponse.json({ data: null, error: null })));
+    const { data, error } = await financeService.getExpenses('u1');
+    expect(error).toBeNull();
+    expect(data).toEqual([]);
+  });
+
+  it('propaga o erro do envelope sem tentar desembrulhar', async () => {
+    server.use(
+      http.get('*/expenses/user/*', () =>
+        HttpResponse.json({ data: null, error: { code: 'INVALID_USER_ID' } }, { status: 400 }),
+      ),
+    );
+    const { data, error } = await financeService.getExpenses('u1');
+    expect(data).toBeNull();
+    expect(error).toEqual({ code: 'INVALID_USER_ID' });
+  });
+});
+
 describe('financeService.getAvailableCompetences', () => {
   it('injeta o mês atual, deduplica e ordena desc', async () => {
     vi.useFakeTimers();
