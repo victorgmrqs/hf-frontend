@@ -70,10 +70,14 @@ versionamento [SemVer](https://semver.org/lang/pt-BR/).
   (e espelho `.agents/skills/`) removidas em favor de `.dev-workflow/workflow.config.yaml`
   + `AGENTS.md`. `scripts/docs-guard.sh` e `.github/pull_request_template.md` mantidos
   (mais completos que os templates do plugin). `/backfill-tests` permanece local (sem
-  equivalente no plugin). Geradas via `/generate-rules`: 5 rules path-scoped em
-  `.claude/rules/` (architecture-layers, error-handling, api-conventions, testing,
-  coding-style) derivadas do código real do projeto. Sem mudança de comportamento em
-  produção.
+  equivalente no plugin). Geradas via `/generate-rules`: 4 rules path-scoped em
+  `.claude/rules/` (architecture-layers, error-handling, api-conventions,
+  coding-style) derivadas do código real do projeto. Geradas via `/generate-test-guide`:
+  skill multi-arquivo `testing-guide-hf-frontend` (`.claude/skills/`) com recipe por
+  tipo de artefato (services/utils/hooks/contexts/components/pages/e2e) — substitui a
+  rule `testing.md` (removida) e enxuga `docs/testing-strategy.md` (que passa a apontar
+  para a skill para o "como" por tipo, mantendo status/metas de cobertura/anti-padrões).
+  Sem mudança de comportamento em produção.
 
 ### Tests
 
