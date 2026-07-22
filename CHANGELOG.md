@@ -63,6 +63,18 @@ versionamento [SemVer](https://semver.org/lang/pt-BR/).
   `FamilyVisionSection`. Seção sempre visível; estado informativo quando há menos
   de 2 usuários.
 
+### Maintenance
+
+- (HF-121) Migração de `/task`, `/code-review-task` e `/docs-sync` para o plugin
+  `dev-workflow`: skills locais `.claude/skills/{task,code-review-task,docs-sync}`
+  (e espelho `.agents/skills/`) removidas em favor de `.dev-workflow/workflow.config.yaml`
+  + `AGENTS.md`. `scripts/docs-guard.sh` e `.github/pull_request_template.md` mantidos
+  (mais completos que os templates do plugin). `/backfill-tests` permanece local (sem
+  equivalente no plugin). Geradas via `/generate-rules`: 5 rules path-scoped em
+  `.claude/rules/` (architecture-layers, error-handling, api-conventions, testing,
+  coding-style) derivadas do código real do projeto. Sem mudança de comportamento em
+  produção.
+
 ### Tests
 
 - (HF-79) Backfill de testes de integração das 5 páginas (Dashboard, Expenses, Budgets,
