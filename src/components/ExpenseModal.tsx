@@ -3,6 +3,7 @@ import { X, ChevronDown, Check, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { financeService, Category, PaymentMethod, Expense } from '../services/financeService';
 import { messageForError } from '../utils/errorMessage';
+import { buildSharedUserIds, equalSplit, isEqualSplit, percentsFromAmounts, rebalance, sumSplits } from '../utils/split';
 import { useUser } from '../hooks/useUser';
 
 interface ExpenseModalProps {
@@ -27,6 +28,9 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({ expense, isOpen, onClose, o
   const [payerId, setPayerId] = useState('');
   const [isShared, setIsShared] = useState(false);
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
+  const [splits, setSplits] = useState<Record<string, number>>({});
+  const [splitsTouched, setSplitsTouched] = useState(false);
+  const splitsKeyRef = useRef<string>('');
   const prevPayerIdRef = useRef<string>('');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [apiError, setApiError] = useState('');
@@ -48,6 +52,17 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({ expense, isOpen, onClose, o
           ?.map(p => p.user_id)
           .filter(uid => uid !== expense.user_id) || [];
         setSelectedUserIds(otherParticipants);
+        if (expense.type === 'SHARED' && expense.shared_with?.length && expense.value > 0) {
+          const derived = percentsFromAmounts(expense.value, expense.shared_with);
+          const ids = [expense.user_id, ...otherParticipants];
+          setSplits(derived);
+          setSplitsTouched(!isEqualSplit(ids, derived));
+          splitsKeyRef.current = [...ids].sort().join(',');
+        } else {
+          setSplits({});
+          setSplitsTouched(false);
+          splitsKeyRef.current = '';
+        }
       } else {
         setAmount('');
         setDescription('');
@@ -58,27 +73,62 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({ expense, isOpen, onClose, o
         prevPayerIdRef.current = currentUser.id;
         setIsShared(false);
         setSelectedUserIds([]);
+        setSplits({});
+        setSplitsTouched(false);
+        splitsKeyRef.current = '';
       }
       setErrors({});
       setApiError('');
     }
   }, [isOpen, expense, currentUser]);
 
-  // DSP-07: sync participants when payer changes
-  useEffect(() => {
-    if (!isShared || !payerId) return;
+  // DSP-07: sync participants when payer changes — num único batch, para o conjunto
+  // de participantes não passar por um estado transiente que resetaria o rateio
+  const handlePayerChange = (newPayerId: string) => {
     const prevId = prevPayerIdRef.current;
-    if (prevId && prevId !== payerId) {
+    if (isShared && prevId && prevId !== newPayerId) {
       setSelectedUserIds(prev => {
-        const withoutNewPayer = prev.filter(uid => uid !== payerId);
+        const withoutNewPayer = prev.filter(uid => uid !== newPayerId);
         if (!withoutNewPayer.includes(prevId)) {
           return [...withoutNewPayer, prevId];
         }
         return withoutNewPayer;
       });
     }
-    prevPayerIdRef.current = payerId;
-  }, [payerId]);
+    setPayerId(newPayerId);
+    prevPayerIdRef.current = newPayerId;
+  };
+
+  const participantIds = isShared && payerId
+    ? [payerId, ...allUsers.map(u => u.id).filter(id => id !== payerId && selectedUserIds.includes(id))]
+    : [];
+  // Chave insensível à ordem: trocar o pagador entre os mesmos participantes não reseta o rateio
+  const participantsSetKey = [...participantIds].sort().join(',');
+  const participantIdsRef = useRef<string[]>([]);
+  participantIdsRef.current = participantIds;
+
+  // Recalcula a divisão igualitária padrão sempre que o conjunto de participantes muda
+  useEffect(() => {
+    if (!participantsSetKey || participantsSetKey === splitsKeyRef.current) return;
+    const ids = participantIdsRef.current;
+    const eq = equalSplit(ids.length);
+    const next: Record<string, number> = {};
+    ids.forEach((id, i) => { next[id] = eq[i]; });
+    setSplits(next);
+    setSplitsTouched(false);
+    splitsKeyRef.current = participantsSetKey;
+  }, [participantsSetKey]);
+
+  const handleSplitChange = (id: string, raw: string) => {
+    setSplitsTouched(true);
+    const parsed = parseFloat(raw.replace(',', '.'));
+    if (isNaN(parsed)) {
+      setSplits(prev => ({ ...prev, [id]: NaN }));
+      return;
+    }
+    const clamped = Math.min(Math.max(parsed, 0), 100);
+    setSplits(prev => rebalance(participantIds, prev, id, clamped));
+  };
 
   const loadInitialData = async () => {
     if (!currentUser) return;
@@ -96,10 +146,21 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({ expense, isOpen, onClose, o
 
   const sharedError = isShared && selectedUserIds.length < 1;
 
+  const splitSum = sumSplits(participantIds, splits);
+  // DSP-12 (cortesia de UX — a autoridade da validação é o backend)
+  const splitError = isShared && participantIds.length >= 2 && (
+    Math.abs(splitSum - 100) > 0.001 ||
+    participantIds.some(id => !(splits[id] > 0) || splits[id] > 100)
+  );
+
+  const parsedPreviewAmount = parseFloat(amount.replace(',', '.'));
+  const previewBase = Number.isFinite(parsedPreviewAmount) && parsedPreviewAmount > 0 ? parsedPreviewAmount : 0;
+  const formatBRL = (n: number) => n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!currentUser) return;
-    if (sharedError) return;
+    if (sharedError || splitError) return;
 
     const newErrors: Record<string, string> = {};
     const parsedAmount = parseFloat(amount.replace(',', '.'));
@@ -126,7 +187,7 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({ expense, isOpen, onClose, o
       user_id: payerId,
       category_id: categoryId || null,
       payment_method_id: paymentMethodId,
-      shared_user_ids: isShared ? Array.from(new Set([...selectedUserIds, payerId])) : []
+      shared_user_ids: isShared ? buildSharedUserIds(participantIds, splits, splitsTouched) : []
     };
 
     const { error } = expense
@@ -218,7 +279,7 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({ expense, isOpen, onClose, o
                   required
                   className="w-full bg-input-dark border border-border-dark rounded-lg h-12 px-4 text-white appearance-none cursor-pointer outline-none"
                   value={payerId}
-                  onChange={(e) => setPayerId(e.target.value)}
+                  onChange={(e) => handlePayerChange(e.target.value)}
                 >
                   {allUsers.map(u => (
                     <option key={u.id} value={u.id}>{u.name} {u.id === currentUser?.id ? '(Me)' : ''}</option>
@@ -327,6 +388,47 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({ expense, isOpen, onClose, o
                     Despesas compartilhadas precisam de pelo menos 2 participantes
                   </p>
                 )}
+                {participantIds.length >= 2 && (
+                  <div className="mt-4 flex flex-col gap-2">
+                    <label className="text-text-secondary text-sm font-medium">Split percentages:</label>
+                    {participantIds.map(id => {
+                      const participant = allUsers.find(u => u.id === id);
+                      if (!participant) return null;
+                      const pct = splits[id];
+                      return (
+                        <div key={id} className="flex items-center gap-3">
+                          <div className="w-6 h-6 rounded-full bg-gray-600 flex items-center justify-center text-[10px] text-white font-bold uppercase shrink-0">
+                            {participant.name.charAt(0)}
+                          </div>
+                          <span className="text-sm text-white flex-1 truncate">
+                            {participant.name}{id === payerId ? ' (paga)' : ''}
+                          </span>
+                          <div className="relative w-24 shrink-0">
+                            <input
+                              type="number"
+                              min="0.01"
+                              max="100"
+                              step="0.01"
+                              aria-label={`Percentual de ${participant.name}`}
+                              className="w-full bg-input-dark border border-border-dark rounded-lg h-10 pl-3 pr-7 text-white text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+                              value={Number.isFinite(pct) ? pct : ''}
+                              onChange={(e) => handleSplitChange(id, e.target.value)}
+                            />
+                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-text-secondary text-sm pointer-events-none">%</span>
+                          </div>
+                          <span className="text-sm text-text-secondary w-28 text-right shrink-0">
+                            {formatBRL(Number.isFinite(pct) ? (previewBase * pct) / 100 : 0)}
+                          </span>
+                        </div>
+                      );
+                    })}
+                    {splitError && (
+                      <p className="text-rose-400 text-xs mt-1">
+                        Os percentuais devem somar exatamente 100% e ser maiores que 0 (soma atual: {splitSum}%)
+                      </p>
+                    )}
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -338,7 +440,7 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({ expense, isOpen, onClose, o
           </button>
           <button
             type="submit"
-            disabled={loading || sharedError}
+            disabled={loading || sharedError || splitError}
             className="px-6 py-2.5 rounded-lg bg-primary-strong hover:bg-blue-700 text-white font-semibold shadow-lg flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading && <Loader2 size={18} className="animate-spin" />}
