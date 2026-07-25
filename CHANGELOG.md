@@ -6,6 +6,22 @@ versionamento [SemVer](https://semver.org/lang/pt-BR/).
 
 ## [Unreleased]
 
+### Fixed
+
+- `openapi.yaml`/`RULES.md` sincronizados com o contrato real do backend, achado durante
+  migração de documentação (Notion → Confluence, 2026-07-22): `shared_user_ids` agora
+  documenta o rateio percentual variável (`{user_id, split_pct}`, DSP-10/11/12, entregue
+  pela HF-48) em `CreateExpenseRequest` e `UpdateExpenseRequest` (este último não tinha
+  `shared_user_ids` documentado). MET-03 corrigido de "Planejado" para "Implementado"
+  (HF-12). Isso desbloqueia a HF-49 (rateio customizável no `ExpenseModal`), que
+  referenciava incorretamente HF-43 como dependência — corrigido no ticket.
+- `openapi.yaml` passou a documentar os endpoints do **hf-income-service** já consumidos
+  pelo cliente (`incomeService`) mas ausentes do contrato: `/income` (+`/income/{id}`),
+  `/budgets/global` (+`/{id}`, `/preview-next`, `/auto-adjust`) e `/balance`. Segundo
+  `server` adicionado (`http://localhost:8081/api/v1`, `VITE_INCOME_API_URL`) com
+  override por path. `/goals/reduction` (hf-income-service) não incluído — ainda sem
+  cliente no frontend (HF-47 não implementada).
+
 ### Added
 
 - (HF-45) Card "Teto Global do Mês" no topo da página de Budgets (ORC): teto vindo de
