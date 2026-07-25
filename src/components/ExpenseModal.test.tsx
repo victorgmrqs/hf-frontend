@@ -218,4 +218,134 @@ describe('ExpenseModal', () => {
     expect(screen.queryByText('Despesas compartilhadas precisam de pelo menos 2 participantes')).toBeNull();
     expect(screen.getByRole('button', { name: 'Save Expense' })).toBeEnabled();
   });
+
+  it('ExpenseModal_SharedDefault_ShowsEqualPercentages', async () => {
+    const user = userEvent.setup();
+    render(<ExpenseModal isOpen onClose={noop} onSuccess={noop} />);
+
+    await user.click(screen.getByRole('checkbox'));
+
+    expect(screen.getByText('Split percentages:')).toBeInTheDocument();
+    expect(screen.getByLabelText('Percentual de Ana')).toHaveValue(50);
+    expect(screen.getByLabelText('Percentual de Bruno')).toHaveValue(50);
+  });
+
+  it('ExpenseModal_ChangePct_RebalancesOthersProportionally', async () => {
+    const user = userEvent.setup();
+    render(<ExpenseModal isOpen onClose={noop} onSuccess={noop} />);
+
+    await user.click(screen.getByRole('checkbox'));
+    const anaInput = screen.getByLabelText('Percentual de Ana');
+    await user.clear(anaInput);
+    await user.type(anaInput, '70');
+
+    expect(anaInput).toHaveValue(70);
+    expect(screen.getByLabelText('Percentual de Bruno')).toHaveValue(30);
+    expect(screen.queryByText(/devem somar exatamente 100%/)).toBeNull();
+  });
+
+  it('ExpenseModal_SumNot100_ShowsInlineAlertAndBlocksSubmit', async () => {
+    const user = userEvent.setup();
+    render(<ExpenseModal isOpen onClose={noop} onSuccess={noop} />);
+
+    await user.click(screen.getByRole('checkbox'));
+    await user.clear(screen.getByLabelText('Percentual de Ana'));
+
+    expect(await screen.findByText(/devem somar exatamente 100%/)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Save Expense' })).toBeDisabled();
+  });
+
+  it('ExpenseModal_ShowsCurrencyPreviewPerParticipant', async () => {
+    const user = userEvent.setup();
+    render(<ExpenseModal isOpen onClose={noop} onSuccess={noop} />);
+
+    await user.type(screen.getByPlaceholderText('0,00'), '700');
+    await user.click(screen.getByRole('checkbox'));
+
+    // 50% de R$ 700 para cada participante
+    expect(screen.getAllByText(/R\$\s?350,00/)).toHaveLength(2);
+  });
+
+  it('ExpenseModal_Submit_CustomSplit_SendsUserIdSplitPctObjects', async () => {
+    const user = userEvent.setup();
+    const onSuccess = vi.fn();
+    let body: Record<string, unknown> = {};
+    server.use(
+      http.post('*/expenses', async ({ request }) => {
+        body = (await request.json()) as Record<string, unknown>;
+        return HttpResponse.json({ data: { id: 'e3' }, error: null }, { status: 201 });
+      }),
+    );
+    render(<ExpenseModal isOpen onClose={noop} onSuccess={onSuccess} />);
+
+    await waitFor(() => expect(screen.getByRole('option', { name: 'Cartão' })).toBeInTheDocument());
+    await user.type(screen.getByPlaceholderText('0,00'), '100');
+    await user.type(screen.getByPlaceholderText(/Weekly Groceries/), 'Rateio 70/30');
+    await user.click(screen.getByRole('checkbox'));
+    const anaInput = screen.getByLabelText('Percentual de Ana');
+    await user.clear(anaInput);
+    await user.type(anaInput, '70');
+    await user.click(screen.getByRole('button', { name: 'Save Expense' }));
+
+    await waitFor(() => expect(onSuccess).toHaveBeenCalled());
+    expect(body.shared_user_ids).toEqual([
+      { user_id: 'u1', split_pct: 70 },
+      { user_id: 'u2', split_pct: 30 },
+    ]);
+  });
+
+  it('ExpenseModal_Submit_DefaultSplit_SendsStringArray', async () => {
+    const user = userEvent.setup();
+    const onSuccess = vi.fn();
+    let body: Record<string, unknown> = {};
+    server.use(
+      http.post('*/expenses', async ({ request }) => {
+        body = (await request.json()) as Record<string, unknown>;
+        return HttpResponse.json({ data: { id: 'e4' }, error: null }, { status: 201 });
+      }),
+    );
+    render(<ExpenseModal isOpen onClose={noop} onSuccess={onSuccess} />);
+
+    await waitFor(() => expect(screen.getByRole('option', { name: 'Cartão' })).toBeInTheDocument());
+    await user.type(screen.getByPlaceholderText('0,00'), '100');
+    await user.type(screen.getByPlaceholderText(/Weekly Groceries/), 'Rateio padrão');
+    await user.click(screen.getByRole('checkbox'));
+    await user.click(screen.getByRole('button', { name: 'Save Expense' }));
+
+    await waitFor(() => expect(onSuccess).toHaveBeenCalled());
+    // sem customização: array de strings — o backend faz a divisão igualitária (DSP-11)
+    expect(body.shared_user_ids).toEqual(['u1', 'u2']);
+  });
+
+  it('ExpenseModal_SwapPayer_PreservesCustomSplitForSameParticipants', async () => {
+    const user = userEvent.setup();
+    render(<ExpenseModal isOpen onClose={noop} onSuccess={noop} />);
+
+    await user.click(screen.getByRole('checkbox'));
+    const anaInput = screen.getByLabelText('Percentual de Ana');
+    await user.clear(anaInput);
+    await user.type(anaInput, '70');
+
+    await user.selectOptions(screen.getByLabelText('Paid by'), 'u2');
+
+    // mesmo conjunto de participantes: o rateio customizado não pode ser resetado
+    expect(screen.getByLabelText('Percentual de Ana')).toHaveValue(70);
+    expect(screen.getByLabelText('Percentual de Bruno')).toHaveValue(30);
+  });
+
+  it('ExpenseModal_EditShared_DerivesPercentagesFromDividedAmount', async () => {
+    const customExpense: Expense = {
+      ...sharedExpense,
+      shared_with: [
+        { user_id: 'u1', name: 'Ana', divided_amount: 140 },
+        { user_id: 'u2', name: 'Bruno', divided_amount: 60 },
+      ],
+    };
+    render(<ExpenseModal expense={customExpense} isOpen onClose={noop} onSuccess={noop} />);
+
+    expect(screen.getByLabelText('Percentual de Ana')).toHaveValue(70);
+    expect(screen.getByLabelText('Percentual de Bruno')).toHaveValue(30);
+    expect(screen.getByText(/R\$\s?140,00/)).toBeInTheDocument();
+    expect(screen.getByText(/R\$\s?60,00/)).toBeInTheDocument();
+  });
 });
