@@ -11,7 +11,9 @@ info:
 
 servers:
   - url: http://localhost:8080
-    description: Ambiente local
+    description: hf-transaction-service (ambiente local)
+  - url: http://localhost:8081/api/v1
+    description: hf-income-service (ambiente local, VITE_INCOME_API_URL)
 
 tags:
   - name: Health
@@ -28,6 +30,12 @@ tags:
     description: Metas e Orçamentos
   - name: Accounts Payable
     description: Contas a Pagar
+  - name: Income
+    description: Receitas (hf-income-service, domínio REC)
+  - name: Global Budget
+    description: Teto global mensal (hf-income-service, domínio ORC)
+  - name: Balance
+    description: Saldo mensal (hf-income-service, domínio SAL)
 
 paths:
   /health:
@@ -736,6 +744,271 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponseAccountPayable'
 
+  # ─── hf-income-service (servidor separado — ver `servers` acima) ───────────
+
+  /income:
+    servers:
+      - url: http://localhost:8081/api/v1
+    post:
+      tags: [Income]
+      summary: Criar receita
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateIncomeRequest'
+      responses:
+        '201':
+          description: Receita criada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseIncome'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+    get:
+      tags: [Income]
+      summary: Listar receitas por usuário e competência
+      parameters:
+        - name: user_id
+          in: query
+          required: true
+          schema: { type: string, format: uuid }
+        - name: competence
+          in: query
+          required: true
+          schema: { type: string, pattern: '^\d{4}-\d{2}$' }
+        - name: type
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/IncomeType'
+      responses:
+        '200':
+          description: Lista de receitas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseIncomes'
+
+  /income/{id}:
+    servers:
+      - url: http://localhost:8081/api/v1
+    put:
+      tags: [Income]
+      summary: Editar receita (aplica a partir da competência atual — REC-03)
+      parameters:
+        - $ref: '#/components/parameters/UuidPathId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateIncomeRequest'
+      responses:
+        '200':
+          description: Receita atualizada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseIncome'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags: [Income]
+      summary: Excluir receita (soft delete)
+      parameters:
+        - $ref: '#/components/parameters/UuidPathId'
+        - $ref: '#/components/parameters/RequesterIdQuery'
+      responses:
+        '204':
+          description: Receita excluída
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /budgets/global:
+    servers:
+      - url: http://localhost:8081/api/v1
+    post:
+      tags: [Global Budget]
+      summary: Definir teto global mensal (ORC-01)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateGlobalBudgetRequest'
+      responses:
+        '201':
+          description: Teto criado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseGlobalBudget'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '409':
+          description: Já existe teto para a competência (código BUDGET_ALREADY_EXISTS)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+    get:
+      tags: [Global Budget]
+      summary: Consultar teto global mensal
+      parameters:
+        - name: user_id
+          in: query
+          required: true
+          schema: { type: string, format: uuid }
+        - name: competence
+          in: query
+          required: true
+          schema: { type: string, pattern: '^\d{4}-\d{2}$' }
+      responses:
+        '200':
+          description: Teto encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseGlobalBudget'
+        '404':
+          description: Sem teto definido (código BUDGET_NOT_FOUND)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /budgets/global/{id}:
+    servers:
+      - url: http://localhost:8081/api/v1
+    put:
+      tags: [Global Budget]
+      summary: Editar teto manualmente (ORC-05 — define auto_adjusted=false)
+      parameters:
+        - $ref: '#/components/parameters/UuidPathId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [ceiling]
+              properties:
+                ceiling: { type: number, example: 4800.00 }
+      responses:
+        '200':
+          description: Teto atualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseGlobalBudget'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /budgets/global/preview-next:
+    servers:
+      - url: http://localhost:8081/api/v1
+    get:
+      tags: [Global Budget]
+      summary: Pré-visualizar auto-ajuste do próximo mês sem aplicar (ORC-03/04)
+      parameters:
+        - name: user_id
+          in: query
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Preview do auto-ajuste
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseAutoAdjustPreview'
+        '400':
+          description: Sem teto anterior (código NO_PREVIOUS_BUDGET)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '503':
+          description: hf-transaction-service indisponível (código UPSTREAM_UNAVAILABLE)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /budgets/global/auto-adjust:
+    servers:
+      - url: http://localhost:8081/api/v1
+    post:
+      tags: [Global Budget]
+      summary: Aplicar auto-ajuste para a competência de destino (ORC-03/04/05, idempotente)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [user_id, competence]
+              properties:
+                user_id: { type: string, format: uuid }
+                competence: { type: string, pattern: '^\d{4}-\d{2}$', example: '2026-07' }
+      responses:
+        '200':
+          description: Teto ajustado (upsert idempotente)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseGlobalBudget'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '503':
+          description: hf-transaction-service indisponível (código UPSTREAM_UNAVAILABLE)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /balance:
+    servers:
+      - url: http://localhost:8081/api/v1
+    get:
+      tags: [Balance]
+      summary: Saldo mensal completo (SAL-01/02/03/04, agrega ORC-06/07)
+      parameters:
+        - name: user_id
+          in: query
+          required: true
+          schema: { type: string, format: uuid }
+        - name: competence
+          in: query
+          required: true
+          schema: { type: string, pattern: '^\d{4}-\d{2}$' }
+      responses:
+        '200':
+          description: Saldo mensal
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseBalance'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '502':
+          description: Resposta inesperada do hf-transaction-service (código UPSTREAM_ERROR)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '503':
+          description: Timeout do hf-transaction-service (código UPSTREAM_TIMEOUT)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
 components:
   parameters:
     UuidPathId:
@@ -1081,9 +1354,30 @@ components:
           type: string
           format: uuid
         shared_user_ids:
-          type: array
-          items:
-            type: string
+          description: >
+            Participantes do rateio (DSP-06/07). Aceita dois formatos (DSP-10):
+            array de UUIDs para rateio igualitário (DSP-11), ou array de objetos
+            {user_id, split_pct} para rateio percentual variável — soma dos
+            split_pct deve ser exatamente 100 (DSP-12).
+          oneOf:
+            - type: array
+              items:
+                type: string
+                format: uuid
+            - type: array
+              items:
+                $ref: '#/components/schemas/SharedUserEntry'
+
+    SharedUserEntry:
+      type: object
+      required: [user_id, split_pct]
+      properties:
+        user_id:
+          type: string
+          format: uuid
+        split_pct:
+          type: number
+          description: "Percentual do rateio, em (0, 100]. Deve ser informado para todos os participantes ou nenhum (DSP-10)."
 
     UpdateExpenseRequest:
       type: object
@@ -1101,6 +1395,18 @@ components:
         payment_method_id:
           type: string
           format: uuid
+        shared_user_ids:
+          description: >
+            Mesmo contrato de CreateExpenseRequest.shared_user_ids (DSP-08).
+            Substitui integralmente os participantes anteriores.
+          oneOf:
+            - type: array
+              items:
+                type: string
+                format: uuid
+            - type: array
+              items:
+                $ref: '#/components/schemas/SharedUserEntry'
 
     UpdateExpenseCategoryRequest:
       type: object
@@ -1233,4 +1539,127 @@ components:
       type: object
       properties:
         data: { type: array, items: { $ref: '#/components/schemas/AccountPayable' } }
+        error: { type: 'null' }
+
+    # ─── hf-income-service (servidor separado — ver `servers` no topo) ────────
+
+    IncomeType:
+      type: string
+      enum: [SALARY, FREELANCE, INVESTMENT, RENTAL, OTHER]
+
+    Income:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        user_id: { type: string, format: uuid }
+        description: { type: string }
+        amount: { type: number }
+        type:
+          $ref: '#/components/schemas/IncomeType'
+        date: { type: string, format: date }
+        competence: { type: string, pattern: '^\d{4}-\d{2}$' }
+        recurrent: { type: boolean }
+        origin_id: { type: string, format: uuid, nullable: true }
+
+    CreateIncomeRequest:
+      type: object
+      required: [user_id, description, amount, type, date, competence, recurrent]
+      properties:
+        user_id: { type: string, format: uuid }
+        description: { type: string, maxLength: 200 }
+        amount: { type: number, minimum: 0.01 }
+        type:
+          $ref: '#/components/schemas/IncomeType'
+        date: { type: string, format: date }
+        competence: { type: string, pattern: '^\d{4}-\d{2}$' }
+        recurrent: { type: boolean, default: false }
+
+    UpdateIncomeRequest:
+      type: object
+      required: [requester_id]
+      properties:
+        requester_id: { type: string, format: uuid }
+        description: { type: string }
+        amount: { type: number, minimum: 0.01 }
+        recurrent: { type: boolean }
+
+    ApiResponseIncome:
+      type: object
+      properties:
+        data: { $ref: '#/components/schemas/Income' }
+        error: { type: 'null' }
+
+    ApiResponseIncomes:
+      type: object
+      properties:
+        data: { type: array, items: { $ref: '#/components/schemas/Income' } }
+        error: { type: 'null' }
+
+    GlobalBudget:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        user_id: { type: string, format: uuid }
+        competence: { type: string, pattern: '^\d{4}-\d{2}$' }
+        ceiling: { type: number }
+        auto_adjusted: { type: boolean }
+        created_at: { type: string, format: date-time }
+
+    CreateGlobalBudgetRequest:
+      type: object
+      required: [user_id, competence, ceiling]
+      properties:
+        user_id: { type: string, format: uuid }
+        competence: { type: string, pattern: '^\d{4}-\d{2}$' }
+        ceiling: { type: number, minimum: 0.01 }
+
+    ApiResponseGlobalBudget:
+      type: object
+      properties:
+        data: { $ref: '#/components/schemas/GlobalBudget' }
+        error: { type: 'null' }
+
+    AutoAdjustPreview:
+      type: object
+      properties:
+        current_competence: { type: string }
+        current_ceiling: { type: number }
+        current_spending: { type: number }
+        next_competence: { type: string }
+        suggested_ceiling: { type: number }
+        adjustment_reason:
+          type: string
+          enum: [spending_below_ceiling, spending_equals_ceiling]
+
+    ApiResponseAutoAdjustPreview:
+      type: object
+      properties:
+        data: { $ref: '#/components/schemas/AutoAdjustPreview' }
+        error: { type: 'null' }
+
+    # Contrato canônico do FDD-004 §5 (HF-41) do hf-income-service. Campos
+    # monetários serializados como string decimal (ex.: "7500.00").
+    Balance:
+      type: object
+      properties:
+        user_id: { type: string, format: uuid }
+        competence: { type: string, pattern: '^\d{4}-\d{2}$' }
+        total_income: { type: string, example: '7500.00' }
+        total_personal: { type: string, example: '1800.00' }
+        total_shared: { type: string, example: '1400.00' }
+        total_expenses: { type: string, example: '3200.00' }
+        balance_today: { type: string, example: '4300.00' }
+        committed_bills: { type: string, example: '850.00' }
+        projected_balance: { type: string, example: '3450.00' }
+        is_projected_negative: { type: boolean }
+        ceiling: { type: string, nullable: true, example: '5000.00' }
+        # ORC-07: percentual inteiro (64 = 64%); acima de 100 indica estouro; null sem teto.
+        ceiling_usage_pct: { type: integer, nullable: true, example: 64 }
+        # ORC-06: true quando total_expenses > ceiling; false sem teto.
+        ceiling_exceeded: { type: boolean }
+
+    ApiResponseBalance:
+      type: object
+      properties:
+        data: { $ref: '#/components/schemas/Balance' }
         error: { type: 'null' }
