@@ -24,6 +24,21 @@ versionamento [SemVer](https://semver.org/lang/pt-BR/).
 
 ### Added
 
+- (HF-47) Seção "Metas de Redução" na página de Budgets (MET-04..07, consumo do
+  backend HF-68/69/70/71): cliente tipado no `incomeService`
+  (`getReductionGoals`/`getGoalComparison`/`createReductionGoal`/
+  `updateReductionGoal`/`deleteReductionGoal`, valores string→number, nulls de
+  degradação preservados), card por categoria com meta, gasto atual, mês
+  anterior, `variation_label` pt-BR do backend, barra de progresso e badges
+  "Dentro da meta"/"Meta estourada" (`on_track`) e "Meta atingida/não atingida"
+  (`achieved`, pós-fechamento); CRUD via `ReductionGoalModal` (409
+  `GOAL_ALREADY_EXISTS` tratado; edição só do valor — MET-04) e exclusão com
+  confirmação; estados loading/erro/vazio; campos degradados exibem "—" com nome
+  da categoria resolvido pelo catálogo local. Códigos MET no `errorMessage` e
+  endpoints `/goals/reduction` documentados no `openapi.yaml`.
+- (HF-47) `apiFetch` passou a tratar `204 No Content`: respostas de DELETE não
+  têm corpo e `response.json()` lançava, transformando exclusões bem-sucedidas
+  em erro no cliente (afetava também `deleteIncome`).
 - (HF-49) Rateio percentual customizável no `ExpenseModal` (DSP-10/11/12, consumo do
   backend HF-48): campo de % por participante (pagador incluído) na seção de despesa
   compartilhada, com padrão igualitário (50/50; 33.33/33.33/33.34), rebalanceamento
