@@ -24,6 +24,15 @@ versionamento [SemVer](https://semver.org/lang/pt-BR/).
 
 ### Added
 
+- (HF-49) Rateio percentual customizável no `ExpenseModal` (DSP-10/11/12, consumo do
+  backend HF-48): campo de % por participante (pagador incluído) na seção de despesa
+  compartilhada, com padrão igualitário (50/50; 33.33/33.33/33.34), rebalanceamento
+  proporcional dos demais ao editar um percentual, preview do valor em R$ por
+  participante e validação inline de soma = 100% (cortesia de UX — autoridade no
+  backend). Sem customização, `shared_user_ids` segue como array de strings (divisão
+  igualitária pelo backend, DSP-11); customizado, envia `[{user_id, split_pct}]`
+  (DSP-10). Na edição, os percentuais são derivados de `divided_amount/value`. Lógica
+  pura em `src/utils/split.ts` (novo, 100% coberto).
 - (HF-45) Card "Teto Global do Mês" no topo da página de Budgets (ORC): teto vindo de
   `GET /budgets/global` do hf-income-service (novo cliente tipado
   `incomeService.getGlobalBudget/createGlobalBudget/updateGlobalBudget`, `ceiling`
