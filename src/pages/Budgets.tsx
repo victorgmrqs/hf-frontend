@@ -12,6 +12,7 @@ import {
 import Sidebar from '../components/Sidebar';
 import BudgetModal from '../components/BudgetModal';
 import GlobalBudgetCard from '../components/GlobalBudgetCard';
+import ReductionGoalsSection from '../components/ReductionGoalsSection';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import EmptyState from '../components/EmptyState';
 import { toast } from 'sonner';
@@ -220,6 +221,9 @@ const Budgets: React.FC = () => {
             />
           </div>
         )}
+
+        {/* Metas de Redução por categoria (MET-07 — HF-47) */}
+        <ReductionGoalsSection competence={competence} />
       </main>
 
       <BudgetModal

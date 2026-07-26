@@ -14,6 +14,11 @@ export async function apiFetch<T>(
       },
     });
 
+    // 204 No Content (ex.: DELETE) não tem corpo — response.json() lançaria.
+    if (response.status === 204) {
+      return { data: null, error: null };
+    }
+
     const result = await response.json();
 
     if (!response.ok) {

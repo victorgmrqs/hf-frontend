@@ -28,6 +28,10 @@ export const ERROR_MESSAGES: Record<string, string> = {
 
   // --- hf-income-service (REC/ORC/SAL/MET) ---
   INVALID_COMPETENCE: 'Competência inválida.',
+  // MET (metas de redução — HF-47)
+  GOAL_ALREADY_EXISTS: 'Já existe uma meta para esta categoria neste mês. Edite a meta atual.',
+  GOAL_NOT_FOUND: 'Meta de redução não encontrada.',
+  INVALID_TARGET_AMOUNT: 'A meta deve ser um valor maior que zero.',
   // ORC (teto global — HF-45)
   BUDGET_ALREADY_EXISTS: 'Já existe um teto definido para este mês. Edite o valor atual.',
   INVALID_CEILING: 'O teto deve ser um valor maior que zero.',
