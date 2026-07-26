@@ -56,4 +56,13 @@ describe('apiFetch', () => {
     expect(data).toBeNull();
     expect(error).toBeInstanceOf(Error);
   });
+
+  it('204 No Content (DELETE) resolve sem erro e sem tentar parsear corpo', async () => {
+    server.use(http.delete('*/users/u1', () => new HttpResponse(null, { status: 204 })));
+
+    const { data, error } = await apiFetch<void>('/users/u1', { method: 'DELETE' });
+
+    expect(data).toBeNull();
+    expect(error).toBeNull();
+  });
 });

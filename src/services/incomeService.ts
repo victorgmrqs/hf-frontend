@@ -81,6 +81,84 @@ const toGlobalBudget = (raw: RawGlobalBudget): GlobalBudget => ({
   auto_adjusted: raw.auto_adjusted,
 });
 
+/**
+ * Meta de redução por categoria (domínio MET — HF-68/69/70/71 no backend).
+ * Valores monetários chegam como string no envelope; o cliente converte para
+ * number. `previous_amount` é null sem snapshot e `achieved` é null até o
+ * fechamento do mês (MET-06).
+ */
+export interface ReductionGoal {
+  id: string;
+  user_id: string;
+  category_id: string;
+  competence: string;
+  target_amount: number;
+  previous_amount: number | null;
+  achieved: boolean | null;
+}
+
+interface RawReductionGoal {
+  id: string;
+  user_id: string;
+  category_id: string;
+  competence: string;
+  target_amount: string;
+  previous_amount: string | null;
+  achieved: boolean | null;
+}
+
+const toReductionGoal = (raw: RawReductionGoal): ReductionGoal => ({
+  id: raw.id,
+  user_id: raw.user_id,
+  category_id: raw.category_id,
+  competence: raw.competence,
+  target_amount: Number(raw.target_amount),
+  previous_amount: raw.previous_amount === null ? null : Number(raw.previous_amount),
+  achieved: raw.achieved,
+});
+
+/**
+ * Linha do comparativo mensal (MET-05/07). Os cálculos — inclusive o texto
+ * `variation_label` em pt-BR — vêm prontos do backend. Campos null indicam
+ * degradação (hf-transaction-service indisponível) ou ausência de base de
+ * comparação; a UI exibe placeholder.
+ */
+export interface GoalComparisonItem {
+  category_id: string;
+  category_name: string | null;
+  previous_month_amount: number | null;
+  current_month_amount: number | null;
+  target_amount: number;
+  on_track: boolean | null;
+  variation_pct: number | null;
+  variation_label: string | null;
+  target_progress_pct: number | null;
+}
+
+interface RawGoalComparisonItem {
+  category_id: string;
+  category_name: string | null;
+  previous_month_amount: string | null;
+  current_month_amount: string | null;
+  target_amount: string;
+  on_track: boolean | null;
+  variation_pct: number | null;
+  variation_label: string | null;
+  target_progress_pct: number | null;
+}
+
+const toGoalComparisonItem = (raw: RawGoalComparisonItem): GoalComparisonItem => ({
+  category_id: raw.category_id,
+  category_name: raw.category_name,
+  previous_month_amount: raw.previous_month_amount === null ? null : Number(raw.previous_month_amount),
+  current_month_amount: raw.current_month_amount === null ? null : Number(raw.current_month_amount),
+  target_amount: Number(raw.target_amount),
+  on_track: raw.on_track,
+  variation_pct: raw.variation_pct,
+  variation_label: raw.variation_label,
+  target_progress_pct: raw.target_progress_pct,
+});
+
 const base = config.incomeApi.baseUrl;
 
 // Cliente do hf-income-service (serviço separado). Reusa o envelope { data, error }
@@ -178,5 +256,66 @@ export const incomeService = {
     if (!data) return { data: null as GlobalBudget | null, error };
     return { data: toGlobalBudget(data), error };
   },
+
+  // --- Metas de redução (MET — HF-47) ---
+
+  getReductionGoals: async (userId: string, competence: string) => {
+    const params = new URLSearchParams({ user_id: userId, competence });
+    const { data, error } = await apiFetch<RawReductionGoal[]>(
+      `/goals/reduction?${params.toString()}`,
+      undefined,
+      base,
+    );
+    if (!data) return { data: null as ReductionGoal[] | null, error };
+    return { data: data.map(toReductionGoal), error };
+  },
+
+  // Comparativo mensal (MET-05/07): responde 200 mesmo com degradação parcial.
+  getGoalComparison: async (userId: string, competence: string) => {
+    const params = new URLSearchParams({ user_id: userId, competence });
+    const { data, error } = await apiFetch<RawGoalComparisonItem[]>(
+      `/goals/reduction/comparison?${params.toString()}`,
+      undefined,
+      base,
+    );
+    if (!data) return { data: null as GoalComparisonItem[] | null, error };
+    return { data: data.map(toGoalComparisonItem), error };
+  },
+
+  // 409 GOAL_ALREADY_EXISTS quando já há meta para (usuário, categoria, mês) — MET-04.
+  createReductionGoal: async (userId: string, categoryId: string, competence: string, targetAmount: number) => {
+    const { data, error } = await apiFetch<RawReductionGoal>(
+      '/goals/reduction',
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          user_id: userId,
+          category_id: categoryId,
+          competence,
+          target_amount: targetAmount,
+        }),
+      },
+      base,
+    );
+    if (!data) return { data: null as ReductionGoal | null, error };
+    return { data: toReductionGoal(data), error };
+  },
+
+  // Somente target_amount é editável (MET-04).
+  updateReductionGoal: async (id: string, targetAmount: number) => {
+    const { data, error } = await apiFetch<RawReductionGoal>(
+      `/goals/reduction/${id}`,
+      {
+        method: 'PUT',
+        body: JSON.stringify({ target_amount: targetAmount }),
+      },
+      base,
+    );
+    if (!data) return { data: null as ReductionGoal | null, error };
+    return { data: toReductionGoal(data), error };
+  },
+
+  deleteReductionGoal: (id: string) =>
+    apiFetch<void>(`/goals/reduction/${id}`, { method: 'DELETE' }, base),
 };
 

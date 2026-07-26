@@ -231,3 +231,111 @@ function rawBalance(overrides: Record<string, unknown> = {}) {
     ...overrides,
   };
 }
+
+describe('incomeService — metas de redução (MET, HF-47)', () => {
+  it('getReductionGoals_ConvertsStringsAndNulls', async () => {
+    server.use(
+      http.get('*/goals/reduction', () =>
+        HttpResponse.json({
+          data: [
+            { id: 'g1', user_id: 'u1', category_id: 'c1', competence: '2026-07', target_amount: '400.00', previous_amount: '520.00', achieved: null },
+            { id: 'g2', user_id: 'u1', category_id: 'c2', competence: '2026-07', target_amount: '200.00', previous_amount: null, achieved: true },
+          ],
+          error: null,
+        }),
+      ),
+    );
+    const { data, error } = await incomeService.getReductionGoals('u1', '2026-07');
+    expect(error).toBeNull();
+    expect(data).toEqual([
+      { id: 'g1', user_id: 'u1', category_id: 'c1', competence: '2026-07', target_amount: 400, previous_amount: 520, achieved: null },
+      { id: 'g2', user_id: 'u1', category_id: 'c2', competence: '2026-07', target_amount: 200, previous_amount: null, achieved: true },
+    ]);
+  });
+
+  it('getReductionGoals monta a URL com user_id e competence', async () => {
+    await incomeService.getReductionGoals('u1', '2026-07');
+    expect(captured?.pathname).toMatch(/\/goals\/reduction$/);
+    const p = new URLSearchParams(captured?.search);
+    expect(p.get('user_id')).toBe('u1');
+    expect(p.get('competence')).toBe('2026-07');
+  });
+
+  it('getGoalComparison_PreservesDegradationNulls', async () => {
+    server.use(
+      http.get('*/goals/reduction/comparison', () =>
+        HttpResponse.json({
+          data: [
+            {
+              category_id: 'c1', category_name: 'Alimentação', previous_month_amount: '800.00',
+              current_month_amount: '620.00', target_amount: '700.00', on_track: true,
+              variation_pct: -22.5, variation_label: '22,5% menor que o mês passado', target_progress_pct: 88.6,
+            },
+            {
+              category_id: 'c2', category_name: null, previous_month_amount: null,
+              current_month_amount: null, target_amount: '250.00', on_track: null,
+              variation_pct: null, variation_label: null, target_progress_pct: null,
+            },
+          ],
+          error: null,
+        }),
+      ),
+    );
+    const { data, error } = await incomeService.getGoalComparison('u1', '2026-07');
+    expect(error).toBeNull();
+    expect(data?.[0]).toEqual({
+      category_id: 'c1', category_name: 'Alimentação', previous_month_amount: 800,
+      current_month_amount: 620, target_amount: 700, on_track: true,
+      variation_pct: -22.5, variation_label: '22,5% menor que o mês passado', target_progress_pct: 88.6,
+    });
+    expect(data?.[1]).toEqual({
+      category_id: 'c2', category_name: null, previous_month_amount: null,
+      current_month_amount: null, target_amount: 250, on_track: null,
+      variation_pct: null, variation_label: null, target_progress_pct: null,
+    });
+  });
+
+  it('getGoalComparison aponta para /goals/reduction/comparison', async () => {
+    await incomeService.getGoalComparison('u1', '2026-07');
+    expect(captured?.pathname).toMatch(/\/goals\/reduction\/comparison$/);
+  });
+
+  it('createReductionGoal_PostsPayload', async () => {
+    let body: Record<string, unknown> = {};
+    server.use(
+      http.post('*/goals/reduction', async ({ request }) => {
+        body = (await request.json()) as Record<string, unknown>;
+        return HttpResponse.json(
+          { data: { id: 'g1', user_id: 'u1', category_id: 'c1', competence: '2026-07', target_amount: '400', previous_amount: null, achieved: null }, error: null },
+          { status: 201 },
+        );
+      }),
+    );
+    const { data, error } = await incomeService.createReductionGoal('u1', 'c1', '2026-07', 400);
+    expect(error).toBeNull();
+    expect(data?.target_amount).toBe(400);
+    expect(body).toEqual({ user_id: 'u1', category_id: 'c1', competence: '2026-07', target_amount: 400 });
+  });
+
+  it('updateReductionGoal_PutsTargetAmount', async () => {
+    let body: Record<string, unknown> = {};
+    server.use(
+      http.put('*/goals/reduction/:id', async ({ request }) => {
+        body = (await request.json()) as Record<string, unknown>;
+        return HttpResponse.json({
+          data: { id: 'g1', user_id: 'u1', category_id: 'c1', competence: '2026-07', target_amount: '350', previous_amount: null, achieved: null },
+          error: null,
+        });
+      }),
+    );
+    const { data } = await incomeService.updateReductionGoal('g1', 350);
+    expect(data?.target_amount).toBe(350);
+    expect(body).toEqual({ target_amount: 350 });
+  });
+
+  it('deleteReductionGoal_Deletes', async () => {
+    await incomeService.deleteReductionGoal('g1');
+    expect(captured?.method).toBe('DELETE');
+    expect(captured?.pathname).toMatch(/\/goals\/reduction\/g1$/);
+  });
+});

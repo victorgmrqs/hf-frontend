@@ -112,7 +112,7 @@ Gerenciador financeiro doméstico para casal com filhos. Permite controlar despe
 | MET-02 | Sistema permite consultar status do orçamento (gasto vs. limite por competência) | ✅ Implementado |
 | MET-03 | Sistema alerta visualmente quando gastos atingem percentual configurável do orçamento da categoria (padrão 80%, campo `alert_threshold`, intervalo 1–100); exibe em vermelho quando o limite é excedido | ✅ Implementado (HF-12) |
 
-> Não confundir com o épico Jira "Metas de Redução de Gastos" (HF-34, `hf-income-service`, `ReductionGoal`, MET-04 a MET-07) — domínio distinto, ainda em desenvolvimento.
+> Não confundir com o épico Jira "Metas de Redução de Gastos" (HF-34, `hf-income-service`, `ReductionGoal`, MET-04 a MET-07) — domínio distinto, entregue no backend (HF-68/69/70/71) e consumido pela seção "Metas de Redução" da página Budgets (HF-47).
 
 ---
 

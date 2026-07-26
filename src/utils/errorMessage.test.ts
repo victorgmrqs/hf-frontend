@@ -58,4 +58,14 @@ describe('messageForError', () => {
       ERROR_MESSAGES.INTERNAL_SERVER_ERROR,
     );
   });
+
+  it('mapeia os códigos MET (metas de redução — HF-47)', () => {
+    expect(messageForError({ code: 'GOAL_ALREADY_EXISTS' })).toBe(
+      'Já existe uma meta para esta categoria neste mês. Edite a meta atual.',
+    );
+    expect(messageForError({ code: 'GOAL_NOT_FOUND' })).toBe('Meta de redução não encontrada.');
+    expect(messageForError({ code: 'INVALID_TARGET_AMOUNT' })).toBe(
+      'A meta deve ser um valor maior que zero.',
+    );
+  });
 });
