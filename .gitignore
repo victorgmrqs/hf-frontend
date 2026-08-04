@@ -166,3 +166,7 @@ task-brief.yaml
 
 # Evidência de PR (screenshots locais, não versionar)
 /evidence/
+
+# Config local do agente: contém env do workflow (Jira/Confluence) e permissões
+.claude/settings.local.json
+.dev-workflow/*.local.yaml

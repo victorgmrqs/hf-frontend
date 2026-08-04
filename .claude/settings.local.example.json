@@ -1,0 +1,9 @@
+{
+  "//": "Copie para .claude/settings.local.json (não versionado) e preencha. Os valores alimentam os ${VAR} de .dev-workflow/workflow.config.yaml, usados pelas skills /task, /code-review-task e /docs-sync.",
+  "env": {
+    "HF_JIRA_URL": "https://<seu-site>.atlassian.net",
+    "HF_JIRA_CLOUD_ID": "<cloud id — obtenha com getAccessibleAtlassianResources>",
+    "HF_CONFLUENCE_SPACE": "<chave do espaço, ex.: HF>",
+    "HF_CONFLUENCE_DELIVERY_LOG_PAGE_ID": "<page id da página 'Histórico de entregas'>"
+  }
+}
