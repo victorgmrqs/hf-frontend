@@ -3,6 +3,16 @@
 # neste repo (.claude/skills/{task,code-review-task,docs-sync} + docs-guard.sh)
 # para as skills dev-workflow:*. Este arquivo é a ÚNICA fonte de parâmetros
 # das skills /task, /code-review-task e /docs-sync.
+#
+# ATENÇÃO (repositório público): valores no formato ${VAR} abaixo NÃO são
+# literais — são referências a variáveis de ambiente e devem ser resolvidas em
+# tempo de execução (ex.: `printenv HF_JIRA_CLOUD_ID`) antes de chamar qualquer
+# tool Atlassian. Os valores reais vivem no bloco `env` de
+# `.claude/settings.local.json`, que não é versionado. Se uma variável não
+# estiver definida, PARE e peça ao usuário — nunca chute nem reaproveite o
+# valor de outro projeto.
+# Variáveis usadas: HF_JIRA_URL, HF_JIRA_CLOUD_ID, HF_CONFLUENCE_SPACE,
+# HF_CONFLUENCE_DELIVERY_LOG_PAGE_ID.
 
 schema_version: 1
 
@@ -19,8 +29,8 @@ tracker:
   provider: jira
   mcp_server: MCP_DOCKER
   project_key: HF
-  cloud_id: ${HF_JIRA_CLOUD_ID}
-  url: ${HF_JIRA_URL}
+  cloud_id: ${HF_JIRA_CLOUD_ID}    # env — ver cabeçalho
+  url: ${HF_JIRA_URL}              # env — ver cabeçalho
   ticket_prefix_guard: "[backend]"   # ticket de outro repo mais comum; outros prefixos do processo HF: [infra], [database], [observability], [cross-service], [docs] — se casar, /task para
   columns:
     todo: "To Do"
@@ -83,7 +93,7 @@ documentation_policy:
   delivery_log:
     required_for_every_task: true
     page_title: "Histórico de entregas"
-    page_id: ${HF_CONFLUENCE_DELIVERY_LOG_PAGE_ID}
+    page_id: ${HF_CONFLUENCE_DELIVERY_LOG_PAGE_ID}   # env — ver cabeçalho
 
 evidence:
   type: screenshot
@@ -92,7 +102,7 @@ evidence:
 confluence:
   enabled: true
   mcp_server: MCP_DOCKER
-  space: "HF"
+  space: ${HF_CONFLUENCE_SPACE}    # env — ver cabeçalho
   business_docs: []
 
 dod_extra:

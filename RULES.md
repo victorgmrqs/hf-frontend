@@ -1,6 +1,6 @@
 # RULES.md - Regras de Negócio
 
-> **Fonte de verdade**: [Confluence — Home Finance / Regras de Negócio](${HF_JIRA_URL}/wiki/spaces/HF/pages/20283394/Regras+de+Neg+cio)
+> **Fonte de verdade**: Confluence (espaço privado) — página _Home Finance / Regras de Negócio_, id `20283394`. URL base do site em `$HF_JIRA_URL` (ver `.dev-workflow/workflow.config.yaml`).
 > Este arquivo é um espelho local dos domínios consumidos pelo hf-frontend (USR/DSP/FPG/CAT/PER/CAL/MET/CTP, do hf-transaction-service) mais o domínio UX, exclusivo deste repositório. Em caso de divergência, o Confluence prevalece — exceto para UX, que só existe aqui.
 > Ao alterar ou adicionar uma regra no código, atualize **ambos**: o Confluence e este arquivo.
 > Sincronizado com o backend em 2026-07-22 (achado: DSP-10/11/12 e MET-03 estavam desatualizados aqui).
